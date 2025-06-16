@@ -1,8 +1,8 @@
-#include "buffer/IBuffer.h"
+#include "LWGL/buffer/IBuffer.h"
 
 #include <glad/glad.h>
 #include "../detail/conversions.h"
-#include "Globals.h"
+#include "LWGL/Globals.h"
 
 void gl::IBuffer::registerAttribute(
     uint32_t loc, uint32_t size, VertexAttribute::Type type, uint32_t stride, uint32_t offset

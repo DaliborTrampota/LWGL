@@ -1,5 +1,5 @@
-#include "CubeMap.h"
-#include "ImageData.h"
+#include "LWGL/texture/CubeMap.h"
+#include "LWGL/texture/ImageData.h"
 #include "TexturePrivate.h"
 
 #include <glad/glad.h>

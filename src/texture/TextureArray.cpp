@@ -1,5 +1,5 @@
-#include "TextureArray.h"
-#include "ImageData.h"
+#include "LWGL//texture/TextureArray.h"
+#include "LWGL//texture/ImageData.h"
 #include "TexturePrivate.h"
 
 #include <format>

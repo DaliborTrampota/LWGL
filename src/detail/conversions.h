@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <stdexcept>
 
-#include "buffer/VertexLayout.h"
+#include "LWGL/buffer/VertexLayout.h"
 
 namespace gl::detail {
 

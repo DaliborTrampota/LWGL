@@ -1,5 +1,5 @@
-#include "ImageData.h"
-#include "TextureBase.h"
+#include "LWGL/texture/ImageData.h"
+#include "LWGL/texture/TextureBase.h"
 
 #include <glad/glad.h>
 

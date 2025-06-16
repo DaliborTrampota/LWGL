@@ -1,5 +1,5 @@
-#include "buffer/UBO.h"
-#include "Globals.h"
+#include "LWGL/buffer/UBO.h"
+#include "LWGL/Globals.h"
 
 #include <glad/glad.h>
 

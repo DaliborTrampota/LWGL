@@ -1,4 +1,4 @@
-#include "TextureBase.h"
+#include "LWGL/texture/TextureBase.h"
 #include "TexturePrivate.h"
 
 #include <glad/glad.h>

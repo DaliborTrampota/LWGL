@@ -1,4 +1,4 @@
-#include "GraphicsAPI.h"
+#include "LWGL/gl/GraphicsAPI.h"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -6,8 +6,8 @@
 #include <stdexcept>
 
 #include "../events/CallbackWrapper.h"
-#include "../events/GLEvents.h"
-#include "Globals.h"
+#include "LWGL/events/GLEvents.h"
+#include "LWGL/Globals.h"
 
 using namespace gl;
 

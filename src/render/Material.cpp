@@ -1,8 +1,8 @@
-#include "render/Material.h"
+#include "LWGL/render/Material.h"
 
 #include <glm/gtc/type_ptr.hpp>
-#include "buffer/UBO.h"
-#include "render/Shader.h"
+#include "LWGL/buffer/UBO.h"
+#include "LWGL/render/Shader.h"
 
 using namespace gl;
 

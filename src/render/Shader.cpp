@@ -1,5 +1,5 @@
-#include "Shader.h"
-#include "../Globals.h"
+#include "LWGL/render/Shader.h"
+#include "LWGL/Globals.h"
 
 #include <fstream>
 #include <string>
