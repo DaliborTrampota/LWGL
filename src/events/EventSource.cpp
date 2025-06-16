@@ -1,4 +1,4 @@
-#include "core/events/EventSource.h"
+#include "lwgl/events/EventSource.h"
 
 using namespace engine;
 
