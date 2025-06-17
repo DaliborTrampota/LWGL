@@ -1,6 +1,6 @@
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS src/*.cpp src/*.h)
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" PREFIX "Source Files" FILES ${SRC_FILES})
-file(GLOB_RECURSE INC_FILES CONFIGURE_DEPENDS include/lwgl/*.h)
+file(GLOB_RECURSE INC_FILES CONFIGURE_DEPENDS include/LWGL/*.h)
 # source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/include/lwgl" PREFIX "Include" FILES ${INC_FILES})
 
 add_library(lwgl STATIC ${SRC_FILES})
