@@ -6,7 +6,7 @@ namespace gl {
 
     class TextureArray : public TextureBase {
       public:
-        TextureArray(UInt unit) : TextureBase(unit, Type::TextureArray) {}
+        TextureArray(UInt unit) : TextureBase(unit, TextureType::TextureArray) {}
 
         void create(ArraySettings settings);
         int load(const gl::ImageData& imageData, int layer = -1);

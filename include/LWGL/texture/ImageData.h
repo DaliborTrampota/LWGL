@@ -12,7 +12,20 @@ namespace gl {
         RGB,        // Red, Green, Blue
         RGBA,       // Red, Green, Blue, Alpha
         GRAY,       // Grayscale
-        GRAY_ALPHA  // Grayscale with Alpha
+        GRAY_ALPHA,  // Grayscale with Alpha
+        DEPTH,      // Depth
+    };
+
+    enum class ImageDataType {
+        UChar,
+        UShort,
+        UInt,
+
+        Char,
+        Short,
+        Int,
+        HalfFloat,
+        Float,
     };
 
     struct ImageData {

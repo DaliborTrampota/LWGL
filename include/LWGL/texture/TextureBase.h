@@ -44,7 +44,7 @@ namespace gl {
         int layers;
         int width;
         int height;
-        gl::ImageFormat format = gl::ImageFormat::RGBA;
+        ImageFormat format = ImageFormat::RGBA;
 
         static ArraySettings Pixelated() {
             return {
@@ -57,7 +57,7 @@ namespace gl {
         }
     };
 
-    enum class Type {
+    enum class TextureType {
         Texture1D,
         Texture2D,
         Texture3D,
@@ -90,7 +90,7 @@ namespace gl {
 
     class TextureBase {
       public:
-        TextureBase(UInt unit, Type type);
+        TextureBase(UInt unit, TextureType type);
         virtual ~TextureBase();
 
         UInt id() const { return m_id; }
@@ -100,6 +100,6 @@ namespace gl {
       protected:
         UInt m_id = 0;
         UInt m_unit = 0;
-        Type m_type;  // OpenGL texture type (e.g., GL_TEXTURE_2D)
+        TextureType m_type;  // OpenGL texture type (e.g., GL_TEXTURE_2D)
     };
 }  // namespace gl

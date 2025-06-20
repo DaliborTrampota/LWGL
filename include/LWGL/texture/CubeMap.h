@@ -6,7 +6,7 @@ namespace gl {
 
     class CubeMap : public TextureBase {
       public:
-        CubeMap(UInt unit) : TextureBase(unit, Type::CubeMap) {};
+        CubeMap(UInt unit) : TextureBase(unit, TextureType::CubeMap) {};
 
         void create(Settings setting);
         void loadFace(CubeFace face, const gl::ImageData& data);

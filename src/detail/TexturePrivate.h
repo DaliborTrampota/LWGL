@@ -21,18 +21,18 @@ namespace gl::detail {
         }
     }
 
-    constexpr GLenum toGLType(Type type) {
+    constexpr GLenum toGLType(TextureType type) {
         switch (type) {
-            case Type::Texture2D: return GL_TEXTURE_2D;
-            case Type::Texture3D: return GL_TEXTURE_3D;
-            case Type::TextureArray: return GL_TEXTURE_2D_ARRAY;
-            case Type::Texture1D: return GL_TEXTURE_1D;
-            case Type::TextureArray1D: return GL_TEXTURE_1D_ARRAY;
-            case Type::CubeMap: return GL_TEXTURE_CUBE_MAP;
-            case Type::CubeMapArray: return GL_TEXTURE_CUBE_MAP_ARRAY;
-            case Type::Multisample: return GL_TEXTURE_2D_MULTISAMPLE;
-            case Type::MultisampleArray: return GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
-            case Type::Buffer: return GL_TEXTURE_BUFFER;
+            case TextureType::Texture2D: return GL_TEXTURE_2D;
+            case TextureType::Texture3D: return GL_TEXTURE_3D;
+            case TextureType::TextureArray: return GL_TEXTURE_2D_ARRAY;
+            case TextureType::Texture1D: return GL_TEXTURE_1D;
+            case TextureType::TextureArray1D: return GL_TEXTURE_1D_ARRAY;
+            case TextureType::CubeMap: return GL_TEXTURE_CUBE_MAP;
+            case TextureType::CubeMapArray: return GL_TEXTURE_CUBE_MAP_ARRAY;
+            case TextureType::Multisample: return GL_TEXTURE_2D_MULTISAMPLE;
+            case TextureType::MultisampleArray: return GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+            case TextureType::Buffer: return GL_TEXTURE_BUFFER;
         }
         return GL_NONE;
     }
@@ -43,6 +43,7 @@ namespace gl::detail {
             case gl::ImageFormat::RGBA: return GL_RGBA;
             case gl::ImageFormat::GRAY: return GL_RED;
             case gl::ImageFormat::GRAY_ALPHA: return GL_RG;
+            case gl::ImageFormat::DEPTH: return GL_DEPTH_COMPONENT;
         }
         return GL_NONE;  // Should not happen
     }
@@ -53,6 +54,7 @@ namespace gl::detail {
             case gl::ImageFormat::RGBA: return GL_RGBA8;
             case gl::ImageFormat::GRAY: return GL_R8;
             case gl::ImageFormat::GRAY_ALPHA: return GL_RG8;
+            case gl::ImageFormat::DEPTH: return GL_DEPTH_COMPONENT;
         }
         return GL_NONE;  // Should not happen
     }
@@ -69,10 +71,24 @@ namespace gl::detail {
         return GL_NONE;  // Should not happen
     }
 
+    constexpr GLenum toGLDataType(ImageDataType type) {
+        switch (type) {
+            case ImageDataType::UChar: return GL_UNSIGNED_BYTE;
+            case gl::ImageDataType::UShort: return GL_UNSIGNED_SHORT;
+            case gl::ImageDataType::UInt: return GL_UNSIGNED_INT;
+            case gl::ImageDataType::Char: return GL_BYTE;
+            case gl::ImageDataType::Short: return GL_SHORT;
+            case gl::ImageDataType::Int: return GL_INT;
+            case gl::ImageDataType::HalfFloat: return GL_HALF_FLOAT;
+            case gl::ImageDataType::Float: return GL_FLOAT;
+        }
+        return GL_NONE;  // Should not happen
+    }
+
 
     void ConfigureTexture(GLenum type, const Settings& settings);
     void Data1D(GLenum type, int width, gl::ImageFormat format, unsigned char* data);
-    void Data2D(GLenum type, int width, int height, gl::ImageFormat format, unsigned char* data);
+    void Data2D(GLenum type, int width, int height, gl::ImageFormat format, unsigned char* data, gl::ImageDataType dataType = gl::ImageDataType::UChar);
     void Data3D(
         GLenum type, int width, int height, int depth, gl::ImageFormat format, unsigned char* data
     );

@@ -6,7 +6,7 @@
 
 using namespace gl;
 
-TextureBase::TextureBase(UInt unit, Type type) : m_unit(unit), m_type(type) {
+TextureBase::TextureBase(UInt unit, TextureType type) : m_unit(unit), m_type(type) {
     if (unit >= 32)
         throw std::runtime_error("Texture unit out of range");
 }

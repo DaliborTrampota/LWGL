@@ -26,7 +26,7 @@ void Data1D(GLenum type, int width, gl::ImageFormat format, unsigned char* data)
 }
 
 void Data2D(
-    GLenum type, int width, int height, gl::ImageFormat format, unsigned char* data
+    GLenum type, int width, int height, gl::ImageFormat format, unsigned char* data, gl::ImageDataType dataType
 ) {
     glTexImage2D(
         type,
@@ -36,7 +36,7 @@ void Data2D(
         height,                      // height of the texture
         0,                           // border (must be 0)
         toGLFormat(format),          // format of the input data
-        GL_UNSIGNED_BYTE,            // type of the input data
+        toGLDataType(dataType),      // type of the input data
         data                         // data pointer (null = reserve space only)
     );
 }
