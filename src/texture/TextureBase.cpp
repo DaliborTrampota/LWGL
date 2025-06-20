@@ -1,10 +1,10 @@
 #include "LWGL/texture/TextureBase.h"
-#include "TexturePrivate.h"
+#include "../detail/TexturePrivate.h"
 
 #include <glad/glad.h>
 #include <stdexcept>
 
-using namespace gl::texture;
+using namespace gl;
 
 TextureBase::TextureBase(UInt unit, Type type) : m_unit(unit), m_type(type) {
     if (unit >= 32)
@@ -16,8 +16,8 @@ TextureBase::~TextureBase() {
 }
 
 void TextureBase::bind() const {
-    glBindTexture(toGLType(m_type), m_id);
+    glBindTexture(detail::toGLType(m_type), m_id);
 }
 void TextureBase::unbind() const {
-    glBindTexture(toGLType(m_type), 0);
+    glBindTexture(detail::toGLType(m_type), 0);
 }

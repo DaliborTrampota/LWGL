@@ -3,7 +3,7 @@
 
 #include <glad/glad.h>
 
-namespace gl::texture {
+namespace gl::detail {
     constexpr GLenum toGLWrap(Settings::Option opt) {
         switch (opt) {
             case Settings::MirroredRepeat: return GL_MIRRORED_REPEAT;

@@ -2,7 +2,7 @@
 
 #include "TextureBase.h"
 
-namespace gl::texture {
+namespace gl {
 
     class CubeMap : public TextureBase {
       public:
@@ -16,4 +16,4 @@ namespace gl::texture {
         int m_width = 0;
         int m_channels = 0;
     };
-}  // namespace gl::texture
+}  // namespace gl

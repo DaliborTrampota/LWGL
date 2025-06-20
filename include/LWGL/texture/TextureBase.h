@@ -2,7 +2,7 @@
 
 #include "ImageData.h"
 
-namespace gl::texture {
+namespace gl {
 
     struct Settings {
         enum Option {
@@ -102,4 +102,4 @@ namespace gl::texture {
         UInt m_unit = 0;
         Type m_type;  // OpenGL texture type (e.g., GL_TEXTURE_2D)
     };
-}  // namespace gl::texture
+}  // namespace gl

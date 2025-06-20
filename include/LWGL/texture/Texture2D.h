@@ -2,7 +2,7 @@
 
 #include "TextureBase.h"
 
-namespace gl::texture {
+namespace gl {
     class Texture2D : public TextureBase {
       public:
         Texture2D(UInt unit) : TextureBase(unit, Type::Texture2D) {};
@@ -16,4 +16,4 @@ namespace gl::texture {
         int m_height = 0;
         int m_channels = 0;
     };
-}  // namespace gl::texture
+}  // namespace gl

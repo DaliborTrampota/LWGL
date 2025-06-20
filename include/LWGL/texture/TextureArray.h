@@ -2,7 +2,7 @@
 
 #include "TextureBase.h"
 
-namespace gl::texture {
+namespace gl {
 
     class TextureArray : public TextureBase {
       public:
@@ -20,4 +20,4 @@ namespace gl::texture {
         int m_layer = 0;
         unsigned int m_maxLayers = 0;
     };
-}  // namespace gl::texture
+}  // namespace gl
