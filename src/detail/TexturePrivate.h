@@ -85,10 +85,26 @@ namespace gl::detail {
         return GL_NONE;  // Should not happen
     }
 
+    constexpr GLenum toGLAttachmentType(FBOType type) {
+        switch (type) {
+            case FBOType::Depth: return GL_DEPTH_ATTACHMENT;
+            case FBOType::Color: return GL_COLOR_ATTACHMENT0;
+            case FBOType::Stencil: return GL_STENCIL_ATTACHMENT;
+            case FBOType::DepthStencil: return GL_DEPTH_STENCIL_ATTACHMENT;
+        }
+        return GL_NONE;  // Should not happen
+    }
 
     void ConfigureTexture(GLenum type, const Settings& settings);
     void Data1D(GLenum type, int width, gl::ImageFormat format, unsigned char* data);
-    void Data2D(GLenum type, int width, int height, gl::ImageFormat format, unsigned char* data, gl::ImageDataType dataType = gl::ImageDataType::UChar);
+    void Data2D(
+        GLenum type,
+        int width,
+        int height,
+        gl::ImageFormat format,
+        unsigned char* data,
+        gl::ImageDataType dataType = gl::ImageDataType::UChar
+    );
     void Data3D(
         GLenum type, int width, int height, int depth, gl::ImageFormat format, unsigned char* data
     );
@@ -101,4 +117,4 @@ namespace gl::detail {
         gl::ImageFormat format,
         unsigned char* data
     );
-}  // namespace gl::texture
+}  // namespace gl::detail

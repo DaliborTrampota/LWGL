@@ -57,6 +57,28 @@ namespace gl {
         }
     };
 
+    
+    struct FrameBufferSettings : public Settings {
+        int width;
+        int height;
+        ImageFormat format;
+        ImageDataType dataType;
+
+        static FrameBufferSettings Depth(int width, int height) {
+            return {
+                ClampToEdge,
+                ClampToEdge,
+                ClampToEdge,
+                Nearest,
+                Nearest,
+                width,
+                height,
+                ImageFormat::DEPTH,
+                ImageDataType::Float,
+            };
+        };
+    };
+
     enum class TextureType {
         Texture1D,
         Texture2D,
@@ -84,6 +106,12 @@ namespace gl {
         Front
     };
 
+    enum class FBOType {
+        Depth,
+        Color,
+        Stencil,
+        DepthStencil,
+    };
 
     using UInt = unsigned int;
     using Data = unsigned char*;
