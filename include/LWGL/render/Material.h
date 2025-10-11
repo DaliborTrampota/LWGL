@@ -23,6 +23,14 @@ namespace gl {
         );
         ~Material();
 
+        // Prevent copying (Material manages OpenGL resources)
+        Material(const Material&) = delete;
+        Material& operator=(const Material&) = delete;
+
+        // Allow moving if needed in the future
+        Material(Material&&) noexcept = default;
+        Material& operator=(Material&&) noexcept = default;
+
         void use() const;
 
         void setBool(const std::string& name, bool value) const;
