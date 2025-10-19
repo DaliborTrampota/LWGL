@@ -1,0 +1,23 @@
+LWGL - LightWeight Graphics Library
+Copyright 2025 LWGL Contributors
+
+This product includes software developed by third parties:
+
+================================================================================
+GLM (OpenGL Mathematics)
+Copyright (c) 2005 - G-Truc Creation
+License: MIT License
+https://github.com/g-truc/glm
+
+================================================================================
+GLFW
+Copyright (c) 2002-2006 Marcus Geelnard
+Copyright (c) 2006-2019 Camilla Löwy
+License: zlib/libpng License
+https://www.glfw.org/
+
+================================================================================
+GLAD
+License: Public Domain / MIT License
+https://github.com/Dav1dde/glad
+
