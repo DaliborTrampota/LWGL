@@ -2,7 +2,7 @@
 
 #include "ImageData.h"
 
-namespace gl::texture {
+namespace gl {
 
     struct Settings {
         enum Option {
@@ -44,7 +44,7 @@ namespace gl::texture {
         int layers;
         int width;
         int height;
-        gl::ImageFormat format = gl::ImageFormat::RGBA;
+        ImageFormat format = ImageFormat::RGBA;
 
         static ArraySettings Pixelated() {
             return {
@@ -57,7 +57,29 @@ namespace gl::texture {
         }
     };
 
-    enum class Type {
+
+    struct FrameBufferSettings : public Settings {
+        int width;
+        int height;
+        ImageFormat format;
+        ImageDataType dataType;
+
+        static FrameBufferSettings Depth(int width, int height) {
+            return {
+                ClampToEdge,
+                ClampToEdge,
+                ClampToEdge,
+                Nearest,
+                Nearest,
+                width,
+                height,
+                ImageFormat::DEPTH,
+                ImageDataType::Float,
+            };
+        };
+    };
+
+    enum class TextureType {
         Texture1D,
         Texture2D,
         Texture3D,
@@ -84,13 +106,28 @@ namespace gl::texture {
         Front
     };
 
+    enum class FBOAttachment : uint8_t {
+        Depth,
+        Stencil,
+        DepthStencil,
+        Color,
+    };
+
+
+    inline FBOAttachment operator>>(FBOAttachment attachment, int offset) {
+        return static_cast<FBOAttachment>(static_cast<int>(attachment) + offset);
+    }
+
+    inline uint8_t operator+(FBOAttachment attachment, int offset) {
+        return static_cast<int>(attachment) + offset;
+    }
 
     using UInt = unsigned int;
     using Data = unsigned char*;
 
     class TextureBase {
       public:
-        TextureBase(UInt unit, Type type);
+        TextureBase(UInt unit, TextureType type);
         virtual ~TextureBase();
 
         UInt id() const { return m_id; }
@@ -100,6 +137,6 @@ namespace gl::texture {
       protected:
         UInt m_id = 0;
         UInt m_unit = 0;
-        Type m_type;  // OpenGL texture type (e.g., GL_TEXTURE_2D)
+        TextureType m_type;  // OpenGL texture type (e.g., GL_TEXTURE_2D)
     };
-}  // namespace gl::texture
+}  // namespace gl

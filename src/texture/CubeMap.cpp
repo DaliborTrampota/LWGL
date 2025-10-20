@@ -1,16 +1,16 @@
 #include "LWGL/texture/CubeMap.h"
 #include "LWGL/texture/ImageData.h"
-#include "TexturePrivate.h"
+#include "../detail/TexturePrivate.h"
 
 #include <glad/glad.h>
 
-using namespace gl::texture;
+using namespace gl;
 
 void CubeMap::create(Settings setting) {
     glGenTextures(1, &m_id);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
 
-    ConfigureTexture(GL_TEXTURE_CUBE_MAP, setting);
+    detail::ConfigureTexture(GL_TEXTURE_CUBE_MAP, setting);
 }
 
 void CubeMap::loadFace(CubeFace face, const gl::ImageData& data) {
@@ -20,7 +20,7 @@ void CubeMap::loadFace(CubeFace face, const gl::ImageData& data) {
     m_width = data.width;
     m_channels = data.channels;
 
-    Data2D(toGLCubeFace(face), data.width, data.height, data.format, data.data);
+    detail::Data2D(detail::toGLCubeFace(face), data.width, data.height, data.format, data.data);
 }
 
 void CubeMap::loadFaceRaw(CubeFace face, int w, int ch, gl::ImageFormat format, Data data) {
@@ -30,8 +30,8 @@ void CubeMap::loadFaceRaw(CubeFace face, int w, int ch, gl::ImageFormat format, 
     m_width = w;
     m_channels = ch;
 
-    Data2D(
-        toGLCubeFace(face),
+    detail::Data2D(
+        detail::toGLCubeFace(face),
         w,
         w,  // Cube map faces are square
         format,

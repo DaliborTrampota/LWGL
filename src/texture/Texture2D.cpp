@@ -1,12 +1,12 @@
 #include "LWGL/texture/Texture2D.h"
 #include "LWGL/texture/ImageData.h"
-#include "TexturePrivate.h"
+#include "../detail/TexturePrivate.h"
 
 #include <glad/glad.h>
 #include <format>
 #include <stdexcept>
 
-using namespace gl::texture;
+using namespace gl;
 
 
 void Texture2D::create(Settings settings) {
@@ -17,7 +17,7 @@ void Texture2D::create(Settings settings) {
     glActiveTexture(GL_TEXTURE0 + m_unit);
     glBindTexture(GL_TEXTURE_2D, m_id);
 
-    ConfigureTexture(GL_TEXTURE_2D, settings);
+    detail::ConfigureTexture(GL_TEXTURE_2D, settings);
 }
 
 void Texture2D::load(const gl::ImageData& imageData) {
@@ -25,7 +25,7 @@ void Texture2D::load(const gl::ImageData& imageData) {
     m_height = imageData.height;
     m_channels = imageData.channels;
 
-    Data2D(GL_TEXTURE_2D, imageData.width, imageData.height, imageData.format, imageData.data);
+    detail::Data2D(GL_TEXTURE_2D, imageData.width, imageData.height, imageData.format, imageData.data);
     // glTexImage2D(
     //     GL_TEXTURE_2D,
     //     0,                 // mipmap level
@@ -44,7 +44,7 @@ void Texture2D::loadRaw(int w, int h, int ch, gl::ImageFormat format, Data data)
     m_height = h;
     m_channels = ch;
 
-    Data2D(
+    detail::Data2D(
         GL_TEXTURE_2D,
         w,       // width of the texture
         h,       // height of the texture

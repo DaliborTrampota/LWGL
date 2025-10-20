@@ -2,11 +2,11 @@
 
 #include "TextureBase.h"
 
-namespace gl::texture {
+namespace gl {
 
     class CubeMap : public TextureBase {
       public:
-        CubeMap(UInt unit) : TextureBase(unit, Type::CubeMap) {};
+        CubeMap(UInt unit) : TextureBase(unit, TextureType::CubeMap) {};
 
         void create(Settings setting);
         void loadFace(CubeFace face, const gl::ImageData& data);
@@ -16,4 +16,4 @@ namespace gl::texture {
         int m_width = 0;
         int m_channels = 0;
     };
-}  // namespace gl::texture
+}  // namespace gl

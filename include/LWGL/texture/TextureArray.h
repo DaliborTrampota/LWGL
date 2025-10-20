@@ -2,11 +2,11 @@
 
 #include "TextureBase.h"
 
-namespace gl::texture {
+namespace gl {
 
     class TextureArray : public TextureBase {
       public:
-        TextureArray(UInt unit) : TextureBase(unit, Type::TextureArray) {}
+        TextureArray(UInt unit) : TextureBase(unit, TextureType::TextureArray) {}
 
         void create(ArraySettings settings);
         int load(const gl::ImageData& imageData, int layer = -1);
@@ -20,4 +20,4 @@ namespace gl::texture {
         int m_layer = 0;
         unsigned int m_maxLayers = 0;
     };
-}  // namespace gl::texture
+}  // namespace gl

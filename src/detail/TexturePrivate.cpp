@@ -1,9 +1,9 @@
 #include "TexturePrivate.h"
 
 
-using namespace gl::texture;
+using namespace gl::detail;
 
-void gl::texture::ConfigureTexture(GLenum type, const Settings& settings) {
+void gl::detail::ConfigureTexture(GLenum type, const gl::Settings& settings) {
     glTexParameteri(type, GL_TEXTURE_WRAP_S, toGLWrap(settings.wrapS));
     glTexParameteri(type, GL_TEXTURE_WRAP_T, toGLWrap(settings.wrapT));
     glTexParameteri(type, GL_TEXTURE_WRAP_R, toGLWrap(settings.wrapR));
@@ -12,7 +12,7 @@ void gl::texture::ConfigureTexture(GLenum type, const Settings& settings) {
     glTexParameteri(type, GL_TEXTURE_MAG_FILTER, toGLFilter(settings.magFilter));
 }
 
-void gl::texture::Data1D(GLenum type, int width, gl::ImageFormat format, unsigned char* data) {
+void gl::detail::Data1D(GLenum type, int width, gl::ImageFormat format, unsigned char* data) {
     glTexImage1D(
         type,
         0,                           // mipmap level
@@ -25,8 +25,13 @@ void gl::texture::Data1D(GLenum type, int width, gl::ImageFormat format, unsigne
     );
 }
 
-void gl::texture::Data2D(
-    GLenum type, int width, int height, gl::ImageFormat format, unsigned char* data
+void gl::detail::Data2D(
+    GLenum type,
+    int width,
+    int height,
+    gl::ImageFormat format,
+    unsigned char* data,
+    gl::ImageDataType dataType
 ) {
     glTexImage2D(
         type,
@@ -36,12 +41,12 @@ void gl::texture::Data2D(
         height,                      // height of the texture
         0,                           // border (must be 0)
         toGLFormat(format),          // format of the input data
-        GL_UNSIGNED_BYTE,            // type of the input data
+        toGLDataType(dataType),      // type of the input data
         data                         // data pointer (null = reserve space only)
     );
 }
 
-void gl::texture::Data3D(
+void gl::detail::Data3D(
     GLenum type, int width, int height, int depth, gl::ImageFormat format, unsigned char* data
 ) {
     glTexImage3D(
@@ -58,7 +63,7 @@ void gl::texture::Data3D(
     );
 }
 
-void gl::texture::SubData3D(
+void gl::detail::SubData3D(
     GLenum type,
     int layer,
     int width,
