@@ -44,6 +44,8 @@ namespace gl::detail {
             case gl::ImageFormat::GRAY: return GL_RED;
             case gl::ImageFormat::GRAY_ALPHA: return GL_RG;
             case gl::ImageFormat::DEPTH: return GL_DEPTH_COMPONENT;
+            case gl::ImageFormat::DEPTH_STENCIL: return GL_DEPTH_STENCIL;
+            case gl::ImageFormat::STENCIL: return GL_STENCIL_INDEX;
         }
         return GL_NONE;  // Should not happen
     }
@@ -55,6 +57,9 @@ namespace gl::detail {
             case gl::ImageFormat::GRAY: return GL_R8;
             case gl::ImageFormat::GRAY_ALPHA: return GL_RG8;
             case gl::ImageFormat::DEPTH: return GL_DEPTH_COMPONENT;
+            case gl::ImageFormat::DEPTH_STENCIL:
+                return GL_DEPTH_STENCIL;
+                //case gl::ImageFormat::STENCIL: return GL_STENCIL_INDEX8; // ?
         }
         return GL_NONE;  // Should not happen
     }
@@ -74,25 +79,30 @@ namespace gl::detail {
     constexpr GLenum toGLDataType(ImageDataType type) {
         switch (type) {
             case ImageDataType::UChar: return GL_UNSIGNED_BYTE;
-            case gl::ImageDataType::UShort: return GL_UNSIGNED_SHORT;
-            case gl::ImageDataType::UInt: return GL_UNSIGNED_INT;
-            case gl::ImageDataType::Char: return GL_BYTE;
-            case gl::ImageDataType::Short: return GL_SHORT;
-            case gl::ImageDataType::Int: return GL_INT;
-            case gl::ImageDataType::HalfFloat: return GL_HALF_FLOAT;
-            case gl::ImageDataType::Float: return GL_FLOAT;
+            case ImageDataType::UShort: return GL_UNSIGNED_SHORT;
+            case ImageDataType::UInt: return GL_UNSIGNED_INT;
+            case ImageDataType::Char: return GL_BYTE;
+            case ImageDataType::Short: return GL_SHORT;
+            case ImageDataType::Int: return GL_INT;
+            case ImageDataType::HalfFloat: return GL_HALF_FLOAT;
+            case ImageDataType::Float: return GL_FLOAT;
         }
         return GL_NONE;  // Should not happen
     }
 
-    constexpr GLenum toGLAttachmentType(FBOType type) {
-        switch (type) {
-            case FBOType::Depth: return GL_DEPTH_ATTACHMENT;
-            case FBOType::Color: return GL_COLOR_ATTACHMENT0;
-            case FBOType::Stencil: return GL_STENCIL_ATTACHMENT;
-            case FBOType::DepthStencil: return GL_DEPTH_STENCIL_ATTACHMENT;
+    constexpr GLenum toGLAttachmentType(FBOAttachment attachment) {
+        switch (attachment) {
+            case FBOAttachment::Depth: return GL_DEPTH_ATTACHMENT;
+            //case FBOAttachment::Stencil: return GL_STENCIL_ATTACHMENT;
+            case FBOAttachment::DepthStencil: return GL_DEPTH_STENCIL_ATTACHMENT;
+            case FBOAttachment::Color: return GL_COLOR_ATTACHMENT0;
+            default:
+                uint8_t idx = static_cast<uint8_t>(attachment);
+                if (idx >= 32)
+                    throw std::runtime_error("Color attachment index out of bounds");
+
+                return GL_COLOR_ATTACHMENT0 + (idx - static_cast<int>(FBOAttachment::Color));
         }
-        return GL_NONE;  // Should not happen
     }
 
     void ConfigureTexture(GLenum type, const Settings& settings);

@@ -57,7 +57,7 @@ namespace gl {
         }
     };
 
-    
+
     struct FrameBufferSettings : public Settings {
         int width;
         int height;
@@ -106,12 +106,21 @@ namespace gl {
         Front
     };
 
-    enum class FBOType {
+    enum class FBOAttachment : uint8_t {
         Depth,
-        Color,
         Stencil,
         DepthStencil,
+        Color,
     };
+
+
+    inline FBOAttachment operator>>(FBOAttachment attachment, int offset) {
+        return static_cast<FBOAttachment>(static_cast<int>(attachment) + offset);
+    }
+
+    inline uint8_t operator+(FBOAttachment attachment, int offset) {
+        return static_cast<int>(attachment) + offset;
+    }
 
     using UInt = unsigned int;
     using Data = unsigned char*;

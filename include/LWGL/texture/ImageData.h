@@ -9,19 +9,21 @@ namespace gl {
 
     enum class ImageFormat {
         Unknown,
-        RGB,        // Red, Green, Blue
-        RGBA,       // Red, Green, Blue, Alpha
-        GRAY,       // Grayscale
-        GRAY_ALPHA,  // Grayscale with Alpha
-        DEPTH,      // Depth
+        RGB,            // Red, Green, Blue
+        RGBA,           // Red, Green, Blue, Alpha
+        GRAY,           // Grayscale
+        GRAY_ALPHA,     // Grayscale with Alpha
+        DEPTH,          // Depth
+        DEPTH_STENCIL,  // Depth and Stencil
+        STENCIL,        // Stencil
     };
 
     enum class ImageDataType {
-        UChar,
+        UChar,  // unsigned byte
         UShort,
         UInt,
 
-        Char,
+        Char,  // byte
         Short,
         Int,
         HalfFloat,
