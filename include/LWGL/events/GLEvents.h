@@ -20,6 +20,21 @@ class MouseEvent : public engine::Event {
     bool clearEvent() const { return x == -1 && y == -1; }
 };
 
+class MouseButtonEvent : public engine::Event {
+  public:
+    MouseButtonEvent(int button, int action, int mods)
+        : button(button),
+          action(action),
+          mods(mods) {}
+    MouseButtonEvent() : button(-1), action(-1), mods(-1) {}
+
+    int button;
+    int action;
+    int mods;
+
+    bool clearEvent() const { return button == -1 && action == -1 && mods == -1; }
+};
+
 class KeyboardEvent : public engine::Event {
   public:
     KeyboardEvent(int key, int scancode, int action, int mods)
