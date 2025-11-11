@@ -96,6 +96,11 @@ void GraphicsAPI::init() {
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &max_units);
     printf("Max layers: %d\nMax units: %d\n", max_layers, max_units);
 
+    if (GLAD_GL_ARB_bindless_texture)
+        printf("Bindless textures supported!\n");
+    else
+        printf("Bindless textures NOT supported!\n");
+
     registerCallbacks();
 }
 
@@ -114,6 +119,14 @@ void GraphicsAPI::registerCallbacks() {
         fireMouseMoveEvent(&e);
     };
     glfwSetCursorPosCallback(m_window, CallbackWrapper<MouseCB>::call);
+
+    using MouseButtonCB = void(GLFWwindow*, int, int, int);
+    CallbackWrapper<MouseButtonCB>::callback =
+        [this](GLFWwindow* w, int button, int action, int mods) -> void {
+        MouseButtonEvent e{button, action, mods};
+        fireMouseButtonEvent(&e);
+    };
+    glfwSetMouseButtonCallback(m_window, CallbackWrapper<MouseButtonCB>::call);
 
     using ResizeCB = void(GLFWwindow*, int, int);
     CallbackWrapper<ResizeCB>::callback = [this](GLFWwindow* window, int width, int height) {
@@ -148,7 +161,8 @@ void GraphicsAPI::registerCallbacks() {
             getDebugSeverity(severity),
             message
         );
-        throw std::runtime_error("GL Error");
+        if (type == GL_DEBUG_TYPE_ERROR)
+            throw std::runtime_error("GL Error");
     };
 
     glEnable(GL_DEBUG_OUTPUT);
