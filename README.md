@@ -393,7 +393,7 @@ LWGL is designed for:
 - [ ] Implement Frame Buffer Objects (FBO)
 - [ ] Add compute shader support
 - [ ] Multi-threaded resource loading
-- [ ] Vulkan backend (LWVK?)
+- [ ] Learn Vulkan
 
 ## Contributing
 
