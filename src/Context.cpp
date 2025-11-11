@@ -19,13 +19,13 @@ Context::Context(Context* share) : m_sharedCtx(share) {
 }
 
 Context::~Context() {
+    if (m_window)
+        glfwDestroyWindow(m_window);
+
     s_contextCount--;
     if (s_contextCount == 0) {
         glfwTerminate();
         s_initialized = false;
-    } else {
-        glfwSetWindowShouldClose(m_window, GL_TRUE);
-        glfwDestroyWindow(m_window);
     }
 }
 
@@ -43,7 +43,6 @@ int Context::init(int w, int h, const char* name) {
 
     if (!m_window) {
         printf("Failed to create GLFW window");
-        glfwTerminate();
         return 0;
     }
 
