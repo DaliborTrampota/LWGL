@@ -95,7 +95,7 @@ void Context::setWindowSize(int x, int y) const {
 glm::ivec2 Context::windowSize() const {
     glm::ivec2 size;
     glfwGetWindowSize(m_window, &size.x, &size.y);
-    return std::move(size);
+    return size;
 }
 
 void Context::setShouldClose() {
