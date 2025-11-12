@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 
 namespace gl {
-
+    class RBO;
 
     class FBO {
       public:
@@ -79,6 +79,8 @@ namespace gl {
         /// @return 0 if the FBO is complete, otherwise the OpenGL error code.
         /// @see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glCheckFramebufferStatus.xhtml
         unsigned int checkCompleteness() const;
+
+        void attachRenderBuffer(RBO& rbo, FBOAttachment attachment, Target target);
 
 
       protected:

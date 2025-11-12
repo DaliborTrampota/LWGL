@@ -1,5 +1,7 @@
 #include "LWGL/buffer/FBO.h"
 #include "../detail/TexturePrivate.h"
+#include "LWGL/buffer/RBO.h"
+
 
 #include <glad/glad.h>
 
@@ -135,4 +137,12 @@ void FBO::setReadBuffer(uint8_t colorAttachmentIndex) {
 unsigned int FBO::checkCompleteness() const {
     unsigned int status = glCheckNamedFramebufferStatus(m_fboID, m_target);
     return status == GL_FRAMEBUFFER_COMPLETE ? 0 : status;
+}
+
+
+void FBO::attachRenderBuffer(RBO& rbo, FBOAttachment attachment, Target target) {
+    bind();
+    glFramebufferRenderbuffer(
+        toGLFBOTarget(target), detail::toGLAttachmentType(attachment), GL_RENDERBUFFER, rbo.id()
+    );
 }
