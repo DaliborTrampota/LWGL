@@ -46,6 +46,19 @@ void gl::detail::Data2D(
     );
 }
 
+void gl::detail::SubData2D(
+    GLenum type,
+    int x,
+    int y,
+    int width,
+    int height,
+    gl::ImageFormat format,
+    unsigned char* data,
+    gl::ImageDataType dataType
+) {
+    glTexSubImage2D(type, 0, x, y, width, height, toGLFormat(format), toGLDataType(dataType), data);
+}
+
 void gl::detail::Data3D(
     GLenum type, int width, int height, int depth, gl::ImageFormat format, unsigned char* data
 ) {

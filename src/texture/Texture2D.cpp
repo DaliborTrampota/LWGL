@@ -1,6 +1,7 @@
 #include "LWGL/texture/Texture2D.h"
-#include "LWGL/texture/ImageData.h"
 #include "../detail/TexturePrivate.h"
+#include "LWGL/texture/ImageData.h"
+
 
 #include <glad/glad.h>
 #include <format>
@@ -25,7 +26,9 @@ void Texture2D::load(const gl::ImageData& imageData) {
     m_height = imageData.height;
     m_channels = imageData.channels;
 
-    detail::Data2D(GL_TEXTURE_2D, imageData.width, imageData.height, imageData.format, imageData.data);
+    detail::Data2D(
+        GL_TEXTURE_2D, imageData.width, imageData.height, imageData.format, imageData.data
+    );
     // glTexImage2D(
     //     GL_TEXTURE_2D,
     //     0,                 // mipmap level
@@ -51,4 +54,8 @@ void Texture2D::loadRaw(int w, int h, int ch, gl::ImageFormat format, Data data)
         format,  // format of the input data
         data     // data pointer (null = reserve space only)
     );
+}
+
+void Texture2D::update(gl::ImageFormat format, Data data) {
+    detail::SubData2D(GL_TEXTURE_2D, 0, 0, m_width, m_height, format, data);
 }

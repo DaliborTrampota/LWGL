@@ -14,6 +14,20 @@ namespace gl {
             Nearest,
         };
 
+        Settings(Option wrap, Option filter)
+            : wrapS(wrap),
+              wrapT(wrap),
+              wrapR(wrap),
+              minFilter(filter),
+              magFilter(filter) {}
+
+        Settings(Option wrapS, Option wrapT, Option wrapR, Option minFilter, Option magFilter)
+            : wrapS(wrapS),
+              wrapT(wrapT),
+              wrapR(wrapR),
+              minFilter(minFilter),
+              magFilter(magFilter) {}
+
         Option wrapS = MirroredRepeat;
         Option wrapT = MirroredRepeat;
         Option wrapR = MirroredRepeat;  // Only used for 3D textures
@@ -30,6 +44,16 @@ namespace gl {
             };
         }
 
+        static Settings LinearClampToEdge() {
+            return {
+                ClampToEdge,
+                ClampToEdge,
+                ClampToEdge,
+                Linear,
+                Linear,
+            };
+        }
+
         static Settings Cubemap() {
             return {
                 ClampToEdge,
@@ -42,20 +66,12 @@ namespace gl {
     };
 
     struct ArraySettings : public Settings {
-        int layers;
+        unsigned layers;
         int width;
         int height;
         ImageFormat format = ImageFormat::RGBA;
 
-        static ArraySettings Pixelated() {
-            return {
-                MirroredRepeat,
-                MirroredRepeat,
-                MirroredRepeat,
-                Nearest,
-                Nearest,
-            };
-        }
+        static ArraySettings Pixelated() { return {Settings(MirroredRepeat, Nearest)}; }
     };
 
 
@@ -67,11 +83,7 @@ namespace gl {
 
         static FrameBufferSettings Depth(int width, int height) {
             return {
-                ClampToEdge,
-                ClampToEdge,
-                ClampToEdge,
-                Nearest,
-                Nearest,
+                Settings(ClampToEdge, Nearest),
                 width,
                 height,
                 ImageFormat::DEPTH,
@@ -122,6 +134,7 @@ namespace gl {
     inline uint8_t operator+(FBOAttachment attachment, int offset) {
         return static_cast<int>(attachment) + offset;
     }
+
 
     using UInt = unsigned int;
     using Data = unsigned char*;

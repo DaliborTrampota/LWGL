@@ -11,6 +11,12 @@ namespace gl {
         void load(const gl::ImageData& imageData);
         void loadRaw(int w, int h, int ch, gl::ImageFormat format, Data data);
 
+        void update(gl::ImageFormat format, Data data);
+
+        int width() const { return m_width; }
+        int height() const { return m_height; }
+        int channels() const { return m_channels; }
+
       private:
         int m_width = 0;
         int m_height = 0;

@@ -115,6 +115,17 @@ namespace gl::detail {
         unsigned char* data,
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
+    void SubData2D(
+        GLenum type,
+        int x,
+        int y,
+        int width,
+        int height,
+        gl::ImageFormat format,
+        unsigned char* data,
+        gl::ImageDataType dataType = gl::ImageDataType::UChar
+    );
+
     void Data3D(
         GLenum type, int width, int height, int depth, gl::ImageFormat format, unsigned char* data
     );
