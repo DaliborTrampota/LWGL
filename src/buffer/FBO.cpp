@@ -40,7 +40,7 @@ void FBO::bindTexture(FBOAttachment attachment, unsigned int textureID) {
     }
     glBindTexture(GL_TEXTURE_2D, textureID);
     glFramebufferTexture2D(
-        GL_FRAMEBUFFER, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, textureID, 0
+        m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, textureID, 0
     );
 }
 
@@ -101,11 +101,11 @@ void FBO::clearDepthStencil(float depth, uint8_t stencil) {
 }
 
 
-void FBO::bind() {
+void FBO::bind() const {
     glBindFramebuffer(m_target, m_fboID);
 }
 
-void FBO::unbind() {
+void FBO::unbind() const {
     glBindFramebuffer(m_target, 0);
 }
 

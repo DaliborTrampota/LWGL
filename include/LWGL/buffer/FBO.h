@@ -19,8 +19,8 @@ namespace gl {
 
         FBO(std::initializer_list<FBOAttachment> attachments, Target target = Target::ReadDraw);
 
-        void bind();
-        void unbind();
+        void bind() const;
+        void unbind() const;
 
         /// @brief Sets where draw operations will write to.
         /// @param colorAttachmentIndices Indices of the color attachments to write to.
