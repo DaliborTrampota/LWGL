@@ -4,7 +4,7 @@
 
 
 #include <glad/glad.h>
-
+#include <stdexcept>
 
 using namespace gl;
 
@@ -18,6 +18,10 @@ namespace {
         return GL_NONE;  // Should not happen
     }
 }  // namespace
+
+FBO::FBO() : m_target(GL_FRAMEBUFFER), m_attachments(), m_texIDs() {
+    glGenFramebuffers(1, &m_fboID);
+}
 
 FBO::FBO(std::initializer_list<FBOAttachment> attachments, Target target)
     : m_target(toGLFBOTarget(target)),

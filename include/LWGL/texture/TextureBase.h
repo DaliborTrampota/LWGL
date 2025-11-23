@@ -1,38 +1,41 @@
 #pragma once
 
 #include <cstdint>
+#include "../GLTypes.h"
 #include "ImageData.h"
 
 namespace gl {
 
     struct Settings {
-        enum Option {
+        enum Wrap {
             MirroredRepeat,
             ClampToEdge,
             ClampToBorder,
+        };
+        enum Filter {
             Linear,
             Nearest,
         };
 
-        Settings(Option wrap, Option filter)
+        Settings(Wrap wrap, Filter filter)
             : wrapS(wrap),
               wrapT(wrap),
               wrapR(wrap),
               minFilter(filter),
               magFilter(filter) {}
 
-        Settings(Option wrapS, Option wrapT, Option wrapR, Option minFilter, Option magFilter)
+        Settings(Wrap wrapS, Wrap wrapT, Wrap wrapR, Filter minFilter, Filter magFilter)
             : wrapS(wrapS),
               wrapT(wrapT),
               wrapR(wrapR),
               minFilter(minFilter),
               magFilter(magFilter) {}
 
-        Option wrapS = MirroredRepeat;
-        Option wrapT = MirroredRepeat;
-        Option wrapR = MirroredRepeat;  // Only used for 3D textures
-        Option minFilter = Linear;
-        Option magFilter = Linear;
+        Wrap wrapS = MirroredRepeat;
+        Wrap wrapT = MirroredRepeat;
+        Wrap wrapR = MirroredRepeat;  // Only used for 3D textures
+        Filter minFilter = Linear;
+        Filter magFilter = Linear;
 
         static Settings Pixelated() {
             return {

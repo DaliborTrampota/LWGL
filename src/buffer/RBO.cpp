@@ -14,11 +14,11 @@ RBO::~RBO() {
     }
 }
 
-void RBO::bind() {
+void RBO::bind() const {
     glBindRenderbuffer(GL_RENDERBUFFER, m_ID);
 }
 
-void RBO::unbind() {
+void RBO::unbind() const {
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 

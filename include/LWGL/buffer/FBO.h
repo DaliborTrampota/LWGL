@@ -17,6 +17,7 @@ namespace gl {
             ReadDraw,
         };
 
+        FBO();
         FBO(std::initializer_list<FBOAttachment> attachments, Target target = Target::ReadDraw);
 
         void bind() const;

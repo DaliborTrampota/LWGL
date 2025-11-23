@@ -1,7 +1,6 @@
 #pragma once
 
-#include "GLTypes.h"
-#include "LWGL/texture/ImageData.h"
+#include "../GLTypes.h"
 
 
 namespace gl {
@@ -12,8 +11,8 @@ namespace gl {
         RBO();
         ~RBO();
 
-        void bind();
-        void unbind();
+        void bind() const;
+        void unbind() const;
 
         void create(unsigned int width, unsigned int height, GLenum internalFormat, int samples = 0);
 
