@@ -1,21 +1,19 @@
 #pragma once
 
 #include <tools/stb_image.h>
-#include <format>
-#include <stdexcept>
 #include <string>
 
 namespace gl {
 
     enum class ImageFormat {
         Unknown,
-        RGB,            // Red, Green, Blue
-        RGBA,           // Red, Green, Blue, Alpha
-        GRAY,           // Grayscale
-        GRAY_ALPHA,     // Grayscale with Alpha
-        DEPTH,          // Depth
-        DEPTH_STENCIL,  // Depth and Stencil
-        STENCIL,        // Stencil
+        RGB,           // Red, Green, Blue
+        RGBA,          // Red, Green, Blue, Alpha
+        Gray,          // Grayscale
+        GrayAlpha,     // Grayscale with Alpha
+        Depth,         // Depth
+        DepthStencil,  // Depth and Stencil
+        Stencil,       // Stencil
     };
 
     enum class ImageDataType {

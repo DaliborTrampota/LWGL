@@ -1,6 +1,8 @@
 #include "LWGL/texture/CubeMap.h"
-#include "LWGL/texture/ImageData.h"
 #include "../detail/TexturePrivate.h"
+#include "../detail/conversions.h"
+#include "LWGL/texture/ImageData.h"
+
 
 #include <glad/glad.h>
 

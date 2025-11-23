@@ -15,8 +15,8 @@ ImageData::ImageData(const char* path) {
     this->path = path;
 
     switch (channels) {
-        case 1: format = ImageFormat::GRAY; break;
-        case 2: format = ImageFormat::GRAY_ALPHA; break;
+        case 1: format = ImageFormat::Gray; break;
+        case 2: format = ImageFormat::GrayAlpha; break;
         case 3: format = ImageFormat::RGB; break;
         case 4: format = ImageFormat::RGBA; break;
         default: throw std::runtime_error("Unsupported number of channels");

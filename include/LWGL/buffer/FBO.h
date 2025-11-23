@@ -2,48 +2,52 @@
 
 #include "LWGL/texture/TextureBase.h"
 
+#include <glm/glm.hpp>
 #include <vector>
 
-#include <glm/glm.hpp>
 
 namespace gl {
-    class RBO;
 
+    class RBO;
     class FBO {
       public:
+        using Att = FBOAttachment::Attachment;
         enum Target : uint8_t {
             Draw,
             Read,
             ReadDraw,
         };
 
+        static inline int MaxDrawBuffers = -1;
+        static inline int MaxColorAttachments = -1;
+
         FBO();
-        FBO(std::initializer_list<FBOAttachment> attachments, Target target = Target::ReadDraw);
+        // FBO(std::initializer_list<FBOAttachment> attachments, Target target = Target::ReadDraw);
 
         void bind() const;
         void unbind() const;
 
         /// @brief Sets where draw operations will write to.
-        /// @param colorAttachmentIndices Indices of the color attachments to write to.
-        void setDrawBuffers(std::initializer_list<uint8_t> colorAttachmentIndices);
+        /// @param colorAttachments The color attachments to write to.
+        void setDrawBuffers(std::initializer_list<Att> colorAttachments);
         /// @brief Sets where read operations will read from.
-        /// @param colorAttachmentIndex Index of the color attachment to read from.
-        void setReadBuffer(uint8_t colorAttachmentIndex);
+        /// @param colorAttachment The color attachment to read from.
+        void setReadBuffer(Att colorAttachment);
 
         /// @brief Binds a texture to an attachment. If the attachment is already bound, the texture is replaced, old texture is deleted.
         /// @param attachment Attachment to bind the texture to.
         /// @param textureID ID of the texture to bind.
-        void bindTexture(FBOAttachment attachment, unsigned int textureID);
+        void bindTexture(Att attachment, unsigned int textureID);
 
         /// @brief Creates a texture for an attachment.
         /// @param attachment Attachment to create the texture for.
         /// @param settings Settings for the texture.
-        void createTexture(FBOAttachment attachment, const FrameBufferSettings& settings);
+        void createTexture(Att attachment, const FrameBufferSettings& settings);
 
         /// @brief Removes a texture and attachment from this FBO.
         /// @param attachment Attachment to remove.
         /// @note The texture is deleted and the attachment is removed from the FBO.
-        void removeAttachment(FBOAttachment attachment);
+        void removeAttachment(Att attachment);
 
         /// @brief Clears the active buffer. (Buffers bound to glDrawBuffers)
         /// @param color Color to clear the attachment to.
@@ -57,11 +61,11 @@ namespace gl {
         );
 
         /// @brief Clears a color attachment.
-        /// @param index Index of the attachment to clear.
+        /// @param colorAttachment The color attachment to clear.
         /// @param color Color to clear the attachment to.
         /// @note If the attachment is not glDrawBuffer bound, the color is not cleared.
         void clearColor(
-            uint8_t index = 0, const glm::vec4& color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)
+            Att colorAttachment, const glm::vec4& color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)
         );
 
         /// @brief Clears the depth attachment.
@@ -81,13 +85,12 @@ namespace gl {
         /// @see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glCheckFramebufferStatus.xhtml
         unsigned int checkCompleteness() const;
 
-        void attachRenderBuffer(RBO& rbo, FBOAttachment attachment, Target target);
-
+        void attachRenderBuffer(RBO& rbo, Att attachment, Target target);
 
       protected:
         unsigned int m_fboID = 0;
         unsigned int m_target;
-        std::vector<unsigned int> m_texIDs;
-        std::vector<FBOAttachment> m_attachments;
+        std::vector<unsigned> m_texIDs;
+        std::vector<Att> m_attachments;
     };
 }  // namespace gl

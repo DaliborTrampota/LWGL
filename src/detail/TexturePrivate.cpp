@@ -1,5 +1,5 @@
 #include "TexturePrivate.h"
-
+#include "conversions.h"
 
 using namespace gl::detail;
 
@@ -15,13 +15,13 @@ void gl::detail::ConfigureTexture(GLenum type, const gl::Settings& settings) {
 void gl::detail::Data1D(GLenum type, int width, gl::ImageFormat format, unsigned char* data) {
     glTexImage1D(
         type,
-        0,                           // mipmap level
-        toGLInternalFormat(format),  // internal format
-        width,                       // width of the texture
-        0,                           // border (must be 0)
-        toGLFormat(format),          // format of the input data
-        GL_UNSIGNED_BYTE,            // type of the input data
-        data                         // data pointer (null = reserve space only)
+        0,  // mipmap level
+        toGLInternalFormat(format),
+        width,
+        0,  // border (must be 0)
+        toGLFormat(format),
+        GL_UNSIGNED_BYTE,
+        data
     );
 }
 
@@ -35,14 +35,14 @@ void gl::detail::Data2D(
 ) {
     glTexImage2D(
         type,
-        0,                           // mipmap level
-        toGLInternalFormat(format),  // internal format
-        width,                       // width of the texture
-        height,                      // height of the texture
-        0,                           // border (must be 0)
-        toGLFormat(format),          // format of the input data
-        toGLDataType(dataType),      // type of the input data
-        data                         // data pointer (null = reserve space only)
+        0,  // mipmap level
+        toGLInternalFormat(format),
+        width,
+        height,
+        0,  // border (must be 0)
+        toGLFormat(format),
+        toGLDataType(dataType),
+        data
     );
 }
 
@@ -64,15 +64,15 @@ void gl::detail::Data3D(
 ) {
     glTexImage3D(
         type,
-        0,                           // mipmap level
-        toGLInternalFormat(format),  // internal format
-        width,                       // width of the texture
-        height,                      // height of the texture
-        depth,                       // depth of the texture
-        0,                           // border (must be 0)
-        toGLFormat(format),          // format of the input data
-        GL_UNSIGNED_BYTE,            // type of the input data
-        data                         // data pointer (null = reserve space only)
+        0,  // mipmap level
+        toGLInternalFormat(format),
+        width,
+        height,
+        depth,  // depth of the texture
+        0,      // border (must be 0)
+        toGLFormat(format),
+        GL_UNSIGNED_BYTE,
+        data
     );
 }
 
@@ -87,15 +87,15 @@ void gl::detail::SubData3D(
 ) {
     glTexSubImage3D(
         type,
-        0,  // level of detail
-        0,
-        0,
-        layer,  // xoffset, yoffset, zoffset
+        0,      // level of detail
+        0,      // xoffset
+        0,      // yoffset,
+        layer,  // zoffset
         width,
         height,
-        depth,               // width, height, depth
-        toGLFormat(format),  // format
-        GL_UNSIGNED_BYTE,    // type
-        data                 // data pointer (null = reserve space only)
+        depth,
+        toGLFormat(format),
+        GL_UNSIGNED_BYTE,
+        data
     );
 }

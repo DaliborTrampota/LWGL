@@ -1,6 +1,7 @@
 #include "LWGL/texture/TextureArray.h"
-#include "LWGL/texture/ImageData.h"
 #include "../detail/TexturePrivate.h"
+#include "LWGL/texture/ImageData.h"
+
 
 #include <format>
 #include <stdexcept>
@@ -28,8 +29,8 @@ void TextureArray::create(ArraySettings setting) {
         setting.width,   // width of each 2D layer
         setting.height,  // height of each 2D layer
         setting.layers,  // number of layers
-        setting.format,  // format of the input data
-        nullptr          // data pointer (null = reserve space only)
+        setting.format,
+        nullptr
     );
 }
 int TextureArray::load(const gl::ImageData& imageData, int layer) {
@@ -53,9 +54,7 @@ int TextureArray::load(const gl::ImageData& imageData, int layer) {
     int targetLayer = (layer == -1) ? m_layer++ : layer;
     if (targetLayer >= m_maxLayers)
         throw std::runtime_error("Maximum layers exceeded");
-    // glTexSubImage3D(
-    //     GL_TEXTURE_2D_ARRAY, 0, 0, 0, m_layer, m_width, m_height, 1, GL_RGBA, GL_UNSIGNED_BYTE, data
-    // );
+
     detail::SubData3D(
         GL_TEXTURE_2D_ARRAY, targetLayer, m_width, m_height, 1, imageData.format, imageData.data
     );

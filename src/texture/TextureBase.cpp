@@ -1,5 +1,5 @@
 #include "LWGL/texture/TextureBase.h"
-#include "../detail/TexturePrivate.h"
+#include "../detail/conversions.h"
 
 #include <glad/glad.h>
 #include <stdexcept>
@@ -16,8 +16,8 @@ TextureBase::~TextureBase() {
 }
 
 void TextureBase::bind() const {
-    glBindTexture(detail::toGLType(m_type), m_id);
+    glBindTexture(detail::toGLTexture(m_type), m_id);
 }
 void TextureBase::unbind() const {
-    glBindTexture(detail::toGLType(m_type), 0);
+    glBindTexture(detail::toGLTexture(m_type), 0);
 }
