@@ -6,12 +6,12 @@
 namespace gl::detail {
 
     void ConfigureTexture(GLenum type, const Settings& settings);
-    void Data1D(GLenum type, int width, gl::ImageFormat format, unsigned char* data);
+    void Data1D(GLenum type, int width, ImageFormat format, unsigned char* data);
     void Data2D(
         GLenum type,
         int width,
         int height,
-        gl::ImageFormat format,
+        ImageFormat format,
         unsigned char* data,
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
@@ -21,13 +21,13 @@ namespace gl::detail {
         int y,
         int width,
         int height,
-        gl::ImageFormat format,
+        ImageFormat format,
         unsigned char* data,
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
 
     void Data3D(
-        GLenum type, int width, int height, int depth, gl::ImageFormat format, unsigned char* data
+        GLenum type, int width, int height, int depth, ImageFormat format, unsigned char* data
     );
     void SubData3D(
         GLenum type,
@@ -35,7 +35,7 @@ namespace gl::detail {
         int width,
         int height,
         int depth,
-        gl::ImageFormat format,
+        ImageFormat format,
         unsigned char* data
     );
 }  // namespace gl::detail

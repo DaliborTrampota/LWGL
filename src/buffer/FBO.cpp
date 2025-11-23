@@ -10,12 +10,6 @@
 using namespace gl;
 
 namespace {
-    inline auto findAtt(const std::vector<FBO::Att>& attachments, FBO::Att attachment) {
-        return std::find(attachments.begin(), attachments.end(), attachment);
-    }
-}  // namespace
-
-namespace {
     constexpr GLenum toGLFBOTarget(FBO::Target target) {
         switch (target) {
             case FBO::Target::Draw: return GL_DRAW_FRAMEBUFFER;
@@ -25,6 +19,9 @@ namespace {
         return GL_NONE;  // Should not happen
     }
 
+    inline auto findAtt(const std::vector<FBO::Att>& attachments, FBO::Att attachment) {
+        return std::find(attachments.begin(), attachments.end(), attachment);
+    }
     int queryMaxDrawBuffers() {
         int maxDrawBuffers;
         glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxDrawBuffers);

@@ -9,7 +9,8 @@ namespace gl {
 
         void create(Settings settings);
         void load(const gl::ImageData& imageData);
-        void loadRaw(int w, int ch, gl::ImageFormat format, Data data);
+        void load(const gl::RawImageData& rawImageData);
+        void loadRaw(int w, int ch, ImageFormat format, Data data);
 
       private:
         int m_width = 0;

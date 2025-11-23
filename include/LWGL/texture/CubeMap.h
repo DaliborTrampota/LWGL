@@ -10,7 +10,8 @@ namespace gl {
 
         void create(Settings setting);
         void loadFace(CubeFace face, const gl::ImageData& data);
-        void loadFaceRaw(CubeFace face, int w, int ch, gl::ImageFormat format, Data data);
+        void loadFace(CubeFace face, const gl::RawImageData& rawImageData);
+        void loadFaceRaw(CubeFace face, int w, int ch, ImageFormat format, Data data);
 
       private:
         int m_width = 0;

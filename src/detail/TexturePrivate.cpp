@@ -12,7 +12,7 @@ void gl::detail::ConfigureTexture(GLenum type, const gl::Settings& settings) {
     glTexParameteri(type, GL_TEXTURE_MAG_FILTER, toGLFilter(settings.magFilter));
 }
 
-void gl::detail::Data1D(GLenum type, int width, gl::ImageFormat format, unsigned char* data) {
+void gl::detail::Data1D(GLenum type, int width, ImageFormat format, unsigned char* data) {
     glTexImage1D(
         type,
         0,  // mipmap level
@@ -29,7 +29,7 @@ void gl::detail::Data2D(
     GLenum type,
     int width,
     int height,
-    gl::ImageFormat format,
+    ImageFormat format,
     unsigned char* data,
     gl::ImageDataType dataType
 ) {
@@ -52,7 +52,7 @@ void gl::detail::SubData2D(
     int y,
     int width,
     int height,
-    gl::ImageFormat format,
+    ImageFormat format,
     unsigned char* data,
     gl::ImageDataType dataType
 ) {
@@ -60,7 +60,7 @@ void gl::detail::SubData2D(
 }
 
 void gl::detail::Data3D(
-    GLenum type, int width, int height, int depth, gl::ImageFormat format, unsigned char* data
+    GLenum type, int width, int height, int depth, ImageFormat format, unsigned char* data
 ) {
     glTexImage3D(
         type,
@@ -77,13 +77,7 @@ void gl::detail::Data3D(
 }
 
 void gl::detail::SubData3D(
-    GLenum type,
-    int layer,
-    int width,
-    int height,
-    int depth,
-    gl::ImageFormat format,
-    unsigned char* data
+    GLenum type, int layer, int width, int height, int depth, ImageFormat format, unsigned char* data
 ) {
     glTexSubImage3D(
         type,

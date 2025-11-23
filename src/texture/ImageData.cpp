@@ -52,3 +52,15 @@ ImageData& ImageData::operator=(ImageData&& other) noexcept {
     }
     return *this;
 }
+
+
+RawImageData::RawImageData(
+    void* data, int w, int h, int ch, GLenum format, GLenum dataType, GLenum internalFormat
+)
+    : width(w),
+      height(h),
+      channels(ch),
+      data(data),
+      format(format),
+      internalFormat(internalFormat),
+      dataType(dataType) {}

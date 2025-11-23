@@ -30,7 +30,25 @@ void Texture2D::load(const gl::ImageData& imageData) {
     );
 }
 
-void Texture2D::loadRaw(int w, int h, int ch, gl::ImageFormat format, Data data) {
+void Texture2D::load(const gl::RawImageData& rawImageData) {
+    m_width = rawImageData.width;
+    m_height = rawImageData.height;
+    m_channels = rawImageData.channels;
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        rawImageData.internalFormat,
+        rawImageData.width,
+        rawImageData.height,
+        0,
+        rawImageData.format,
+        rawImageData.dataType,
+        rawImageData.data
+    );
+}
+
+void Texture2D::loadRaw(int w, int h, int ch, ImageFormat format, Data data) {
     m_width = w;
     m_height = h;
     m_channels = ch;
@@ -38,6 +56,6 @@ void Texture2D::loadRaw(int w, int h, int ch, gl::ImageFormat format, Data data)
     detail::Data2D(GL_TEXTURE_2D, w, h, format, data);
 }
 
-void Texture2D::update(gl::ImageFormat format, Data data) {
+void Texture2D::update(ImageFormat format, Data data) {
     detail::SubData2D(GL_TEXTURE_2D, 0, 0, m_width, m_height, format, data);
 }

@@ -77,6 +77,12 @@ namespace gl {
         static ArraySettings Pixelated() { return {Settings(MirroredRepeat, Nearest)}; }
     };
 
+    struct RawArraySettings : public ArraySettings {
+        GLenum format;
+        GLenum dataType;
+        GLenum internalFormat;
+    };
+
 
     struct FrameBufferSettings : public Settings {
         int width;

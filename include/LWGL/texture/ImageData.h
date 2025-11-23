@@ -3,6 +3,8 @@
 #include <tools/stb_image.h>
 #include <string>
 
+#include "LWGL/GLTypes.h"
+
 namespace gl {
 
     enum class ImageFormat {
@@ -43,5 +45,26 @@ namespace gl {
         ImageData(const ImageData&) = delete;
         ImageData(ImageData&& other) noexcept;
         ImageData& operator=(ImageData&& other) noexcept;
+    };
+
+    struct RawImageData {
+        int width = 0;
+        int height = 0;
+        int channels = 0;
+        void* data = nullptr;
+
+        GLenum format;
+        GLenum internalFormat;
+        GLenum dataType;
+
+        RawImageData(
+            void* data,
+            int w,
+            int h,
+            int ch,
+            GLenum format,
+            GLenum dataType,
+            GLenum internalFormat = GL_NONE
+        );
     };
 }  // namespace gl

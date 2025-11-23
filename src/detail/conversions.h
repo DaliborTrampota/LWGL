@@ -73,16 +73,16 @@ namespace gl::detail {
     }
 
 
-    constexpr GLenum toGLInternalFormat(gl::ImageFormat format) {
+    constexpr GLenum toGLInternalFormat(ImageFormat format) {
         switch (format) {
-            case gl::ImageFormat::RGB: return GL_RGB8;
-            case gl::ImageFormat::RGBA: return GL_RGBA8;
-            case gl::ImageFormat::Gray: return GL_R8;
-            case gl::ImageFormat::GrayAlpha: return GL_RG8;
-            case gl::ImageFormat::Depth: return GL_DEPTH_COMPONENT24;
-            case gl::ImageFormat::DepthStencil: return GL_DEPTH24_STENCIL8;
-            case gl::ImageFormat::Stencil: return GL_STENCIL_INDEX8;
-            case gl::ImageFormat::Unknown: {
+            case ImageFormat::RGB: return GL_RGB8;
+            case ImageFormat::RGBA: return GL_RGBA8;
+            case ImageFormat::Gray: return GL_R8;
+            case ImageFormat::GrayAlpha: return GL_RG8;
+            case ImageFormat::Depth: return GL_DEPTH_COMPONENT24;
+            case ImageFormat::DepthStencil: return GL_DEPTH24_STENCIL8;
+            case ImageFormat::Stencil: return GL_STENCIL_INDEX8;
+            case ImageFormat::Unknown: {
                 throw std::runtime_error("Invalid image format");
             }
         }

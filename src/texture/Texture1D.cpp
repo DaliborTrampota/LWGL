@@ -28,7 +28,23 @@ void Texture1D::load(const gl::ImageData& imageData) {
     detail::Data1D(GL_TEXTURE_1D, imageData.width, imageData.format, imageData.data);
 }
 
-void Texture1D::loadRaw(int w, int ch, gl::ImageFormat format, Data data) {
+void Texture1D::load(const gl::RawImageData& rawImageData) {
+    m_width = rawImageData.width;
+    m_channels = rawImageData.channels;
+
+    glTexImage1D(
+        GL_TEXTURE_1D,
+        0,
+        rawImageData.internalFormat,
+        rawImageData.width,
+        0,
+        rawImageData.format,
+        rawImageData.dataType,
+        rawImageData.data
+    );
+}
+
+void Texture1D::loadRaw(int w, int ch, ImageFormat format, Data data) {
     m_width = w;
     m_channels = ch;
 
