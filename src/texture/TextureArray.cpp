@@ -109,10 +109,10 @@ void TextureArray::load(const gl::RawImageData& rawImageData, int layer) {
 
     glTexSubImage3D(
         GL_TEXTURE_2D_ARRAY,
-        0,      // level of detail
-        0,      // xoffset
-        0,      // yoffset,
-        layer,  // zoffset
+        0,            // level of detail
+        0,            // xoffset
+        0,            // yoffset,
+        targetLayer,  // zoffset
         m_width,
         m_height,
         1,
