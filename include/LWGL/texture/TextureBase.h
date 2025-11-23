@@ -1,24 +1,39 @@
 #pragma once
 
-#include <cstdint>
 #include "ImageData.h"
 
 namespace gl {
 
     struct Settings {
-        enum Option {
+        enum Wrap {
             MirroredRepeat,
             ClampToEdge,
             ClampToBorder,
+        };
+        enum Filter {
             Linear,
             Nearest,
         };
 
-        Option wrapS = MirroredRepeat;
-        Option wrapT = MirroredRepeat;
-        Option wrapR = MirroredRepeat;  // Only used for 3D textures
-        Option minFilter = Linear;
-        Option magFilter = Linear;
+        Settings(Wrap wrap, Filter filter)
+            : wrapS(wrap),
+              wrapT(wrap),
+              wrapR(wrap),
+              minFilter(filter),
+              magFilter(filter) {}
+
+        Settings(Wrap wrapS, Wrap wrapT, Wrap wrapR, Filter minFilter, Filter magFilter)
+            : wrapS(wrapS),
+              wrapT(wrapT),
+              wrapR(wrapR),
+              minFilter(minFilter),
+              magFilter(magFilter) {}
+
+        Wrap wrapS = MirroredRepeat;
+        Wrap wrapT = MirroredRepeat;
+        Wrap wrapR = MirroredRepeat;  // Only used for 3D textures
+        Filter minFilter = Linear;
+        Filter magFilter = Linear;
 
         static Settings Pixelated() {
             return {
@@ -27,6 +42,16 @@ namespace gl {
                 MirroredRepeat,
                 Nearest,
                 Nearest,
+            };
+        }
+
+        static Settings LinearClampToEdge() {
+            return {
+                ClampToEdge,
+                ClampToEdge,
+                ClampToEdge,
+                Linear,
+                Linear,
             };
         }
 
@@ -42,20 +67,18 @@ namespace gl {
     };
 
     struct ArraySettings : public Settings {
-        int layers;
+        unsigned layers;
         int width;
         int height;
         ImageFormat format = ImageFormat::RGBA;
 
-        static ArraySettings Pixelated() {
-            return {
-                MirroredRepeat,
-                MirroredRepeat,
-                MirroredRepeat,
-                Nearest,
-                Nearest,
-            };
-        }
+        static ArraySettings Pixelated() { return {Settings(MirroredRepeat, Nearest)}; }
+    };
+
+    struct RawArraySettings : public ArraySettings {
+        GLenum format;
+        GLenum dataType;
+        GLenum internalFormat;
     };
 
 
@@ -67,61 +90,15 @@ namespace gl {
 
         static FrameBufferSettings Depth(int width, int height) {
             return {
-                ClampToEdge,
-                ClampToEdge,
-                ClampToEdge,
-                Nearest,
-                Nearest,
+                Settings(ClampToEdge, Nearest),
                 width,
                 height,
-                ImageFormat::DEPTH,
+                ImageFormat::Depth,
                 ImageDataType::Float,
             };
         };
     };
 
-    enum class TextureType {
-        Texture1D,
-        Texture2D,
-        Texture3D,
-
-        TextureArray1D,
-        TextureArray,
-
-        CubeMap,
-        CubeMapArray,
-
-        Multisample,
-        MultisampleArray,
-
-        Buffer
-    };
-
-
-    enum class CubeFace {
-        Right = 0,
-        Left,
-        Top,
-        Bottom,
-        Back,
-        Front
-    };
-
-    enum class FBOAttachment : uint8_t {
-        Depth,
-        Stencil,
-        DepthStencil,
-        Color,
-    };
-
-
-    inline FBOAttachment operator>>(FBOAttachment attachment, int offset) {
-        return static_cast<FBOAttachment>(static_cast<int>(attachment) + offset);
-    }
-
-    inline uint8_t operator+(FBOAttachment attachment, int offset) {
-        return static_cast<int>(attachment) + offset;
-    }
 
     using UInt = unsigned int;
     using Data = unsigned char*;

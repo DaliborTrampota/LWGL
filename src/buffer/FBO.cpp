@@ -1,10 +1,11 @@
 #include "LWGL/buffer/FBO.h"
 #include "../detail/TexturePrivate.h"
+#include "../detail/conversions.h"
 #include "LWGL/buffer/RBO.h"
 
 
 #include <glad/glad.h>
-
+#include <stdexcept>
 
 using namespace gl;
 
@@ -17,22 +18,44 @@ namespace {
         }
         return GL_NONE;  // Should not happen
     }
+
+    inline auto findAtt(const std::vector<FBO::Att>& attachments, FBO::Att attachment) {
+        return std::find(attachments.begin(), attachments.end(), attachment);
+    }
+    int queryMaxDrawBuffers() {
+        int maxDrawBuffers;
+        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxDrawBuffers);
+        return maxDrawBuffers;
+    }
+
+    int queryMaxColorAttachments() {
+        int maxColorAttachments;
+        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
+        return maxColorAttachments;
+    }
+
 }  // namespace
 
-FBO::FBO(std::initializer_list<FBOAttachment> attachments, Target target)
-    : m_target(toGLFBOTarget(target)),
-      m_attachments(attachments),
-      m_texIDs(attachments.size(), 0) {
+FBO::FBO() : m_target(GL_FRAMEBUFFER), m_attachments(), m_texIDs() {
     glGenFramebuffers(1, &m_fboID);
+    if (MaxDrawBuffers == -1) {
+        MaxDrawBuffers = queryMaxDrawBuffers();
+    }
+    if (MaxColorAttachments == -1) {
+        MaxColorAttachments = queryMaxColorAttachments();
+    }
 }
 
-void FBO::bindTexture(FBOAttachment attachment, unsigned int textureID) {
-    auto it = std::find(m_attachments.begin(), m_attachments.end(), attachment);
-    if (it == m_attachments.end()) {
+void FBO::bindTexture(Att attachment, unsigned int textureID) {
+    if (attachment - FBOAttachment::Color >= MaxColorAttachments)
+        throw std::runtime_error("Exceeding max color attachments");
+
+    auto attIt = findAtt(m_attachments, attachment);
+    if (attIt == m_attachments.end()) {
         m_attachments.push_back(attachment);
         m_texIDs.push_back(textureID);
     } else {
-        int index = std::distance(m_attachments.begin(), it);
+        int index = std::distance(m_attachments.cbegin(), attIt);
         if (m_texIDs[index] != 0) {
             glDeleteTextures(1, &m_texIDs[index]);
         }
@@ -40,14 +63,16 @@ void FBO::bindTexture(FBOAttachment attachment, unsigned int textureID) {
     }
     glBindTexture(GL_TEXTURE_2D, textureID);
     glFramebufferTexture2D(
-        GL_FRAMEBUFFER, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, textureID, 0
+        m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, textureID, 0
     );
 }
 
-void FBO::createTexture(FBOAttachment attachment, const FrameBufferSettings& settings) {
-    if (std::find(m_attachments.begin(), m_attachments.end(), attachment) != m_attachments.end()) {
+void FBO::createTexture(Att attachment, const FrameBufferSettings& settings) {
+    if (attachment - FBOAttachment::Color >= MaxColorAttachments)
+        throw std::runtime_error("Exceeding max color attachments");
+    if (findAtt(m_attachments, attachment) != m_attachments.end())
         throw std::runtime_error("Attachment already exists");
-    }
+
     unsigned int texID;
     glGenTextures(1, &texID);
 
@@ -64,12 +89,12 @@ void FBO::createTexture(FBOAttachment attachment, const FrameBufferSettings& set
     );
 }
 
-void FBO::removeAttachment(FBOAttachment attachment) {
-    auto it = std::find(m_attachments.begin(), m_attachments.end(), attachment);
-    if (it == m_attachments.end()) {
+void FBO::removeAttachment(Att attachment) {
+    auto it = findAtt(m_attachments, attachment);
+    if (it == m_attachments.end())
         throw std::runtime_error("Attachment not found");
-    }
-    int index = std::distance(m_attachments.begin(), it);
+    int index = std::distance(m_attachments.cbegin(), it);
+
     glFramebufferTexture2D(m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, 0, 0);
     glDeleteTextures(1, &m_texIDs[index]);
     m_texIDs.erase(m_texIDs.begin() + index);
@@ -101,36 +126,32 @@ void FBO::clearDepthStencil(float depth, uint8_t stencil) {
 }
 
 
-void FBO::bind() {
+void FBO::bind() const {
     glBindFramebuffer(m_target, m_fboID);
 }
 
-void FBO::unbind() {
+void FBO::unbind() const {
     glBindFramebuffer(m_target, 0);
 }
 
-void FBO::setDrawBuffers(std::initializer_list<uint8_t> colorAttachmentIndices) {
+void FBO::setDrawBuffers(std::initializer_list<Att> colorAttachments) {
     if (m_target != GL_DRAW_FRAMEBUFFER && m_target != GL_FRAMEBUFFER) {
         throw std::runtime_error("Cannot set draw buffers on a non-draw framebuffer");
     }
-    std::vector<GLenum> glAttachments;
-    glAttachments.reserve(colorAttachmentIndices.size());
 
-    for (uint8_t index : colorAttachmentIndices) {
-        glAttachments.push_back(GL_COLOR_ATTACHMENT0 + index);
-    }
+    std::vector<GLenum> glAttachments;
+    glAttachments.reserve(colorAttachments.size());
+    for (Att attachment : colorAttachments)
+        glAttachments.push_back(detail::toGLAttachmentType(attachment));
 
     glNamedFramebufferDrawBuffers(m_fboID, glAttachments.size(), glAttachments.data());
 }
 
-void FBO::setReadBuffer(uint8_t colorAttachmentIndex) {
+void FBO::setReadBuffer(Att colorAttachment) {
     if (m_target != GL_READ_FRAMEBUFFER && m_target != GL_FRAMEBUFFER) {
         throw std::runtime_error("Cannot set read buffer on a non-read framebuffer");
     }
-    if (colorAttachmentIndex >= m_attachments.size()) {
-        throw std::runtime_error("Color attachment index out of bounds");
-    }
-    glNamedFramebufferReadBuffer(m_fboID, GL_COLOR_ATTACHMENT0 + colorAttachmentIndex);
+    glNamedFramebufferReadBuffer(m_fboID, detail::toGLAttachmentType(colorAttachment));
 }
 
 
@@ -140,7 +161,7 @@ unsigned int FBO::checkCompleteness() const {
 }
 
 
-void FBO::attachRenderBuffer(RBO& rbo, FBOAttachment attachment, Target target) {
+void FBO::attachRenderBuffer(RBO& rbo, Att attachment, Target target) {
     bind();
     glFramebufferRenderbuffer(
         toGLFBOTarget(target), detail::toGLAttachmentType(attachment), GL_RENDERBUFFER, rbo.id()

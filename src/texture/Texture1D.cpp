@@ -1,9 +1,11 @@
 #include "LWGL/texture/Texture1D.h"
-#include "LWGL/texture/ImageData.h"
 #include "../detail/TexturePrivate.h"
+#include "LWGL/texture/ImageData.h"
 
-#include <format>
+
+#include <glad/glad.h>
 #include <stdexcept>
+
 
 using namespace gl;
 
@@ -24,26 +26,27 @@ void Texture1D::load(const gl::ImageData& imageData) {
     m_channels = imageData.channels;
 
     detail::Data1D(GL_TEXTURE_1D, imageData.width, imageData.format, imageData.data);
-    // glTexImage1D(
-    //     GL_TEXTURE_1D,
-    //     0,                 // mipmap level
-    //     toGLInternalFormat(imageData.format),          // internal format
-    //     imageData.width,   // width of the texture
-    //     0,                 // border (must be 0)
-    //     toGLFormat(imageData.format),  // format of the input data
-    //     GL_UNSIGNED_BYTE,  // type of the input data
-    //     imageData.data     // data pointer (null = reserve space only)
-    // );
-}   
+}
 
-void Texture1D::loadRaw(int w, int ch, gl::ImageFormat format, Data data) {
+void Texture1D::load(const gl::RawImageData& rawImageData) {
+    m_width = rawImageData.width;
+    m_channels = rawImageData.channels;
+
+    glTexImage1D(
+        GL_TEXTURE_1D,
+        0,
+        rawImageData.internalFormat,
+        rawImageData.width,
+        0,
+        rawImageData.format,
+        rawImageData.dataType,
+        rawImageData.data
+    );
+}
+
+void Texture1D::loadRaw(int w, int ch, ImageFormat format, Data data) {
     m_width = w;
     m_channels = ch;
 
-    detail::Data1D(
-        GL_TEXTURE_1D,
-        w,       // width of the texture
-        format,  // format of the input data
-        data     // data pointer (null = reserve space only)
-    );
+    detail::Data1D(GL_TEXTURE_1D, w, format, data);
 }

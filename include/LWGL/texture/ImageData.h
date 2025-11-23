@@ -1,21 +1,30 @@
 #pragma once
 
 #include <tools/stb_image.h>
-#include <format>
-#include <stdexcept>
 #include <string>
 
+#include "LWGL/GLTypes.h"
+
 namespace gl {
+    /// @brief The format of the image (eg. image channels)
+    /// @note Image format should be one of the following values:
+    /// GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_RED_INTEGER, GL_RG_INTEGER, GL_RGB_INTEGER, GL_BGR_INTEGER, GL_RGBA_INTEGER, GL_BGRA_INTEGER, GL_STENCIL_INDEX, GL_DEPTH_COMPONENT, GL_DEPTH_STENCIL
+    /// @note More info in OpenGL documentation https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml
+    // using ImageFormat = GLenum;
+
+    /// @brief The type of the image data (eg. pixel representation)
+    /// @note The valid enum values can be found in the OpenGL documentation https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml
+    // using ImageDataType = GLenum;
 
     enum class ImageFormat {
         Unknown,
-        RGB,            // Red, Green, Blue
-        RGBA,           // Red, Green, Blue, Alpha
-        GRAY,           // Grayscale
-        GRAY_ALPHA,     // Grayscale with Alpha
-        DEPTH,          // Depth
-        DEPTH_STENCIL,  // Depth and Stencil
-        STENCIL,        // Stencil
+        RGB,           // Red, Green, Blue
+        RGBA,          // Red, Green, Blue, Alpha
+        Gray,          // Grayscale
+        GrayAlpha,     // Grayscale with Alpha
+        Depth,         // Depth
+        DepthStencil,  // Depth and Stencil
+        Stencil,       // Stencil
     };
 
     enum class ImageDataType {
@@ -38,55 +47,33 @@ namespace gl {
         ImageFormat format = ImageFormat::RGBA;
         std::string path;
 
-        ImageData(const ImageData&) = delete;
+        ImageData(const char* path);
+        ~ImageData();
+
         ImageData& operator=(const ImageData&) = delete;
+        ImageData(const ImageData&) = delete;
+        ImageData(ImageData&& other) noexcept;
+        ImageData& operator=(ImageData&& other) noexcept;
+    };
 
-        ~ImageData() { stbi_image_free(data); }
+    struct RawImageData {
+        int width = 0;
+        int height = 0;
+        int channels = 0;
+        void* data = nullptr;
 
-        ImageData(const char* path) {
-            data = stbi_load(path, &width, &height, &channels, 0);
-            if (!data)
-                throw std::runtime_error(
-                    std::format("Failed to load image: {}", stbi_failure_reason())
-                );
+        GLenum format;
+        GLenum internalFormat;
+        GLenum dataType;
 
-            this->path = path;
-
-            switch (channels) {
-                case 1: format = ImageFormat::GRAY; break;
-                case 2: format = ImageFormat::GRAY_ALPHA; break;
-                case 3: format = ImageFormat::RGB; break;
-                case 4: format = ImageFormat::RGBA; break;
-                default: throw std::runtime_error("Unsupported number of channels");
-            }
-        }
-
-
-        // Implement move constructor and move assignment to transfer ownership safely
-        ImageData(ImageData&& other) noexcept
-            : width(other.width),
-              height(other.height),
-              channels(other.channels),
-              data(other.data),
-              format(other.format),
-              path(other.path) {
-            other.data = nullptr;  // Take ownership
-        }
-
-        ImageData& operator=(ImageData&& other) noexcept {
-            if (this != &other) {
-                stbi_image_free(data);  // free existing data
-
-                width = other.width;
-                height = other.height;
-                channels = other.channels;
-                data = other.data;
-                format = other.format;
-                path = other.path;
-
-                other.data = nullptr;  // take ownership
-            }
-            return *this;
-        }
+        RawImageData(
+            void* data,
+            int w,
+            int h,
+            int ch,
+            GLenum format,
+            GLenum dataType,
+            GLenum internalFormat = GL_NONE
+        );
     };
 }  // namespace gl

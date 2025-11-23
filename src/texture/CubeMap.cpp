@@ -1,6 +1,8 @@
 #include "LWGL/texture/CubeMap.h"
-#include "LWGL/texture/ImageData.h"
 #include "../detail/TexturePrivate.h"
+#include "../detail/conversions.h"
+#include "LWGL/texture/ImageData.h"
+
 
 #include <glad/glad.h>
 
@@ -23,7 +25,28 @@ void CubeMap::loadFace(CubeFace face, const gl::ImageData& data) {
     detail::Data2D(detail::toGLCubeFace(face), data.width, data.height, data.format, data.data);
 }
 
-void CubeMap::loadFaceRaw(CubeFace face, int w, int ch, gl::ImageFormat format, Data data) {
+void CubeMap::loadFace(CubeFace face, const gl::RawImageData& rawImageData) {
+    if (rawImageData.width != rawImageData.height)
+        throw std::runtime_error("Cube map face must be square");
+
+    m_width = rawImageData.width;
+    m_channels = rawImageData.channels;
+
+    glTexImage2D(
+        detail::toGLCubeFace(face),
+        0,
+        rawImageData.internalFormat,
+        rawImageData.width,
+        rawImageData.height,
+        0,
+        rawImageData.format,
+        rawImageData.dataType,
+        rawImageData.data
+    );
+}
+
+
+void CubeMap::loadFaceRaw(CubeFace face, int w, int ch, ImageFormat format, Data data) {
     if (w <= 0 || ch <= 0)
         throw std::runtime_error("Width and height must be greater than zero");
 

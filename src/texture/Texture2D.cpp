@@ -1,9 +1,9 @@
 #include "LWGL/texture/Texture2D.h"
-#include "LWGL/texture/ImageData.h"
 #include "../detail/TexturePrivate.h"
+#include "LWGL/texture/ImageData.h"
+
 
 #include <glad/glad.h>
-#include <format>
 #include <stdexcept>
 
 using namespace gl;
@@ -25,30 +25,37 @@ void Texture2D::load(const gl::ImageData& imageData) {
     m_height = imageData.height;
     m_channels = imageData.channels;
 
-    detail::Data2D(GL_TEXTURE_2D, imageData.width, imageData.height, imageData.format, imageData.data);
-    // glTexImage2D(
-    //     GL_TEXTURE_2D,
-    //     0,                 // mipmap level
-    //     GL_RGBA8,          // internal format
-    //     imageData.width,           // width of each 2D layer
-    //     imageData.height,          // height of each 2D layer
-    //     0,                 // border (must be 0)
-    //     toGLFormat(imageData.format),           // format of the input data
-    //     GL_UNSIGNED_BYTE,  // type of the input data
-    //     imageData.data            // data pointer (null = reserve space only)
-    // );
+    detail::Data2D(
+        GL_TEXTURE_2D, imageData.width, imageData.height, imageData.format, imageData.data
+    );
 }
 
-void Texture2D::loadRaw(int w, int h, int ch, gl::ImageFormat format, Data data) {
+void Texture2D::load(const gl::RawImageData& rawImageData) {
+    m_width = rawImageData.width;
+    m_height = rawImageData.height;
+    m_channels = rawImageData.channels;
+
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        rawImageData.internalFormat,
+        rawImageData.width,
+        rawImageData.height,
+        0,
+        rawImageData.format,
+        rawImageData.dataType,
+        rawImageData.data
+    );
+}
+
+void Texture2D::loadRaw(int w, int h, int ch, ImageFormat format, Data data) {
     m_width = w;
     m_height = h;
     m_channels = ch;
 
-    detail::Data2D(
-        GL_TEXTURE_2D,
-        w,       // width of the texture
-        h,       // height of the texture
-        format,  // format of the input data
-        data     // data pointer (null = reserve space only)
-    );
+    detail::Data2D(GL_TEXTURE_2D, w, h, format, data);
+}
+
+void Texture2D::update(ImageFormat format, Data data) {
+    detail::SubData2D(GL_TEXTURE_2D, 0, 0, m_width, m_height, format, data);
 }

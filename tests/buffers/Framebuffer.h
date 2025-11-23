@@ -8,7 +8,7 @@ void testFBO() {
         gl::FrameBufferSettings{
             .width = 1024,
             .height = 1024,
-            .format = gl::ImageFormat::RGBA,
+            .format = ImageFormat::RGBA,
             .dataType = gl::ImageDataType::UChar
         }
     );
@@ -17,7 +17,7 @@ void testFBO() {
         gl::FrameBufferSettings{
             .width = 1024,
             .height = 1024,
-            .format = gl::ImageFormat::DEPTH,
+            .format = ImageFormat::DEPTH,
             .dataType = gl::ImageDataType::Float
         }
     );
@@ -46,7 +46,7 @@ void testFBOMultiColor() {
         gl::FrameBufferSettings{
             .width = 1024,
             .height = 1024,
-            .format = gl::ImageFormat::RGBA,
+            .format = ImageFormat::RGBA,
             .dataType = gl::ImageDataType::UChar
         }
     );
@@ -55,7 +55,7 @@ void testFBOMultiColor() {
         gl::FrameBufferSettings{
             .width = 1024,
             .height = 1024,
-            .format = gl::ImageFormat::RGBA,
+            .format = ImageFormat::RGBA,
             .dataType = gl::ImageDataType::UChar
         }
     );
@@ -64,7 +64,7 @@ void testFBOMultiColor() {
         gl::FrameBufferSettings{
             .width = 1024,
             .height = 1024,
-            .format = gl::ImageFormat::RGBA,
+            .format = ImageFormat::RGBA,
             .dataType = gl::ImageDataType::UChar
         }
     );
@@ -73,7 +73,7 @@ void testFBOMultiColor() {
         gl::FrameBufferSettings{
             .width = 1024,
             .height = 1024,
-            .format = gl::ImageFormat::RGBA,
+            .format = ImageFormat::RGBA,
             .dataType = gl::ImageDataType::UChar
         }
     );
@@ -83,7 +83,7 @@ void testFBOMultiColor() {
         gl::FrameBufferSettings{
             .width = 1024,
             .height = 1024,
-            .format = gl::ImageFormat::DEPTH_STENCIL,
+            .format = ImageFormat::DEPTH_STENCIL,
             .dataType = gl::ImageDataType::Float
         }
     );

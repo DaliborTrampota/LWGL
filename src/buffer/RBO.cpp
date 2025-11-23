@@ -14,15 +14,15 @@ RBO::~RBO() {
     }
 }
 
-void RBO::bind() {
+void RBO::bind() const {
     glBindRenderbuffer(GL_RENDERBUFFER, m_ID);
 }
 
-void RBO::unbind() {
+void RBO::unbind() const {
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
-void RBO::create(unsigned int width, unsigned int height, ImageFormat format, int samples) {
+void RBO::create(unsigned int width, unsigned int height, GLenum internalFormat, int samples) {
     if (!m_ID)
         glGenRenderbuffers(1, &m_ID);
 
@@ -30,13 +30,11 @@ void RBO::create(unsigned int width, unsigned int height, ImageFormat format, in
     if (samples > GL_MAX_SAMPLES)
         samples = GL_MAX_SAMPLES;
 
-    m_format = format;
+    m_format = internalFormat;
     m_samples = samples;
     m_width = width;
     m_height = height;
 
     glBindRenderbuffer(GL_RENDERBUFFER, m_ID);
-    glRenderbufferStorageMultisample(
-        GL_RENDERBUFFER, samples, detail::toGLFormat(format), width, height
-    );
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalFormat, width, height);
 }

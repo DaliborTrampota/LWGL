@@ -1,6 +1,7 @@
 #pragma once
 
-#include "LWGL/texture/ImageData.h"
+#include "../GLTypes.h"
+
 
 namespace gl {
     class FBO;
@@ -10,20 +11,20 @@ namespace gl {
         RBO();
         ~RBO();
 
-        void bind();
-        void unbind();
+        void bind() const;
+        void unbind() const;
 
-        void create(unsigned int width, unsigned int height, ImageFormat format, int samples = 0);
+        void create(unsigned int width, unsigned int height, GLenum internalFormat, int samples = 0);
 
         unsigned int id() const { return m_ID; }
-        ImageFormat format() const { return m_format; }
+        GLenum format() const { return m_format; }
         int samples() const { return m_samples; }
         unsigned int width() const { return m_width; }
         unsigned int height() const { return m_height; }
 
 
       protected:
-        ImageFormat m_format = ImageFormat::Unknown;
+        GLenum m_format = GL_NONE;
         unsigned int m_ID = 0;
         int m_samples = 0;
         unsigned int m_width = 0;

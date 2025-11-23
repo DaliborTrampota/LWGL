@@ -168,12 +168,7 @@ cameraUBO.setSubData(1, &viewMatrix);
 
 // Create and load texture
 gl::Texture2D texture(0);  // Texture unit 0
-texture.create(gl::Settings{
-    .wrapS = gl::Settings::ClampToEdge,
-    .wrapT = gl::Settings::ClampToEdge,
-    .minFilter = gl::Settings::Linear,
-    .magFilter = gl::Settings::Linear
-});
+texture.create(gl::Settings::LinearClampToEdge());
 
 // Load from image
 gl::ImageData img = gl::loadImage("texture.png");
