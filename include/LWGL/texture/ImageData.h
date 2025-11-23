@@ -6,6 +6,15 @@
 #include "LWGL/GLTypes.h"
 
 namespace gl {
+    /// @brief The format of the image (eg. image channels)
+    /// @note Image format should be one of the following values:
+    /// GL_RED, GL_RG, GL_RGB, GL_BGR, GL_RGBA, GL_BGRA, GL_RED_INTEGER, GL_RG_INTEGER, GL_RGB_INTEGER, GL_BGR_INTEGER, GL_RGBA_INTEGER, GL_BGRA_INTEGER, GL_STENCIL_INDEX, GL_DEPTH_COMPONENT, GL_DEPTH_STENCIL
+    /// @note More info in OpenGL documentation https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml
+    // using ImageFormat = GLenum;
+
+    /// @brief The type of the image data (eg. pixel representation)
+    /// @note The valid enum values can be found in the OpenGL documentation https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml
+    // using ImageDataType = GLenum;
 
     enum class ImageFormat {
         Unknown,
