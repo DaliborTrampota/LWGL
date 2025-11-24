@@ -19,8 +19,10 @@ namespace {
         return GL_NONE;  // Should not happen
     }
 
-    inline auto findAtt(const std::vector<FBO::Att>& attachments, FBO::Att attachment) {
-        return std::find(attachments.begin(), attachments.end(), attachment);
+    inline std::vector<FBO::Att>::const_iterator findAtt(
+        const std::vector<FBO::Att>& attachments, FBO::Att attachment
+    ) {
+        return std::find(attachments.cbegin(), attachments.cend(), attachment);
     }
     int queryMaxDrawBuffers() {
         int maxDrawBuffers;
