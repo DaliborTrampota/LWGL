@@ -5,7 +5,9 @@
 
 
 #include <glad/glad.h>
+#include <algorithm>
 #include <stdexcept>
+
 
 using namespace gl;
 
