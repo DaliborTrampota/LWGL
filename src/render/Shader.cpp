@@ -24,7 +24,8 @@ Shader::Shader(const char* path, ShaderType type) {
 
     std::ifstream R(path);
     if (!R.is_open()) {
-        printf("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
+        printf("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: %s\n", path);
+        return;
     }
     const std::string content(
         (std::istreambuf_iterator<char>(R)), std::istreambuf_iterator<char>()
