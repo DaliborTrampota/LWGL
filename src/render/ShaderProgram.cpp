@@ -1,13 +1,15 @@
-#include "LWGL/render/Material.h"
+#include "LWGL/render/ShaderProgram.h"
 
 #include <glm/gtc/type_ptr.hpp>
+
 #include "LWGL/buffer/UBO.h"
 #include "LWGL/render/Shader.h"
+
 
 using namespace gl;
 
 
-gl::Material::Material(
+gl::ShaderProgram::ShaderProgram(
     const std::string& vertexPath,
     const std::string& geometryPath,
     const std::string& fragmentPath,
@@ -24,7 +26,7 @@ gl::Material::Material(
     attach(vert, geom, frag);
     link();
 }
-gl::Material::Material(
+gl::ShaderProgram::ShaderProgram(
     const std::string& vertexPath, const std::string& fragmentPath, std::string name
 )
     : m_name(std::move(name)) {
@@ -38,43 +40,51 @@ gl::Material::Material(
     link();
 }
 
-Material::~Material() {
+ShaderProgram::~ShaderProgram() {
     GL_GUARD
     glDeleteProgram(m_id);
 }
 
-void Material::use() const {
+void ShaderProgram::use() const {
     GL_GUARD
     glUseProgram(m_id);
 }
 
 
-void Material::setBool(const std::string& name, bool value) const {
+void ShaderProgram::setBool(const std::string& name, bool value) const {
     glUniform1i(glGetUniformLocation(m_id, name.c_str()), (int)value);
 }
 
-void Material::setInt(const std::string& name, int value) const {
+void ShaderProgram::setInt(const std::string& name, int value) const {
     glUniform1i(glGetUniformLocation(m_id, name.c_str()), value);
 }
 
-void Material::setFloat(const std::string& name, float value) const {
+void ShaderProgram::setFloat(const std::string& name, float value) const {
     glUniform1f(glGetUniformLocation(m_id, name.c_str()), value);
 }
 
-void Material::setVec2(const std::string& name, const glm::vec2& value) const {
+void ShaderProgram::setVec2(const std::string& name, const glm::vec2& value) const {
     glUniform2fv(glGetUniformLocation(m_id, name.c_str()), 1, glm::value_ptr(value));
 }
 
-void Material::setMat4(const std::string& name, const glm::mat4& mat) const {
+void ShaderProgram::setVec3(const std::string& name, const glm::vec3& value) const {
+    glUniform3fv(glGetUniformLocation(m_id, name.c_str()), 1, glm::value_ptr(value));
+}
+
+void ShaderProgram::setVec4(const std::string& name, const glm::vec4& value) const {
+    glUniform4fv(glGetUniformLocation(m_id, name.c_str()), 1, glm::value_ptr(value));
+}
+
+void ShaderProgram::setMat4(const std::string& name, const glm::mat4& mat) const {
     glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
 }
 
-void Material::bindUBO(const UBO& ubo) const {
+void ShaderProgram::bindUBO(const UBO& ubo) const {
     ubo.bindToProgram(m_id);
 }
 
 
-bool Material::link() {
+bool ShaderProgram::link() {
     GL_GUARD
     glLinkProgram(m_id);
 

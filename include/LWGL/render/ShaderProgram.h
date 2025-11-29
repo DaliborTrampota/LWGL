@@ -9,27 +9,28 @@
 namespace gl {
     class UBO;
 
-    // Used to be named ShaderPipeline
-    /// @brief Material class representing shader program.
-    class Material {
+    /// @brief ShaderProgram class representing shader program.
+    class ShaderProgram {
       public:
-        Material() = delete;
-        Material(const std::string& vertexPath, const std::string& fragmentPath, std::string name);
-        Material(
+        ShaderProgram() = delete;
+        ShaderProgram(
+            const std::string& vertexPath, const std::string& fragmentPath, std::string name
+        );
+        ShaderProgram(
             const std::string& vertexPath,
             const std::string& geometryPath,
             const std::string& fragmentPath,
             std::string name
         );
-        ~Material();
+        ~ShaderProgram();
 
-        // Prevent copying (Material manages OpenGL resources)
-        Material(const Material&) = delete;
-        Material& operator=(const Material&) = delete;
+        // Prevent copying (ShaderProgram manages OpenGL resources)
+        ShaderProgram(const ShaderProgram&) = delete;
+        ShaderProgram& operator=(const ShaderProgram&) = delete;
 
         // Allow moving if needed in the future
-        Material(Material&&) noexcept = default;
-        Material& operator=(Material&&) noexcept = default;
+        ShaderProgram(ShaderProgram&&) noexcept = default;
+        ShaderProgram& operator=(ShaderProgram&&) noexcept = default;
 
         void use() const;
 
@@ -37,6 +38,8 @@ namespace gl {
         void setInt(const std::string& name, int value) const;
         void setFloat(const std::string& name, float value) const;
         void setVec2(const std::string& name, const glm::vec2& value) const;
+        void setVec3(const std::string& name, const glm::vec3& value) const;
+        void setVec4(const std::string& name, const glm::vec4& value) const;
         void setMat4(const std::string& name, const glm::mat4& value) const;
 
         template <typename... Shaders>
