@@ -29,10 +29,10 @@ namespace gl {
 
         /// @brief Sets where draw operations will write to.
         /// @param colorAttachments The color attachments to write to.
-        void setDrawBuffers(std::initializer_list<Att> colorAttachments);
+        void setDrawBuffers(std::initializer_list<Att> colorAttachments) const;
         /// @brief Sets where read operations will read from.
         /// @param colorAttachment The color attachment to read from.
-        void setReadBuffer(Att colorAttachment);
+        void setReadBuffer(Att colorAttachment) const;
 
         /// @brief Binds a texture to an attachment. If the attachment is already bound, the texture is replaced, old texture is deleted.
         /// @param attachment Attachment to bind the texture to.
@@ -86,6 +86,8 @@ namespace gl {
         unsigned int checkCompleteness() const;
 
         void attachRenderBuffer(RBO& rbo, Att attachment, Target target);
+
+        unsigned texture(Att attachment) const;
 
       protected:
         unsigned int m_fboID = 0;
