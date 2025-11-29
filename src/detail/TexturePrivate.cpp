@@ -10,6 +10,8 @@ void gl::detail::ConfigureTexture(GLenum type, const gl::Settings& settings) {
 
     glTexParameteri(type, GL_TEXTURE_MIN_FILTER, toGLFilter(settings.minFilter));
     glTexParameteri(type, GL_TEXTURE_MAG_FILTER, toGLFilter(settings.magFilter));
+
+    glTexParameterfv(type, GL_TEXTURE_BORDER_COLOR, settings.borderColor);
 }
 
 void gl::detail::Data1D(GLenum type, int width, ImageFormat format, unsigned char* data) {
@@ -36,7 +38,7 @@ void gl::detail::Data2D(
     glTexImage2D(
         type,
         0,  // mipmap level
-        toGLInternalFormat(format),
+        toGLInternalFormat(format, dataType),
         width,
         height,
         0,  // border (must be 0)
