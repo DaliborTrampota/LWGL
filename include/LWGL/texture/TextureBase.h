@@ -92,7 +92,7 @@ namespace gl {
 
         static FrameBufferSettings Depth(int width, int height) {
             return {
-                Settings(ClampToEdge, Nearest),
+                Settings(ClampToBorder, Nearest),
                 width,
                 height,
                 ImageFormat::Depth,

@@ -92,18 +92,15 @@ namespace gl::detail {
         // Handle float precision formats
         if (dataType == ImageDataType::Float || dataType == ImageDataType::HalfFloat) {
             switch (format) {
-                case ImageFormat::Gray:
-                    return dataType == ImageDataType::Float ? GL_R32F : GL_R16F;
+                case ImageFormat::Gray: return dataType == ImageDataType::Float ? GL_R32F : GL_R16F;
                 case ImageFormat::GrayAlpha:
                     return dataType == ImageDataType::Float ? GL_RG32F : GL_RG16F;
                 case ImageFormat::RGB:
                     return dataType == ImageDataType::Float ? GL_RGB32F : GL_RGB16F;
                 case ImageFormat::RGBA:
                     return dataType == ImageDataType::Float ? GL_RGBA32F : GL_RGBA16F;
-                case ImageFormat::Depth:
-                    return GL_DEPTH_COMPONENT32F;
-                default:
-                    break;
+                case ImageFormat::Depth: return GL_DEPTH_COMPONENT32F;  // use 16F?
+                default: break;
             }
         }
         // Fall back to regular internal format
