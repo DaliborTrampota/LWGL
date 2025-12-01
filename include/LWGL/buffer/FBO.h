@@ -58,7 +58,7 @@ namespace gl {
             const glm::vec4& color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f),
             float depth = 1.0f,
             uint8_t stencil = 0
-        );
+        ) const;
 
         /// @brief Clears a color attachment.
         /// @param colorAttachment The color attachment to clear.
@@ -66,18 +66,18 @@ namespace gl {
         /// @note If the attachment is not glDrawBuffer bound, the color is not cleared.
         void clearColor(
             Att colorAttachment, const glm::vec4& color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)
-        );
+        ) const;
 
         /// @brief Clears the depth attachment.
         /// @param depth Depth to clear the attachment to.
         /// @note If the attachment is not glDrawBuffer bound, the depth is not cleared.
-        void clearDepth(float depth = 1.0f);
+        void clearDepth(float depth = 1.0f) const;
 
         /// @brief Clears the depth and stencil attachment.
         /// @param depth Depth to clear the attachment to.
         /// @param stencil Stencil to clear the attachment to.
         /// @note If the attachment is not glDrawBuffer bound, the depth and stencil are not cleared.
-        void clearDepthStencil(float depth = 1.0f, uint8_t stencil = 0);
+        void clearDepthStencil(float depth = 1.0f, uint8_t stencil = 0) const;
 
         /// @brief Checks if the FBO is complete based on OpenGL specification
         /// @see https://wikis.khronos.org/opengl/Framebuffer_Object#Framebuffer_Completeness

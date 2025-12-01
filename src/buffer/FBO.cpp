@@ -110,7 +110,7 @@ void FBO::removeAttachment(Att attachment) {
     glBindFramebuffer(m_target, 0);
 }
 
-void FBO::clearActive(const glm::vec4& color, float depth, uint8_t stencil) {
+void FBO::clearActive(const glm::vec4& color, float depth, uint8_t stencil) const {
     glBindFramebuffer(m_target, m_fboID);
     glClearColor(color.r, color.g, color.b, color.a);
     glClearDepth(depth);
@@ -118,17 +118,17 @@ void FBO::clearActive(const glm::vec4& color, float depth, uint8_t stencil) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
-void FBO::clearColor(uint8_t index, const glm::vec4& color) {
+void FBO::clearColor(uint8_t index, const glm::vec4& color) const {
     glBindFramebuffer(m_target, m_fboID);
     glClearBufferfv(GL_COLOR, index, &color.r);
 }
 
-void FBO::clearDepth(float depth) {
+void FBO::clearDepth(float depth) const {
     glBindFramebuffer(m_target, m_fboID);
     glClearBufferfv(GL_DEPTH, 0, &depth);
 }
 
-void FBO::clearDepthStencil(float depth, uint8_t stencil) {
+void FBO::clearDepthStencil(float depth, uint8_t stencil) const {
     glBindFramebuffer(m_target, m_fboID);
     glClearBufferfi(GL_DEPTH_STENCIL, 0, depth, stencil);
 }
