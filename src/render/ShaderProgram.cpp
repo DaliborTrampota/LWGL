@@ -23,7 +23,9 @@ gl::ShaderProgram::ShaderProgram(
     Shader geom(geometryPath.c_str(), ShaderType::Geometry);
     Shader frag(fragmentPath.c_str(), ShaderType::Fragment);
 
-    attach(vert, geom, frag);
+    glAttachShader(m_id, vert.ID);
+    glAttachShader(m_id, geom.ID);
+    glAttachShader(m_id, frag.ID);
     link();
 }
 gl::ShaderProgram::ShaderProgram(
@@ -36,7 +38,8 @@ gl::ShaderProgram::ShaderProgram(
     Shader vert(vertexPath.c_str(), ShaderType::Vertex);
     Shader frag(fragmentPath.c_str(), ShaderType::Fragment);
 
-    attach(vert, frag);
+    glAttachShader(m_id, vert.ID);
+    glAttachShader(m_id, frag.ID);
     link();
 }
 

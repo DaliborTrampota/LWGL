@@ -4,10 +4,9 @@
 #include <string>
 #include "../Globals.h"
 
-#include <glad/glad.h>
-
 namespace gl {
     class UBO;
+    class Shader;
 
     /// @brief ShaderProgram class representing shader program.
     class ShaderProgram {
@@ -42,12 +41,12 @@ namespace gl {
         void setVec4(const std::string& name, const glm::vec4& value) const;
         void setMat4(const std::string& name, const glm::mat4& value) const;
 
-        template <typename... Shaders>
-        void attach(Shaders&&... shaders) {
-            GL_GUARD
+        // template <typename... Shaders>
+        // void attach(Shaders&&... shaders) {
+        //     GL_GUARD
 
-                (glAttachShader(m_id, shaders.ID), ...);
-        }
+        //         (glAttachShader(m_id, shaders.ID), ...);
+        // }
 
         void bindUBO(const UBO& ubo) const;
 
