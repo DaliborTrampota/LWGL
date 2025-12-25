@@ -2,6 +2,7 @@
 
 #include "ImageData.h"
 
+
 namespace gl {
 
     struct Settings {
@@ -34,6 +35,7 @@ namespace gl {
         Wrap wrapR = MirroredRepeat;  // Only used for 3D textures
         Filter minFilter = Linear;
         Filter magFilter = Linear;
+        float borderColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
         static Settings Pixelated() {
             return {
@@ -90,7 +92,7 @@ namespace gl {
 
         static FrameBufferSettings Depth(int width, int height) {
             return {
-                Settings(ClampToEdge, Nearest),
+                Settings(ClampToBorder, Nearest),
                 width,
                 height,
                 ImageFormat::Depth,
@@ -109,6 +111,7 @@ namespace gl {
         virtual ~TextureBase();
 
         UInt id() const { return m_id; }
+        UInt unit() const { return m_unit; }
         void bind() const;
         void unbind() const;
 

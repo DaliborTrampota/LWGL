@@ -5,7 +5,9 @@
 
 
 #include <glad/glad.h>
+#include <algorithm>
 #include <stdexcept>
+
 
 using namespace gl;
 
@@ -19,8 +21,10 @@ namespace {
         return GL_NONE;  // Should not happen
     }
 
-    inline auto findAtt(const std::vector<FBO::Att>& attachments, FBO::Att attachment) {
-        return std::find(attachments.begin(), attachments.end(), attachment);
+    inline std::vector<FBO::Att>::const_iterator findAtt(
+        const std::vector<FBO::Att>& attachments, FBO::Att attachment
+    ) {
+        return std::find(attachments.cbegin(), attachments.cend(), attachment);
     }
     int queryMaxDrawBuffers() {
         int maxDrawBuffers;
@@ -76,17 +80,21 @@ void FBO::createTexture(Att attachment, const FrameBufferSettings& settings) {
     unsigned int texID;
     glGenTextures(1, &texID);
 
+    glBindTexture(GL_TEXTURE_2D, texID);
+
     detail::Data2D(
         GL_TEXTURE_2D, settings.width, settings.height, settings.format, nullptr, settings.dataType
     );
     detail::ConfigureTexture(GL_TEXTURE_2D, settings);
 
-    glBindTexture(GL_TEXTURE_2D, texID);
     m_texIDs.push_back(texID);
     m_attachments.push_back(attachment);
+    bind();
     glFramebufferTexture2D(
         m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, texID, 0
     );
+    //glNamedFramebufferTexture(m_fboID, detail::toGLAttachmentType(attachment), texID, 0);
+    //unbind();
 }
 
 void FBO::removeAttachment(Att attachment) {
@@ -102,7 +110,7 @@ void FBO::removeAttachment(Att attachment) {
     glBindFramebuffer(m_target, 0);
 }
 
-void FBO::clearActive(const glm::vec4& color, float depth, uint8_t stencil) {
+void FBO::clearActive(const glm::vec4& color, float depth, uint8_t stencil) const {
     glBindFramebuffer(m_target, m_fboID);
     glClearColor(color.r, color.g, color.b, color.a);
     glClearDepth(depth);
@@ -110,17 +118,17 @@ void FBO::clearActive(const glm::vec4& color, float depth, uint8_t stencil) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
-void FBO::clearColor(uint8_t index, const glm::vec4& color) {
+void FBO::clearColor(uint8_t index, const glm::vec4& color) const {
     glBindFramebuffer(m_target, m_fboID);
     glClearBufferfv(GL_COLOR, index, &color.r);
 }
 
-void FBO::clearDepth(float depth) {
+void FBO::clearDepth(float depth) const {
     glBindFramebuffer(m_target, m_fboID);
     glClearBufferfv(GL_DEPTH, 0, &depth);
 }
 
-void FBO::clearDepthStencil(float depth, uint8_t stencil) {
+void FBO::clearDepthStencil(float depth, uint8_t stencil) const {
     glBindFramebuffer(m_target, m_fboID);
     glClearBufferfi(GL_DEPTH_STENCIL, 0, depth, stencil);
 }
@@ -134,7 +142,7 @@ void FBO::unbind() const {
     glBindFramebuffer(m_target, 0);
 }
 
-void FBO::setDrawBuffers(std::initializer_list<Att> colorAttachments) {
+void FBO::setDrawBuffers(std::initializer_list<Att> colorAttachments) const {
     if (m_target != GL_DRAW_FRAMEBUFFER && m_target != GL_FRAMEBUFFER) {
         throw std::runtime_error("Cannot set draw buffers on a non-draw framebuffer");
     }
@@ -147,7 +155,7 @@ void FBO::setDrawBuffers(std::initializer_list<Att> colorAttachments) {
     glNamedFramebufferDrawBuffers(m_fboID, glAttachments.size(), glAttachments.data());
 }
 
-void FBO::setReadBuffer(Att colorAttachment) {
+void FBO::setReadBuffer(Att colorAttachment) const {
     if (m_target != GL_READ_FRAMEBUFFER && m_target != GL_FRAMEBUFFER) {
         throw std::runtime_error("Cannot set read buffer on a non-read framebuffer");
     }
@@ -157,6 +165,17 @@ void FBO::setReadBuffer(Att colorAttachment) {
 
 unsigned int FBO::checkCompleteness() const {
     unsigned int status = glCheckNamedFramebufferStatus(m_fboID, m_target);
+    // switch (status) {
+    //     case GL_FRAMEBUFFER_COMPLETE: return 0;
+    //     case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: return 1;
+    //     case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: return 2;
+    //     case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: return 3;
+    //     case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: return 4;
+    //     case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: return 5;
+    //     case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: return 6;
+    //     case GL_FRAMEBUFFER_UNSUPPORTED: return 7;
+    //     case GL_FRAMEBUFFER_UNDEFINED: return 8;
+    // }
     return status == GL_FRAMEBUFFER_COMPLETE ? 0 : status;
 }
 
@@ -166,4 +185,11 @@ void FBO::attachRenderBuffer(RBO& rbo, Att attachment, Target target) {
     glFramebufferRenderbuffer(
         toGLFBOTarget(target), detail::toGLAttachmentType(attachment), GL_RENDERBUFFER, rbo.id()
     );
+}
+
+unsigned FBO::texture(Att attachment) const {  // TODO better lookup and storage
+    auto it = findAtt(m_attachments, attachment);
+    if (it == m_attachments.cend())
+        throw std::runtime_error("Attachment not found");
+    return m_texIDs[std::distance(m_attachments.cbegin(), it)];
 }

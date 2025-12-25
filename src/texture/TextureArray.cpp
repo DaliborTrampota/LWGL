@@ -67,10 +67,10 @@ int TextureArray::load(const gl::ImageData& imageData, int layer) {
             std::format("Image data size does not match texture size: ({}, {})", m_width, m_height)
         );
 
-    if (detail::toGLFormat(imageData.format) != m_format)  // todo compatible formats?
-        throw std::runtime_error(
-            "Image format is different from the one provided when creating this instance"
-        );
+    //if (detail::toGLFormat(imageData.format) != m_format)  // TODO: enable back and check for compatible
+    //    throw std::runtime_error(
+    //        "Image format is different from the one provided when creating this instance"
+    //    );
 
 
     if (m_layer == -1 && layer == -1) {

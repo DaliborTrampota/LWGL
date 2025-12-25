@@ -29,10 +29,10 @@ namespace gl {
 
         /// @brief Sets where draw operations will write to.
         /// @param colorAttachments The color attachments to write to.
-        void setDrawBuffers(std::initializer_list<Att> colorAttachments);
+        void setDrawBuffers(std::initializer_list<Att> colorAttachments) const;
         /// @brief Sets where read operations will read from.
         /// @param colorAttachment The color attachment to read from.
-        void setReadBuffer(Att colorAttachment);
+        void setReadBuffer(Att colorAttachment) const;
 
         /// @brief Binds a texture to an attachment. If the attachment is already bound, the texture is replaced, old texture is deleted.
         /// @param attachment Attachment to bind the texture to.
@@ -58,7 +58,7 @@ namespace gl {
             const glm::vec4& color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f),
             float depth = 1.0f,
             uint8_t stencil = 0
-        );
+        ) const;
 
         /// @brief Clears a color attachment.
         /// @param colorAttachment The color attachment to clear.
@@ -66,18 +66,18 @@ namespace gl {
         /// @note If the attachment is not glDrawBuffer bound, the color is not cleared.
         void clearColor(
             Att colorAttachment, const glm::vec4& color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)
-        );
+        ) const;
 
         /// @brief Clears the depth attachment.
         /// @param depth Depth to clear the attachment to.
         /// @note If the attachment is not glDrawBuffer bound, the depth is not cleared.
-        void clearDepth(float depth = 1.0f);
+        void clearDepth(float depth = 1.0f) const;
 
         /// @brief Clears the depth and stencil attachment.
         /// @param depth Depth to clear the attachment to.
         /// @param stencil Stencil to clear the attachment to.
         /// @note If the attachment is not glDrawBuffer bound, the depth and stencil are not cleared.
-        void clearDepthStencil(float depth = 1.0f, uint8_t stencil = 0);
+        void clearDepthStencil(float depth = 1.0f, uint8_t stencil = 0) const;
 
         /// @brief Checks if the FBO is complete based on OpenGL specification
         /// @see https://wikis.khronos.org/opengl/Framebuffer_Object#Framebuffer_Completeness
@@ -86,6 +86,8 @@ namespace gl {
         unsigned int checkCompleteness() const;
 
         void attachRenderBuffer(RBO& rbo, Att attachment, Target target);
+
+        unsigned texture(Att attachment) const;
 
       protected:
         unsigned int m_fboID = 0;

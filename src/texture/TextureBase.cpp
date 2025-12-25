@@ -16,8 +16,10 @@ TextureBase::~TextureBase() {
 }
 
 void TextureBase::bind() const {
+    glActiveTexture(GL_TEXTURE0 + m_unit);
     glBindTexture(detail::toGLTexture(m_type), m_id);
 }
 void TextureBase::unbind() const {
+    glActiveTexture(GL_TEXTURE0 + m_unit);
     glBindTexture(detail::toGLTexture(m_type), 0);
 }
