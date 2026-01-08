@@ -37,6 +37,15 @@ namespace gl {
             std::swap(m_elements, other.m_elements);
         }
 
+        void moveDataFrom(Attributes& other) {
+            m_data = std::move(other.m_data);
+            m_dirty = other.m_dirty;
+            m_elements = other.m_elements;
+            other.m_data.clear();
+            other.m_dirty = true;
+            other.m_elements = 0;
+        }
+
         // IBuffer interface
         size_t length() const override { return m_elements; }
         size_t stride() const override { return VertexT::layout().stride; }
