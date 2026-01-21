@@ -5,7 +5,6 @@
 #include <GLFW/glfw3.h>
 
 
-
 namespace gl {
 
     using GLDebugCallback = void (*)(
@@ -50,6 +49,7 @@ namespace gl {
         GLFWmonitor* monitor() const { return m_monitor; }
 
         static float time();
+        static double timeDouble();
 
       private:
         GLFWmonitor* m_monitor = nullptr;

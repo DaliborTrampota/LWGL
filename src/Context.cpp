@@ -144,3 +144,7 @@ void Context::setDebugCallback(GLDebugCallback callback) {
 float Context::time() {
     return glfwGetTime();
 }
+
+double Context::timeDouble() {
+    return glfwGetTime();
+}

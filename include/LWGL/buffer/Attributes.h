@@ -21,8 +21,27 @@ namespace gl {
         Attributes(GLint drawType = GL_STATIC_DRAW) : m_drawType(drawType), m_elements(0) {}
         virtual ~Attributes();
 
+        Attributes(const Attributes&) = delete;
+        Attributes& operator=(const Attributes&) = delete;
+
+        // TODO allow move?
+        Attributes(Attributes&&) = delete;
+        Attributes& operator=(Attributes&&) = delete;
+
         void create();
         void reserve(int size) { m_data.reserve(size); }
+
+        void swapData(Attributes& other) {
+            m_data.swap(other.m_data);
+            std::swap(m_dirty, other.m_dirty);
+            std::swap(m_elements, other.m_elements);
+        }
+
+        void moveDataFrom(Attributes& other) {
+            m_data = std::move(other.m_data);
+            m_dirty = std::exchange(other.m_dirty, true);
+            m_elements = std::exchange(other.m_elements, 0);
+        }
 
         // IBuffer interface
         size_t length() const override { return m_elements; }
@@ -109,6 +128,8 @@ gl::Attributes<VertexT>::~Attributes() {
         glDeleteBuffers(1, &m_VBO);
     if (m_VAO)
         glDeleteVertexArrays(1, &m_VAO);
+    if (m_EBO)
+        glDeleteBuffers(1, &m_EBO);
 }
 
 template <gl::VertexType VertexT>
