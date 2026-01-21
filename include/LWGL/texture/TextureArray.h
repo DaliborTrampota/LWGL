@@ -6,7 +6,7 @@ namespace gl {
 
     class TextureArray : public TextureBase {
       public:
-        TextureArray(UInt unit) : TextureBase(unit, TextureType::TextureArray) {}
+        TextureArray() : TextureBase(TextureType::TextureArray) {}
 
         void create(ArraySettings settings);
         void create(RawArraySettings settings);

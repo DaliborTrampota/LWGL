@@ -15,7 +15,6 @@ using namespace gl;
 
 void TextureArray::create(ArraySettings setting) {
     glGenTextures(1, &m_id);
-    glActiveTexture(GL_TEXTURE0 + m_unit);
     glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
 
     detail::ConfigureTexture(GL_TEXTURE_2D_ARRAY, setting);
@@ -37,7 +36,6 @@ void TextureArray::create(ArraySettings setting) {
 
 void TextureArray::create(RawArraySettings settings) {
     glGenTextures(1, &m_id);
-    glActiveTexture(GL_TEXTURE0 + m_unit);
     glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
 
     detail::ConfigureTexture(GL_TEXTURE_2D_ARRAY, settings);

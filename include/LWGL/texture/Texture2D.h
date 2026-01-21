@@ -5,7 +5,7 @@
 namespace gl {
     class Texture2D : public TextureBase {
       public:
-        Texture2D(UInt unit) : TextureBase(unit, TextureType::Texture2D) {};
+        Texture2D() : TextureBase(TextureType::Texture2D) {};
 
         void create(Settings settings);
         void load(const gl::ImageData& imageData);

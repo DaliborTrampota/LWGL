@@ -107,17 +107,18 @@ namespace gl {
 
     class TextureBase {
       public:
-        TextureBase(UInt unit, TextureType type);
+        TextureBase(TextureType type);
         virtual ~TextureBase();
 
         UInt id() const { return m_id; }
-        UInt unit() const { return m_unit; }
         void bind() const;
-        void unbind() const;
+        void activate(UInt unit) const;
+        void unbind(UInt unit) const;
+
+        static void unbind(TextureType type);
 
       protected:
         UInt m_id = 0;
-        UInt m_unit = 0;
         TextureType m_type;  // OpenGL texture type (e.g., GL_TEXTURE_2D)
     };
 }  // namespace gl

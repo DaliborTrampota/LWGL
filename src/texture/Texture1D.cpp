@@ -15,7 +15,6 @@ void Texture1D::create(Settings settings) {
         throw std::runtime_error("Texture1D already created");
 
     glGenTextures(1, &m_id);
-    glActiveTexture(GL_TEXTURE0 + m_unit);
     glBindTexture(GL_TEXTURE_1D, m_id);
 
     detail::ConfigureTexture(GL_TEXTURE_1D, settings);
