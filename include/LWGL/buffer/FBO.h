@@ -37,7 +37,7 @@ namespace gl {
         /// @brief Binds a texture to an attachment. If the attachment is already bound, the texture is replaced, old texture is deleted.
         /// @param attachment Attachment to bind the texture to.
         /// @param textureID ID of the texture to bind.
-        void bindTexture(Att attachment, unsigned int textureID);
+        void bindTexture(Att attachment, const TextureBase* texture);
 
         /// @brief Creates a texture for an attachment.
         /// @param attachment Attachment to create the texture for.
@@ -87,12 +87,13 @@ namespace gl {
 
         void attachRenderBuffer(RBO& rbo, Att attachment, Target target);
 
-        unsigned texture(Att attachment) const;
+        /// @return The texture of the attachment
+        const TextureBase* texture(Att attachment) const;
 
       protected:
         unsigned int m_fboID = 0;
         unsigned int m_target;
-        std::vector<unsigned> m_texIDs;
+        std::vector<const TextureBase*> m_textures;
         std::vector<Att> m_attachments;
     };
 }  // namespace gl
