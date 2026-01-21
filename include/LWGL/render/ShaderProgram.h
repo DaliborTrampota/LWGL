@@ -7,6 +7,7 @@
 namespace gl {
     class UBO;
     class Shader;
+    class TextureBase;
 
     /// @brief ShaderProgram class representing shader program.
     class ShaderProgram {
@@ -31,7 +32,13 @@ namespace gl {
         ShaderProgram(ShaderProgram&&) noexcept = default;
         ShaderProgram& operator=(ShaderProgram&&) noexcept = default;
 
+        unsigned int id() const { return m_id; }
         void use() const;
+        void bindUBO(const UBO& ubo) const;
+
+        void bindTextures() const;
+        void setTexture(unsigned int unit, const TextureBase* texture, const std::string& name);
+        // void setTextureID(unsigned int unit, unsigned int textureID, const std::string& name);
 
         void setBool(const std::string& name, bool value) const;
         void setInt(const std::string& name, int value) const;
@@ -48,13 +55,14 @@ namespace gl {
         //         (glAttachShader(m_id, shaders.ID), ...);
         // }
 
-        void bindUBO(const UBO& ubo) const;
 
       protected:
-      private:
         unsigned int m_id = 0;
         std::string m_name = "Unnamed";
 
+        std::unordered_map<unsigned int, const TextureBase*> m_textureBindings;
+
+      private:
         bool link();
     };
 

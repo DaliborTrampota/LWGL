@@ -22,7 +22,9 @@ void CubeMap::loadFace(CubeFace face, const gl::ImageData& data) {
     m_width = data.width;
     m_channels = data.channels;
 
-    detail::Data2D(detail::toGLCubeFace(face), data.width, data.height, data.format, data.data);
+    detail::Data2D(
+        detail::toGLCubeFace(face), data.width, data.height, data.format, data.data, data.dataType
+    );
 }
 
 void CubeMap::loadFace(CubeFace face, const gl::RawImageData& rawImageData) {
