@@ -39,11 +39,8 @@ namespace gl {
 
         void moveDataFrom(Attributes& other) {
             m_data = std::move(other.m_data);
-            m_dirty = other.m_dirty;
-            m_elements = other.m_elements;
-            other.m_data.clear();
-            other.m_dirty = true;
-            other.m_elements = 0;
+            m_dirty = std::exchange(other.m_dirty, true);
+            m_elements = std::exchange(other.m_elements, 0);
         }
 
         // IBuffer interface
