@@ -25,7 +25,12 @@ void Texture2D::load(const gl::ImageData& imageData) {
     m_channels = imageData.channels;
 
     detail::Data2D(
-        GL_TEXTURE_2D, imageData.width, imageData.height, imageData.format, imageData.data
+        GL_TEXTURE_2D,
+        imageData.width,
+        imageData.height,
+        imageData.format,
+        imageData.data,
+        imageData.dataType
     );
 }
 

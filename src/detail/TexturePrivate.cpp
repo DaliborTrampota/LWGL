@@ -14,7 +14,9 @@ void gl::detail::ConfigureTexture(GLenum type, const gl::Settings& settings) {
     glTexParameterfv(type, GL_TEXTURE_BORDER_COLOR, settings.borderColor);
 }
 
-void gl::detail::Data1D(GLenum type, int width, ImageFormat format, unsigned char* data) {
+void gl::detail::Data1D(
+    GLenum type, int width, ImageFormat format, unsigned char* data, gl::ImageDataType dataType
+) {
     glTexImage1D(
         type,
         0,  // mipmap level
@@ -22,7 +24,7 @@ void gl::detail::Data1D(GLenum type, int width, ImageFormat format, unsigned cha
         width,
         0,  // border (must be 0)
         toGLFormat(format),
-        GL_UNSIGNED_BYTE,
+        toGLDataType(dataType),  // TODO dataType with internal format
         data
     );
 }
@@ -62,7 +64,13 @@ void gl::detail::SubData2D(
 }
 
 void gl::detail::Data3D(
-    GLenum type, int width, int height, int depth, ImageFormat format, unsigned char* data
+    GLenum type,
+    int width,
+    int height,
+    int depth,
+    ImageFormat format,
+    unsigned char* data,
+    gl::ImageDataType dataType
 ) {
     glTexImage3D(
         type,
@@ -73,13 +81,20 @@ void gl::detail::Data3D(
         depth,  // depth of the texture
         0,      // border (must be 0)
         toGLFormat(format),
-        GL_UNSIGNED_BYTE,
+        toGLDataType(dataType),  // TODO dataType with internal format
         data
     );
 }
 
 void gl::detail::SubData3D(
-    GLenum type, int layer, int width, int height, int depth, ImageFormat format, unsigned char* data
+    GLenum type,
+    int layer,
+    int width,
+    int height,
+    int depth,
+    ImageFormat format,
+    unsigned char* data,
+    gl::ImageDataType dataType
 ) {
     glTexSubImage3D(
         type,
@@ -91,7 +106,7 @@ void gl::detail::SubData3D(
         height,
         depth,
         toGLFormat(format),
-        GL_UNSIGNED_BYTE,
+        toGLDataType(dataType),  // TODO dataType with internal format
         data
     );
 }

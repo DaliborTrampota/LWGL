@@ -24,7 +24,9 @@ void Texture1D::load(const gl::ImageData& imageData) {
     m_width = imageData.width;
     m_channels = imageData.channels;
 
-    detail::Data1D(GL_TEXTURE_1D, imageData.width, imageData.format, imageData.data);
+    detail::Data1D(
+        GL_TEXTURE_1D, imageData.width, imageData.format, imageData.data, imageData.dataType
+    );
 }
 
 void Texture1D::load(const gl::RawImageData& rawImageData) {
