@@ -55,58 +55,61 @@ FBO::FBO() : m_target(GL_FRAMEBUFFER), m_attachments(), m_textures() {
     }
 }
 
-void FBO::bindTexture(Att attachment, const TextureBase* texture) {
+void FBO::bindTexture(Att attachment, TextureRef texture) {
     if (attachment - FBOAttachment::Color >= MaxColorAttachments)
         throw std::runtime_error("Exceeding max color attachments");
 
     auto attIt = findAtt(m_attachments, attachment);
     if (attIt == m_attachments.end()) {
         m_attachments.push_back(attachment);
-        m_textures.push_back(texture);
+        m_textures.push_back(std::move(texture));
     } else {
         int index = std::distance(m_attachments.cbegin(), attIt);
-        if (m_textures[index] != nullptr) {
-            unsigned int prevTexID = m_textures[index]->id();
-            glDeleteTextures(1, &prevTexID);
-        }
         m_textures[index] = texture;
     }
 
-    unsigned int texID = texture->id();
-    if (auto tex = dynamic_cast<const Texture2D*>(texture)) {
-        glBindTexture(GL_TEXTURE_2D, tex->id());
+    unsigned int texID = texture.id();
+    if (texture.type() == TextureType::Texture2D) {
+        glBindTexture(GL_TEXTURE_2D, texID);
         glFramebufferTexture2D(
             m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, texID, 0
         );
-    } else if (auto tex = dynamic_cast<const TextureArray*>(texture)) {
-        glBindTexture(GL_TEXTURE_2D_ARRAY, tex->id());
+    } else if (texture.type() == TextureType::TextureArray) {
+        glBindTexture(GL_TEXTURE_2D_ARRAY, texID);
         glFramebufferTexture(m_target, detail::toGLAttachmentType(attachment), texID, 0);
-    } else if (auto tex = dynamic_cast<const CubeMap*>(texture)) {
+    } else if (texture.type() == TextureType::CubeMap) {
         // glBindTexture(GL_TEXTURE_CUBE_MAP, tex->id());
-        throw std::runtime_error("Unsupported texture type");
+        throw std::runtime_error("Cubemap not implemented yet");
+    } else if (texture.type() == TextureType::Texture1D) {
+        glBindTexture(GL_TEXTURE_1D, texID);
+        glFramebufferTexture1D(
+            m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_1D, texID, 0
+        );
     } else {
         throw std::runtime_error("Unsupported texture type");
     }
 }
 
-void FBO::createTexture(Att attachment, const FrameBufferSettings& settings) {
+std::shared_ptr<TextureBase> FBO::createTexture(
+    Att attachment, const FrameBufferSettings& settings
+) {
     if (attachment - FBOAttachment::Color >= MaxColorAttachments)
         throw std::runtime_error("Exceeding max color attachments");
     if (findAtt(m_attachments, attachment) != m_attachments.end())
         throw std::runtime_error("Attachment already exists");
 
-    Texture2D* texture = new Texture2D();
+    std::shared_ptr<Texture2D> texture = std::make_shared<Texture2D>();
     texture->create(settings);
     texture->bind();
     texture->load(
         ImageData(nullptr, settings.width, settings.height, 4, settings.format, settings.dataType)
     );
 
-    m_textures.push_back(texture);
+    m_textures.push_back(TextureRef(texture.get()));
     m_attachments.push_back(attachment);
 
     glNamedFramebufferTexture(m_fboID, detail::toGLAttachmentType(attachment), texture->id(), 0);
-    //unbind();
+    return texture;
 }
 
 void FBO::removeAttachment(Att attachment) {
@@ -118,8 +121,13 @@ void FBO::removeAttachment(Att attachment) {
     glFramebufferTexture2D(m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, 0, 0);
     m_textures.erase(m_textures.begin() + index);
     m_attachments.erase(it);
-    delete m_textures[index];
-    glBindFramebuffer(m_target, 0);  // TODO remove
+}
+
+TextureRef FBO::texture(Att attachment) const {  // TODO better lookup and storage
+    auto it = findAtt(m_attachments, attachment);
+    if (it == m_attachments.cend())
+        throw std::runtime_error("Attachment not found");
+    return m_textures[std::distance(m_attachments.cbegin(), it)];
 }
 
 void FBO::clearActive(const glm::vec4& color, float depth, uint8_t stencil) const {
@@ -177,31 +185,23 @@ void FBO::setReadBuffer(Att colorAttachment) const {
 
 unsigned int FBO::checkCompleteness() const {
     unsigned int status = glCheckNamedFramebufferStatus(m_fboID, m_target);
-    // switch (status) {
-    //     case GL_FRAMEBUFFER_COMPLETE: return 0;
-    //     case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: return 1;
-    //     case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: return 2;
-    //     case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: return 3;
-    //     case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: return 4;
-    //     case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: return 5;
-    //     case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: return 6;
-    //     case GL_FRAMEBUFFER_UNSUPPORTED: return 7;
-    //     case GL_FRAMEBUFFER_UNDEFINED: return 8;
-    // }
+    switch (status) {
+        case GL_FRAMEBUFFER_COMPLETE: return 0;
+        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: return 1;
+        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: return 2;
+        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: return 3;
+        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: return 4;
+        case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: return 5;
+        case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: return 6;
+        case GL_FRAMEBUFFER_UNSUPPORTED: return 7;
+        case GL_FRAMEBUFFER_UNDEFINED: return 8;
+    }
     return status == GL_FRAMEBUFFER_COMPLETE ? 0 : status;
 }
 
 
-void FBO::attachRenderBuffer(RBO& rbo, Att attachment, Target target) {
-    bind();
-    glFramebufferRenderbuffer(
-        toGLFBOTarget(target), detail::toGLAttachmentType(attachment), GL_RENDERBUFFER, rbo.id()
+void FBO::attachRenderBuffer(RBO& rbo, Att attachment) {
+    glNamedFramebufferRenderbuffer(
+        m_fboID, detail::toGLAttachmentType(attachment), GL_RENDERBUFFER, rbo.id()
     );
-}
-
-const TextureBase* FBO::texture(Att attachment) const {  // TODO better lookup and storage
-    auto it = findAtt(m_attachments, attachment);
-    if (it == m_attachments.cend())
-        throw std::runtime_error("Attachment not found");
-    return m_textures[std::distance(m_attachments.cbegin(), it)];
 }
