@@ -7,7 +7,28 @@
 #include "LWGL/texture/ImageData.h"
 #include "LWGL/texture/TextureBase.h"
 
+#include "LWGL/texture/CubeMap.h"
+#include "LWGL/texture/Texture1D.h"
+#include "LWGL/texture/Texture2D.h"
+#include "LWGL/texture/TextureArray.h"
+
+
 namespace gl::detail {
+
+    inline TextureType textureType(const TextureBase* texture) {
+        if (dynamic_cast<const Texture2D*>(texture)) {
+            return TextureType::Texture2D;
+        } else if (dynamic_cast<const TextureArray*>(texture)) {
+            return TextureType::TextureArray;
+        } else if (dynamic_cast<const CubeMap*>(texture)) {
+            return TextureType::CubeMap;
+        } else if (dynamic_cast<const Texture1D*>(texture)) {
+            return TextureType::Texture1D;
+        } else {
+            throw std::runtime_error("Unsupported texture type");
+        }
+    }
+
 
     constexpr GLsizei sizeOfType(GLenum type) {
         switch (type) {
