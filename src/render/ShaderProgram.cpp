@@ -55,10 +55,7 @@ void ShaderProgram::use() const {
 }
 
 void ShaderProgram::bindTextures() const {
-    // printf("Binding textures for program %s\n", m_name.c_str());
-    // printf("Texture bindings: %zu\n", m_textureBindings.size());
     for (const auto& [unit, texture] : m_textureBindings) {
-        // printf("Binding texture to unit %d\n", unit);
         texture->activate(unit);
     }
 }
@@ -69,9 +66,6 @@ void ShaderProgram::setTexture(
     m_textureBindings[unit] = texture;
     glUniform1i(glGetUniformLocation(m_id, name.c_str()), unit);
 }
-
-// void ShaderProgram::setTextureID(unsigned int unit, unsigned int textureID, const std::string& name) {
-
 
 void ShaderProgram::setBool(const std::string& name, bool value) const {
     glUniform1i(glGetUniformLocation(m_id, name.c_str()), (int)value);

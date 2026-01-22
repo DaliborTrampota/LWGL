@@ -105,10 +105,6 @@ void FBO::createTexture(Att attachment, const FrameBufferSettings& settings) {
     m_textures.push_back(texture);
     m_attachments.push_back(attachment);
 
-    // bind();
-    // glFramebufferTexture2D(
-    //     m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, texture->id(), 0
-    // );
     glNamedFramebufferTexture(m_fboID, detail::toGLAttachmentType(attachment), texture->id(), 0);
     //unbind();
 }

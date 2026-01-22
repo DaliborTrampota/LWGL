@@ -38,7 +38,6 @@ namespace gl {
 
         void bindTextures() const;
         void setTexture(unsigned int unit, const TextureBase* texture, const std::string& name);
-        // void setTextureID(unsigned int unit, unsigned int textureID, const std::string& name);
 
         void setBool(const std::string& name, bool value) const;
         void setInt(const std::string& name, int value) const;
