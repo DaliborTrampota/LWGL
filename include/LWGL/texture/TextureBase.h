@@ -114,6 +114,7 @@ namespace gl {
         void bind() const;
         void activate(UInt unit) const;
         void unbind(UInt unit) const;
+        TextureType type() const { return m_type; }
 
         static void unbind(TextureType type);
 
