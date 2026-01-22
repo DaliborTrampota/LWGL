@@ -14,7 +14,6 @@ void Texture2D::create(Settings settings) {
         throw std::runtime_error("Texture2D already created");
 
     glGenTextures(1, &m_id);
-    glActiveTexture(GL_TEXTURE0 + m_unit);
     glBindTexture(GL_TEXTURE_2D, m_id);
 
     detail::ConfigureTexture(GL_TEXTURE_2D, settings);
@@ -26,7 +25,12 @@ void Texture2D::load(const gl::ImageData& imageData) {
     m_channels = imageData.channels;
 
     detail::Data2D(
-        GL_TEXTURE_2D, imageData.width, imageData.height, imageData.format, imageData.data
+        GL_TEXTURE_2D,
+        imageData.width,
+        imageData.height,
+        imageData.format,
+        imageData.data,
+        imageData.dataType
     );
 }
 

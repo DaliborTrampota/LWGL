@@ -45,9 +45,13 @@ namespace gl {
         int channels = 0;
         unsigned char* data = nullptr;
         ImageFormat format = ImageFormat::RGBA;
+        ImageDataType dataType = ImageDataType::UChar;
         std::string path;
 
         ImageData(const char* path);
+        ImageData(
+            unsigned char* data, int w, int h, int ch, ImageFormat format, ImageDataType dataType
+        );
         ~ImageData();
 
         ImageData& operator=(const ImageData&) = delete;

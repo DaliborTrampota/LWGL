@@ -7,6 +7,7 @@
 #include "LWGL/texture/ImageData.h"
 #include "LWGL/texture/TextureBase.h"
 
+
 namespace gl::detail {
 
     constexpr GLsizei sizeOfType(GLenum type) {

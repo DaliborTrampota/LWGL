@@ -1,8 +1,10 @@
 #pragma once
 
 #include "LWGL/texture/TextureBase.h"
+#include "LWGL/texture/TextureRef.h"
 
 #include <glm/glm.hpp>
+#include <memory>
 #include <vector>
 
 
@@ -34,20 +36,26 @@ namespace gl {
         /// @param colorAttachment The color attachment to read from.
         void setReadBuffer(Att colorAttachment) const;
 
-        /// @brief Binds a texture to an attachment. If the attachment is already bound, the texture is replaced, old texture is deleted.
+        /// @brief Binds a texture to an attachment. If the attachment is already bound, the texture is replaced (old texture is not deleted).
         /// @param attachment Attachment to bind the texture to.
         /// @param textureID ID of the texture to bind.
-        void bindTexture(Att attachment, unsigned int textureID);
+        void bindTexture(Att attachment, TextureRef texture);
 
-        /// @brief Creates a texture for an attachment.
+        /// @brief Creates a texture for an attachment owned by the FBO.
         /// @param attachment Attachment to create the texture for.
         /// @param settings Settings for the texture.
-        void createTexture(Att attachment, const FrameBufferSettings& settings);
+        /// @return The created texture bound to the attachment.
+        std::shared_ptr<TextureBase> createTexture(
+            Att attachment, const FrameBufferSettings& settings
+        );
 
         /// @brief Removes a texture and attachment from this FBO.
         /// @param attachment Attachment to remove.
         /// @note The texture is deleted and the attachment is removed from the FBO.
         void removeAttachment(Att attachment);
+
+        /// @return The texture of the attachment
+        TextureRef texture(Att attachment) const;
 
         /// @brief Clears the active buffer. (Buffers bound to glDrawBuffers)
         /// @param color Color to clear the attachment to.
@@ -85,14 +93,13 @@ namespace gl {
         /// @see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glCheckFramebufferStatus.xhtml
         unsigned int checkCompleteness() const;
 
-        void attachRenderBuffer(RBO& rbo, Att attachment, Target target);
+        void attachRenderBuffer(RBO& rbo, Att attachment);
 
-        unsigned texture(Att attachment) const;
 
       protected:
         unsigned int m_fboID = 0;
         unsigned int m_target;
-        std::vector<unsigned> m_texIDs;
+        std::vector<TextureRef> m_textures;
         std::vector<Att> m_attachments;
     };
 }  // namespace gl

@@ -23,8 +23,19 @@ ImageData::ImageData(const char* path) {
     }
 }
 
+ImageData::ImageData(
+    unsigned char* data, int w, int h, int ch, ImageFormat format, ImageDataType dataType
+)
+    : width(w),
+      height(h),
+      channels(ch),
+      data(data),
+      format(format),
+      dataType(dataType) {}
+
 ImageData::~ImageData() {
-    stbi_image_free(data);
+    if (data)
+        stbi_image_free(data);
 }
 
 ImageData::ImageData(ImageData&& other) noexcept
@@ -33,6 +44,7 @@ ImageData::ImageData(ImageData&& other) noexcept
       channels(other.channels),
       data(other.data),
       format(other.format),
+      dataType(other.dataType),
       path(other.path) {
     other.data = nullptr;  // Take ownership
 }
@@ -46,6 +58,7 @@ ImageData& ImageData::operator=(ImageData&& other) noexcept {
         channels = other.channels;
         data = other.data;
         format = other.format;
+        dataType = other.dataType;
         path = other.path;
 
         other.data = nullptr;  // take ownership

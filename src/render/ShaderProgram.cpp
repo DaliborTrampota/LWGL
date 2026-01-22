@@ -4,6 +4,7 @@
 
 #include "LWGL/buffer/UBO.h"
 #include "LWGL/render/Shader.h"
+#include "LWGL/texture/TextureBase.h"
 
 
 using namespace gl;
@@ -53,6 +54,18 @@ void ShaderProgram::use() const {
     glUseProgram(m_id);
 }
 
+void ShaderProgram::bindTextures() const {
+    for (const auto& [unit, texture] : m_textureBindings) {
+        texture->activate(unit);
+    }
+}
+
+void ShaderProgram::setTexture(
+    unsigned int unit, const TextureBase* texture, const std::string& name
+) {
+    m_textureBindings[unit] = texture;
+    glUniform1i(glGetUniformLocation(m_id, name.c_str()), unit);
+}
 
 void ShaderProgram::setBool(const std::string& name, bool value) const {
     glUniform1i(glGetUniformLocation(m_id, name.c_str()), (int)value);

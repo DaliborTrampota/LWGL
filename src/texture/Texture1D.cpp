@@ -15,7 +15,6 @@ void Texture1D::create(Settings settings) {
         throw std::runtime_error("Texture1D already created");
 
     glGenTextures(1, &m_id);
-    glActiveTexture(GL_TEXTURE0 + m_unit);
     glBindTexture(GL_TEXTURE_1D, m_id);
 
     detail::ConfigureTexture(GL_TEXTURE_1D, settings);
@@ -25,7 +24,9 @@ void Texture1D::load(const gl::ImageData& imageData) {
     m_width = imageData.width;
     m_channels = imageData.channels;
 
-    detail::Data1D(GL_TEXTURE_1D, imageData.width, imageData.format, imageData.data);
+    detail::Data1D(
+        GL_TEXTURE_1D, imageData.width, imageData.format, imageData.data, imageData.dataType
+    );
 }
 
 void Texture1D::load(const gl::RawImageData& rawImageData) {

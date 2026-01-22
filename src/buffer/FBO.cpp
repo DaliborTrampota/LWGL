@@ -8,6 +8,11 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include "LWGL/texture/CubeMap.h"
+#include "LWGL/texture/ImageData.h"
+#include "LWGL/texture/Texture2D.h"
+#include "LWGL/texture/TextureArray.h"
+
 
 using namespace gl;
 
@@ -40,7 +45,7 @@ namespace {
 
 }  // namespace
 
-FBO::FBO() : m_target(GL_FRAMEBUFFER), m_attachments(), m_texIDs() {
+FBO::FBO() : m_target(GL_FRAMEBUFFER), m_attachments(), m_textures() {
     glGenFramebuffers(1, &m_fboID);
     if (MaxDrawBuffers == -1) {
         MaxDrawBuffers = queryMaxDrawBuffers();
@@ -50,51 +55,61 @@ FBO::FBO() : m_target(GL_FRAMEBUFFER), m_attachments(), m_texIDs() {
     }
 }
 
-void FBO::bindTexture(Att attachment, unsigned int textureID) {
+void FBO::bindTexture(Att attachment, TextureRef texture) {
     if (attachment - FBOAttachment::Color >= MaxColorAttachments)
         throw std::runtime_error("Exceeding max color attachments");
 
     auto attIt = findAtt(m_attachments, attachment);
     if (attIt == m_attachments.end()) {
         m_attachments.push_back(attachment);
-        m_texIDs.push_back(textureID);
+        m_textures.push_back(std::move(texture));
     } else {
         int index = std::distance(m_attachments.cbegin(), attIt);
-        if (m_texIDs[index] != 0) {
-            glDeleteTextures(1, &m_texIDs[index]);
-        }
-        m_texIDs[index] = textureID;
+        m_textures[index] = texture;
     }
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glFramebufferTexture2D(
-        m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, textureID, 0
-    );
+
+    unsigned int texID = texture.id();
+    if (texture.type() == TextureType::Texture2D) {
+        glBindTexture(GL_TEXTURE_2D, texID);
+        glFramebufferTexture2D(
+            m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, texID, 0
+        );
+    } else if (texture.type() == TextureType::TextureArray) {
+        glBindTexture(GL_TEXTURE_2D_ARRAY, texID);
+        glFramebufferTexture(m_target, detail::toGLAttachmentType(attachment), texID, 0);
+    } else if (texture.type() == TextureType::CubeMap) {
+        // glBindTexture(GL_TEXTURE_CUBE_MAP, tex->id());
+        throw std::runtime_error("Cubemap not implemented yet");
+    } else if (texture.type() == TextureType::Texture1D) {
+        glBindTexture(GL_TEXTURE_1D, texID);
+        glFramebufferTexture1D(
+            m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_1D, texID, 0
+        );
+    } else {
+        throw std::runtime_error("Unsupported texture type");
+    }
 }
 
-void FBO::createTexture(Att attachment, const FrameBufferSettings& settings) {
+std::shared_ptr<TextureBase> FBO::createTexture(
+    Att attachment, const FrameBufferSettings& settings
+) {
     if (attachment - FBOAttachment::Color >= MaxColorAttachments)
         throw std::runtime_error("Exceeding max color attachments");
     if (findAtt(m_attachments, attachment) != m_attachments.end())
         throw std::runtime_error("Attachment already exists");
 
-    unsigned int texID;
-    glGenTextures(1, &texID);
-
-    glBindTexture(GL_TEXTURE_2D, texID);
-
-    detail::Data2D(
-        GL_TEXTURE_2D, settings.width, settings.height, settings.format, nullptr, settings.dataType
+    std::shared_ptr<Texture2D> texture = std::make_shared<Texture2D>();
+    texture->create(settings);
+    texture->bind();
+    texture->load(
+        ImageData(nullptr, settings.width, settings.height, 4, settings.format, settings.dataType)
     );
-    detail::ConfigureTexture(GL_TEXTURE_2D, settings);
 
-    m_texIDs.push_back(texID);
+    m_textures.push_back(TextureRef(texture.get()));
     m_attachments.push_back(attachment);
-    bind();
-    glFramebufferTexture2D(
-        m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, texID, 0
-    );
-    //glNamedFramebufferTexture(m_fboID, detail::toGLAttachmentType(attachment), texID, 0);
-    //unbind();
+
+    glNamedFramebufferTexture(m_fboID, detail::toGLAttachmentType(attachment), texture->id(), 0);
+    return texture;
 }
 
 void FBO::removeAttachment(Att attachment) {
@@ -104,10 +119,15 @@ void FBO::removeAttachment(Att attachment) {
     int index = std::distance(m_attachments.cbegin(), it);
 
     glFramebufferTexture2D(m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, 0, 0);
-    glDeleteTextures(1, &m_texIDs[index]);
-    m_texIDs.erase(m_texIDs.begin() + index);
+    m_textures.erase(m_textures.begin() + index);
     m_attachments.erase(it);
-    glBindFramebuffer(m_target, 0);
+}
+
+TextureRef FBO::texture(Att attachment) const {  // TODO better lookup and storage
+    auto it = findAtt(m_attachments, attachment);
+    if (it == m_attachments.cend())
+        throw std::runtime_error("Attachment not found");
+    return m_textures[std::distance(m_attachments.cbegin(), it)];
 }
 
 void FBO::clearActive(const glm::vec4& color, float depth, uint8_t stencil) const {
@@ -165,31 +185,23 @@ void FBO::setReadBuffer(Att colorAttachment) const {
 
 unsigned int FBO::checkCompleteness() const {
     unsigned int status = glCheckNamedFramebufferStatus(m_fboID, m_target);
-    // switch (status) {
-    //     case GL_FRAMEBUFFER_COMPLETE: return 0;
-    //     case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: return 1;
-    //     case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: return 2;
-    //     case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: return 3;
-    //     case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: return 4;
-    //     case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: return 5;
-    //     case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: return 6;
-    //     case GL_FRAMEBUFFER_UNSUPPORTED: return 7;
-    //     case GL_FRAMEBUFFER_UNDEFINED: return 8;
-    // }
+    switch (status) {
+        case GL_FRAMEBUFFER_COMPLETE: return 0;
+        case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: return 1;
+        case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: return 2;
+        case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: return 3;
+        case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: return 4;
+        case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: return 5;
+        case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: return 6;
+        case GL_FRAMEBUFFER_UNSUPPORTED: return 7;
+        case GL_FRAMEBUFFER_UNDEFINED: return 8;
+    }
     return status == GL_FRAMEBUFFER_COMPLETE ? 0 : status;
 }
 
 
-void FBO::attachRenderBuffer(RBO& rbo, Att attachment, Target target) {
-    bind();
-    glFramebufferRenderbuffer(
-        toGLFBOTarget(target), detail::toGLAttachmentType(attachment), GL_RENDERBUFFER, rbo.id()
+void FBO::attachRenderBuffer(RBO& rbo, Att attachment) {
+    glNamedFramebufferRenderbuffer(
+        m_fboID, detail::toGLAttachmentType(attachment), GL_RENDERBUFFER, rbo.id()
     );
-}
-
-unsigned FBO::texture(Att attachment) const {  // TODO better lookup and storage
-    auto it = findAtt(m_attachments, attachment);
-    if (it == m_attachments.cend())
-        throw std::runtime_error("Attachment not found");
-    return m_texIDs[std::distance(m_attachments.cbegin(), it)];
 }
