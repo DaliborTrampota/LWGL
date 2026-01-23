@@ -18,5 +18,10 @@ namespace gl {
 
         Shader(const char* path, ShaderType type);
         ~Shader();
+
+        Shader(Shader&& other) noexcept = delete;
+        Shader& operator=(Shader&& other) noexcept = delete;
+        Shader(const Shader& other) = delete;
+        Shader& operator=(const Shader& other) = delete;
     };
 }  // namespace gl

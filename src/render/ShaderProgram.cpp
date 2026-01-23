@@ -46,7 +46,17 @@ gl::ShaderProgram::ShaderProgram(
 
 ShaderProgram::~ShaderProgram() {
     GL_GUARD
-    glDeleteProgram(m_id);
+    if (m_id != 0) {
+        glDeleteProgram(m_id);
+    }
+}
+
+
+ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
+    : m_id(other.m_id),
+      m_name(std::move(other.m_name)),
+      m_textureBindings(std::move(other.m_textureBindings)) {
+    other.m_id = 0;
 }
 
 void ShaderProgram::use() const {

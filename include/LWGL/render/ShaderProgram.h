@@ -28,9 +28,8 @@ namespace gl {
         ShaderProgram(const ShaderProgram&) = delete;
         ShaderProgram& operator=(const ShaderProgram&) = delete;
 
-        // Allow moving if needed in the future
-        ShaderProgram(ShaderProgram&&) noexcept = default;
-        ShaderProgram& operator=(ShaderProgram&&) noexcept = default;
+        ShaderProgram(ShaderProgram&&) noexcept;
+        ShaderProgram& operator=(ShaderProgram&&) noexcept = delete;
 
         unsigned int id() const { return m_id; }
         void use() const;
