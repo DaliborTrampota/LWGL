@@ -8,9 +8,16 @@
 
 using namespace gl;
 
-CubeMap CubeMap::fromImageData(ImageData imageData[6], TextureParams params) {
-    CubeMap cubeMap;
+CubeMap CubeMap::fromImageData(ImageData imageData[6], TextureParams params, bool immutable) {
+    CubeMap cubeMap(immutable);
     cubeMap.create(params);
+    cubeMap.allocate({
+        .width = imageData[0].width,
+        .height = imageData[0].height,
+        .format = imageData[0].format,
+        .dataType = imageData[0].dataType,
+    });
+
     for (int i = 0; i < 6; i++) {
         cubeMap.upload(static_cast<CubeFace>(i), imageData[i]);
     }

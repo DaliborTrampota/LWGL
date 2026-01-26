@@ -9,8 +9,10 @@
 using namespace gl;
 
 
-Texture2D Texture2D::fromImageData(const gl::ImageData& imageData, TextureParams params) {
-    Texture2D texture;
+Texture2D Texture2D::fromImageData(
+    const gl::ImageData& imageData, TextureParams params, bool immutable
+) {
+    Texture2D texture(immutable);
     texture.m_channels = imageData.channels;
 
     texture.create(params);
@@ -24,47 +26,52 @@ Texture2D Texture2D::fromImageData(const gl::ImageData& imageData, TextureParams
     return texture;
 }
 
-Texture2D Texture2D::fromRawData(const gl::RawImageData& rawImageData, TextureParams params) {
-    Texture2D texture;
+Texture2D Texture2D::fromRawData(
+    const gl::RawImageData& rawImageData, TextureParams params, bool immutable
+) {
+    Texture2D texture(immutable);
     texture.create(params);
     texture.m_width = rawImageData.width;
     texture.m_height = rawImageData.height;
     texture.m_channels = rawImageData.channels;
 
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, texture.m_id);
+    if (immutable) {
+        glTextureStorage2D(
+            texture.m_id, 0, rawImageData.internalFormat, texture.m_width, texture.m_height
+        );
 
-    // glTexImage2D(
-    //     GL_TEXTURE_2D,
-    //     0,
-    //     rawImageData.internalFormat,
-    //     rawImageData.width,
-    //     rawImageData.height,
-    //     0,
-    //     rawImageData.format,
-    //     rawImageData.dataType,
-    //     rawImageData.data
-    // );
-    glTextureStorage2D(
-        texture.m_id, 0, rawImageData.internalFormat, texture.m_width, texture.m_height
-    );
+        glTextureSubImage2D(
+            texture.m_id,
+            0,
+            0,
+            0,
+            texture.m_width,
+            texture.m_height,
+            rawImageData.format,
+            rawImageData.dataType,
+            rawImageData.data
+        );
+    } else {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture.m_id);
 
-    glTextureSubImage2D(
-        texture.m_id,
-        0,
-        0,
-        0,
-        texture.m_width,
-        texture.m_height,
-        rawImageData.format,
-        rawImageData.dataType,
-        rawImageData.data
-    );
+        glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            rawImageData.internalFormat,
+            rawImageData.width,
+            rawImageData.height,
+            0,
+            rawImageData.format,
+            rawImageData.dataType,
+            rawImageData.data
+        );
+    }
     return texture;
 }
 
-Texture2D Texture2D::forRenderTarget(TextureStorage storage, TextureParams params) {
-    Texture2D texture;
+Texture2D Texture2D::forRenderTarget(TextureStorage storage, TextureParams params, bool immutable) {
+    Texture2D texture(immutable);
     texture.create(params);
     texture.allocate(storage);
     return texture;

@@ -7,9 +7,15 @@ namespace gl {
       public:
         Texture2D(bool immutable = true) : TextureBase(TextureType::Texture2D, immutable) {};
 
-        static Texture2D fromImageData(const ImageData& imageData, TextureParams params);
-        static Texture2D fromRawData(const RawImageData& rawImageData, TextureParams params);
-        static Texture2D forRenderTarget(TextureStorage storage, TextureParams params);
+        static Texture2D fromImageData(
+            const ImageData& imageData, TextureParams params, bool immutable = true
+        );
+        static Texture2D fromRawData(
+            const RawImageData& rawImageData, TextureParams params, bool immutable = true
+        );
+        static Texture2D forRenderTarget(
+            TextureStorage storage, TextureParams params, bool immutable = true
+        );
 
         void create(TextureParams params);
         void allocate(TextureStorage storage);

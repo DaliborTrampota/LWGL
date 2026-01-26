@@ -9,7 +9,9 @@ namespace gl {
         CubeMap(bool immutable = true) : TextureBase(TextureType::CubeMap, immutable) {};
 
         /// @note The textures are in the order of CubeFace enum: Right, Left, Top, Bottom, Front, Back
-        static CubeMap fromImageData(ImageData imageData[6], TextureParams params);
+        static CubeMap fromImageData(
+            ImageData imageData[6], TextureParams params, bool immutable = true
+        );
         // static Texture2D forRenderTarget(TextureStorage storage, TextureParams params);
 
         void create(TextureParams params);
