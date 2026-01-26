@@ -9,9 +9,10 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/include/LWGL" PREFIX "Include" FI
 add_library(lwgl STATIC ${SRC_FILES})
 target_sources(lwgl PUBLIC ${INC_FILES})
 
-target_link_libraries(lwgl PRIVATE glfw)
-target_link_libraries(lwgl PRIVATE glad)
-target_link_libraries(lwgl PRIVATE glm)
+target_link_libraries(lwgl PUBLIC glfw)
+target_link_libraries(lwgl PUBLIC glad)
+target_link_libraries(lwgl PUBLIC glm)
+
 
 target_include_directories(
     lwgl SYSTEM
@@ -20,3 +21,8 @@ target_include_directories(
 )
 
 
+# Optional testing
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
