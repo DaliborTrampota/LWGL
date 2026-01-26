@@ -5,7 +5,7 @@
 
 namespace gl::detail {
 
-    void ConfigureTexture(GLenum type, const Settings& settings);
+    void ConfigureTexture(GLuint texID, const TextureParams& params);
     void Data1D(
         GLenum type,
         int width,
@@ -13,6 +13,18 @@ namespace gl::detail {
         unsigned char* data,
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
+
+    void Data1DImmutable(GLuint texID, int width, ImageFormat format);
+
+    void SubData1D(
+        GLuint texID,
+        int x,
+        int width,
+        ImageFormat format,
+        unsigned char* data,
+        gl::ImageDataType dataType = gl::ImageDataType::UChar
+    );
+
     void Data2D(
         GLenum type,
         int width,
@@ -21,8 +33,11 @@ namespace gl::detail {
         unsigned char* data,
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
+
+    void Data2DImmutable(GLuint texID, int width, int height, ImageFormat format);
+
     void SubData2D(
-        GLenum type,
+        GLuint texID,
         int x,
         int y,
         int width,
@@ -41,9 +56,14 @@ namespace gl::detail {
         unsigned char* data,
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
+
+    void Data3DImmutable(GLuint texID, int width, int height, int depth, ImageFormat format);
+
     void SubData3D(
-        GLenum type,
-        int layer,
+        GLuint texID,
+        int x,
+        int y,
+        int zOrLayer,
         int width,
         int height,
         int depth,

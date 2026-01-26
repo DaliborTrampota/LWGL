@@ -2,10 +2,12 @@
 
 #include "ImageData.h"
 
+#include <glm/glm.hpp>
+
 
 namespace gl {
 
-    struct Settings {
+    struct TextureParams {
         enum Wrap {
             MirroredRepeat,
             ClampToEdge,
@@ -16,14 +18,14 @@ namespace gl {
             Nearest,
         };
 
-        Settings(Wrap wrap, Filter filter)
+        TextureParams(Wrap wrap, Filter filter)
             : wrapS(wrap),
               wrapT(wrap),
               wrapR(wrap),
               minFilter(filter),
               magFilter(filter) {}
 
-        Settings(Wrap wrapS, Wrap wrapT, Wrap wrapR, Filter minFilter, Filter magFilter)
+        TextureParams(Wrap wrapS, Wrap wrapT, Wrap wrapR, Filter minFilter, Filter magFilter)
             : wrapS(wrapS),
               wrapT(wrapT),
               wrapR(wrapR),
@@ -37,77 +39,34 @@ namespace gl {
         Filter magFilter = Linear;
         float borderColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-        static Settings Pixelated() {
-            return {
-                MirroredRepeat,
-                MirroredRepeat,
-                MirroredRepeat,
-                Nearest,
-                Nearest,
-            };
-        }
-
-        static Settings LinearClampToEdge() {
-            return {
-                ClampToEdge,
-                ClampToEdge,
-                ClampToEdge,
-                Linear,
-                Linear,
-            };
-        }
-
-        static Settings Cubemap() {
-            return {
-                ClampToEdge,
-                ClampToEdge,
-                ClampToEdge,
-                Linear,
-                Linear,
-            };
-        }
+        static TextureParams Pixelated() { return TextureParams(MirroredRepeat, Nearest); }
+        static TextureParams Cubemap() { return TextureParams(ClampToEdge, Linear); }
+        static TextureParams Depth() { return TextureParams(ClampToBorder, Nearest); }
     };
 
-    struct ArraySettings : public Settings {
-        unsigned layers;
-        int width;
-        int height;
+    struct TextureStorage {
+        int width = 0;
+        int height = 0;
+        int depth = 0;
         ImageFormat format = ImageFormat::RGBA;
+        ImageDataType dataType = ImageDataType::UChar;
 
-        static ArraySettings Pixelated() { return {Settings(MirroredRepeat, Nearest)}; }
-    };
-
-    struct RawArraySettings : public ArraySettings {
-        GLenum format;
-        GLenum dataType;
-        GLenum internalFormat;
-    };
-
-
-    struct FrameBufferSettings : public Settings {
-        int width;
-        int height;
-        ImageFormat format;
-        ImageDataType dataType;
-
-        static FrameBufferSettings Depth(int width, int height) {
+        static TextureStorage FBODepth(int width, int height) {
             return {
-                Settings(ClampToBorder, Nearest),
-                width,
-                height,
-                ImageFormat::Depth,
-                ImageDataType::Float,
+                .width = width,
+                .height = height,
+                .format = ImageFormat::Depth,
+                .dataType = ImageDataType::Float,
             };
-        };
+        }
     };
-
 
     using UInt = unsigned int;
     using Data = unsigned char*;
 
     class TextureBase {
       public:
-        TextureBase(TextureType type);
+        TextureBase(TextureType type, bool immutable);
         virtual ~TextureBase();
 
         UInt id() const { return m_id; }
@@ -120,6 +79,7 @@ namespace gl {
 
       protected:
         UInt m_id = 0;
+        bool m_immutable = true;
         TextureType m_type;  // OpenGL texture type (e.g., GL_TEXTURE_2D)
     };
 }  // namespace gl

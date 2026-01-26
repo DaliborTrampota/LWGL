@@ -42,18 +42,18 @@ namespace gl::detail {
     }
 
     // Texture settings
-    constexpr GLenum toGLWrap(Settings::Wrap opt) {
+    constexpr GLenum toGLWrap(TextureParams::Wrap opt) {
         switch (opt) {
-            case Settings::MirroredRepeat: return GL_MIRRORED_REPEAT;
-            case Settings::ClampToEdge: return GL_CLAMP_TO_EDGE;
-            case Settings::ClampToBorder: return GL_CLAMP_TO_BORDER;
+            case TextureParams::MirroredRepeat: return GL_MIRRORED_REPEAT;
+            case TextureParams::ClampToEdge: return GL_CLAMP_TO_EDGE;
+            case TextureParams::ClampToBorder: return GL_CLAMP_TO_BORDER;
         }
     }
 
-    constexpr GLenum toGLFilter(Settings::Filter opt) {
+    constexpr GLenum toGLFilter(TextureParams::Filter opt) {
         switch (opt) {
-            case Settings::Linear: return GL_LINEAR;
-            case Settings::Nearest: return GL_NEAREST;
+            case TextureParams::Linear: return GL_LINEAR;
+            case TextureParams::Nearest: return GL_NEAREST;
         }
     }
 

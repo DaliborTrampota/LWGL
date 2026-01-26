@@ -43,10 +43,11 @@ namespace gl {
 
         /// @brief Creates a texture for an attachment owned by the FBO.
         /// @param attachment Attachment to create the texture for.
-        /// @param settings Settings for the texture.
+        /// @param params Settings for the texture.
+        /// @param size Dimensions and format of the texture
         /// @return The created texture bound to the attachment.
         std::shared_ptr<TextureBase> createTexture(
-            Att attachment, const FrameBufferSettings& settings
+            Att attachment, const TextureParams& params, const TextureStorage& size
         );
 
         /// @brief Removes a texture and attachment from this FBO.

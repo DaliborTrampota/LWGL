@@ -138,7 +138,7 @@ void Context::setDebugCallback(GLDebugCallback callback) {
 
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-    glDebugMessageCallback((GLDEBUGPROC)callback, nullptr);
+    glDebugMessageCallback((GLDEBUGPROC)callback, this);
 }
 
 float Context::time() {
