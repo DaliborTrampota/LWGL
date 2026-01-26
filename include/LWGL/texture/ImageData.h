@@ -1,6 +1,5 @@
 #pragma once
 
-#include <tools/stb_image.h>
 #include <string>
 
 #include "LWGL/GLTypes.h"
