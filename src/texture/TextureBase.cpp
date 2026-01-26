@@ -4,9 +4,10 @@
 #include <glad/glad.h>
 #include <stdexcept>
 
+
 using namespace gl;
 
-TextureBase::TextureBase(TextureType type) : m_type(type) {}
+TextureBase::TextureBase(TextureType type, bool immutable) : m_type(type), m_immutable(immutable) {}
 
 TextureBase::~TextureBase() {
     glDeleteTextures(1, &m_id);

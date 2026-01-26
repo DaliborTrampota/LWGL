@@ -39,6 +39,7 @@ namespace gl {
         Float,
     };
 
+    // TODO support for 3d images? research if such formats exist and how to load them?
     struct ImageData {
         int width = 0;
         int height = 0;
@@ -63,6 +64,7 @@ namespace gl {
     struct RawImageData {
         int width = 0;
         int height = 0;
+        int depth = 0;
         int channels = 0;
         void* data = nullptr;
 
@@ -74,6 +76,7 @@ namespace gl {
             void* data,
             int w,
             int h,
+            int d,
             int ch,
             GLenum format,
             GLenum dataType,

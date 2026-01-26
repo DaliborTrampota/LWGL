@@ -91,19 +91,15 @@ void FBO::bindTexture(Att attachment, TextureRef texture) {
 }
 
 std::shared_ptr<TextureBase> FBO::createTexture(
-    Att attachment, const FrameBufferSettings& settings
+    Att attachment, const TextureParams& params, const TextureStorage& size
 ) {
     if (attachment - FBOAttachment::Color >= MaxColorAttachments)
         throw std::runtime_error("Exceeding max color attachments");
     if (findAtt(m_attachments, attachment) != m_attachments.end())
         throw std::runtime_error("Attachment already exists");
 
-    std::shared_ptr<Texture2D> texture = std::make_shared<Texture2D>();
-    texture->create(settings);
-    texture->bind();
-    texture->load(
-        ImageData(nullptr, settings.width, settings.height, 4, settings.format, settings.dataType)
-    );
+    std::shared_ptr<Texture2D> texture =
+        std::make_shared<Texture2D>(Texture2D::forRenderTarget(size, params));
 
     m_textures.push_back(TextureRef(texture.get()));
     m_attachments.push_back(attachment);

@@ -6,12 +6,21 @@ namespace gl {
 
     class CubeMap : public TextureBase {
       public:
-        CubeMap() : TextureBase(TextureType::CubeMap) {};
+        CubeMap(bool immutable = true) : TextureBase(TextureType::CubeMap, immutable) {};
 
-        void create(Settings setting);
-        void loadFace(CubeFace face, const gl::ImageData& data);
-        void loadFace(CubeFace face, const gl::RawImageData& rawImageData);
-        void loadFaceRaw(CubeFace face, int w, int ch, ImageFormat format, Data data);
+        /// @note The textures are in the order of CubeFace enum: Right, Left, Top, Bottom, Front, Back
+        static CubeMap fromImageData(ImageData imageData[6], TextureParams params);
+        // static Texture2D forRenderTarget(TextureStorage storage, TextureParams params);
+
+        void create(TextureParams params);
+
+        /// @note This is not needed for mutable cube maps, it does nothing
+        void allocate(TextureStorage storage);
+        void upload(CubeFace face, int width, ImageFormat format, Data data);
+        void upload(CubeFace face, const ImageData& imageData);
+        void upload(CubeFace face, const RawImageData& rawImageData);
+
+        int width() { return m_width; }
 
       private:
         int m_width = 0;

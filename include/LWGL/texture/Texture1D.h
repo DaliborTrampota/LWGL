@@ -5,12 +5,18 @@
 namespace gl {
     class Texture1D : public TextureBase {
       public:
-        Texture1D() : TextureBase(TextureType::Texture1D) {};
+        Texture1D(bool immutable = true) : TextureBase(TextureType::Texture1D, immutable) {};
 
-        void create(Settings settings);
-        void load(const gl::ImageData& imageData);
-        void load(const gl::RawImageData& rawImageData);
-        void loadRaw(int w, int ch, ImageFormat format, Data data);
+        static Texture1D fromImageData(const ImageData& imageData, TextureParams params);
+        static Texture1D fromRawData(const RawImageData& rawImageData, TextureParams params);
+        static Texture1D forRenderTarget(TextureStorage storage, TextureParams params);
+
+        void create(TextureParams params);
+        void allocate(TextureStorage storage);
+        void upload(ImageFormat format, Data data);
+
+        int width() const { return m_width; }
+        int channels() const { return m_channels; }
 
       private:
         int m_width = 0;

@@ -8,58 +8,131 @@
 
 using namespace gl;
 
-void CubeMap::create(Settings setting) {
-    glGenTextures(1, &m_id);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
-
-    detail::ConfigureTexture(GL_TEXTURE_CUBE_MAP, setting);
+CubeMap CubeMap::fromImageData(ImageData imageData[6], TextureParams params) {
+    CubeMap cubeMap;
+    cubeMap.create(params);
+    for (int i = 0; i < 6; i++) {
+        cubeMap.upload(static_cast<CubeFace>(i), imageData[i]);
+    }
+    return cubeMap;
 }
 
-void CubeMap::loadFace(CubeFace face, const gl::ImageData& data) {
+void CubeMap::create(TextureParams params) {
+    if (m_id != 0)
+        throw std::runtime_error("CubeMap already created");
+
+    if (m_immutable) {
+        glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_id);
+        detail::ConfigureTexture(m_id, params);
+    } else {
+        glGenTextures(1, &m_id);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
+        detail::ConfigureTexture(m_id, params);
+    }
+    detail::ConfigureTexture(m_id, params);
+}
+
+void CubeMap::allocate(TextureStorage storage) {
+    if (m_id == 0)
+        throw std::runtime_error("CubeMap not created");
+
+    m_width = storage.width;
+
+    if (m_immutable) {
+        detail::Data2DImmutable(m_id, m_width, m_width, storage.format);
+    }
+}
+
+void CubeMap::upload(CubeFace face, const gl::ImageData& data) {
+    if (m_id == 0)
+        throw std::runtime_error("CubeMap not created");
+
     if (data.width != data.height)
         throw std::runtime_error("Cube map face must be square");
 
-    m_width = data.width;
+    // TODO can upload smaller width, track somehow?
     m_channels = data.channels;
 
-    detail::Data2D(
-        detail::toGLCubeFace(face), data.width, data.height, data.format, data.data, data.dataType
-    );
+    if (m_immutable) {
+        detail::SubData3D(
+            m_id,
+            0,
+            0,
+            static_cast<int>(face),
+            data.width,
+            data.width,
+            1,
+            data.format,
+            data.data,
+            data.dataType
+        );
+    } else {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
+
+        detail::Data2D(
+            detail::toGLCubeFace(face), data.width, data.width, data.format, data.data, data.dataType
+        );
+    }
 }
 
-void CubeMap::loadFace(CubeFace face, const gl::RawImageData& rawImageData) {
+void CubeMap::upload(CubeFace face, const gl::RawImageData& rawImageData) {
+    if (m_id == 0)
+        throw std::runtime_error("CubeMap not created");
+
     if (rawImageData.width != rawImageData.height)
         throw std::runtime_error("Cube map face must be square");
 
-    m_width = rawImageData.width;
     m_channels = rawImageData.channels;
 
-    glTexImage2D(
-        detail::toGLCubeFace(face),
-        0,
-        rawImageData.internalFormat,
-        rawImageData.width,
-        rawImageData.height,
-        0,
-        rawImageData.format,
-        rawImageData.dataType,
-        rawImageData.data
-    );
+    if (m_immutable) {
+        glTextureSubImage3D(
+            m_id,
+            0,
+            0,
+            0,
+            static_cast<int>(face),
+            rawImageData.width,
+            rawImageData.width,
+            1,
+            rawImageData.format,
+            rawImageData.dataType,
+            rawImageData.data
+        );
+    } else {
+        glTexImage2D(
+            detail::toGLCubeFace(face),
+            0,
+            rawImageData.internalFormat,
+            rawImageData.width,
+            rawImageData.width,
+            0,
+            rawImageData.format,
+            rawImageData.dataType,
+            rawImageData.data
+        );
+    }
 }
 
 
-void CubeMap::loadFaceRaw(CubeFace face, int w, int ch, ImageFormat format, Data data) {
-    if (w <= 0 || ch <= 0)
-        throw std::runtime_error("Width and height must be greater than zero");
+void CubeMap::upload(CubeFace face, int width, ImageFormat format, Data data) {
+    if (m_id == 0)
+        throw std::runtime_error("CubeMap not created");
+    if (width <= 0)
+        throw std::runtime_error("Width must be greater than zero");
 
-    m_width = w;
-    m_channels = ch;
+    // m_channels = ch;
 
-    detail::Data2D(
-        detail::toGLCubeFace(face),
-        w,
-        w,  // Cube map faces are square
-        format,
-        data
-    );
+    if (m_immutable) {
+        detail::SubData3D(m_id, 0, 0, static_cast<int>(face), width, width, 1, format, data);
+    } else {
+        detail::Data2D(
+            detail::toGLCubeFace(face),
+            width,
+            width,  // Cube map faces are square
+            format,
+            data
+        );
+    }
 }

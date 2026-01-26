@@ -5,14 +5,15 @@
 namespace gl {
     class Texture2D : public TextureBase {
       public:
-        Texture2D() : TextureBase(TextureType::Texture2D) {};
+        Texture2D(bool immutable = true) : TextureBase(TextureType::Texture2D, immutable) {};
 
-        void create(Settings settings);
-        void load(const gl::ImageData& imageData);
-        void load(const gl::RawImageData& rawImageData);
-        void loadRaw(int w, int h, int ch, ImageFormat format, Data data);
+        static Texture2D fromImageData(const ImageData& imageData, TextureParams params);
+        static Texture2D fromRawData(const RawImageData& rawImageData, TextureParams params);
+        static Texture2D forRenderTarget(TextureStorage storage, TextureParams params);
 
-        void update(ImageFormat format, Data data);
+        void create(TextureParams params);
+        void allocate(TextureStorage storage);
+        void upload(ImageFormat format, Data data);
 
         int width() const { return m_width; }
         int height() const { return m_height; }
