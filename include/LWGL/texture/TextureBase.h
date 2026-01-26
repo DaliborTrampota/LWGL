@@ -25,6 +25,13 @@ namespace gl {
               minFilter(filter),
               magFilter(filter) {}
 
+        TextureParams(Wrap wrapS, Wrap wrapT, Wrap wrapR, Filter minFilter, Filter magFilter)
+            : wrapS(wrapS),
+              wrapT(wrapT),
+              wrapR(wrapR),
+              minFilter(minFilter),
+              magFilter(magFilter) {}
+
         Wrap wrapS = MirroredRepeat;
         Wrap wrapT = MirroredRepeat;
         Wrap wrapR = MirroredRepeat;  // Only used for 3D textures
