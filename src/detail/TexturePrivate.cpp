@@ -19,7 +19,7 @@ void gl::detail::Data1D(
 ) {
     glTexImage1D(
         type,
-        0,  // mipmap level
+        0,  // mipmap level index
         toGLInternalFormat(format),
         width,
         0,  // border (must be 0)
@@ -32,7 +32,7 @@ void gl::detail::Data1D(
 void gl::detail::Data1DImmutable(GLuint texID, int width, ImageFormat format) {
     glTextureStorage1D(
         texID,
-        1,  // mipmap level
+        1,  // mipmap level count
         toGLInternalFormat(format),
         width
     );
@@ -59,7 +59,7 @@ void gl::detail::Data2D(
 ) {
     glTexImage2D(
         type,
-        0,  // mipmap level
+        0,  // mipmap level index
         toGLInternalFormat(format, dataType),
         width,
         height,
@@ -73,7 +73,7 @@ void gl::detail::Data2D(
 void gl::detail::Data2DImmutable(GLuint texID, int width, int height, ImageFormat format) {
     glTextureStorage2D(
         texID,
-        1,  // mipmap level
+        1,  // mipmap level count
         toGLInternalFormat(format),
         width,
         height
@@ -145,7 +145,7 @@ void gl::detail::SubData3D(
 ) {
     glTextureSubImage3D(
         texID,
-        0,         // level of detail
+        0,         // mipmap level index
         x,         // xoffset
         y,         // yoffset,
         zOrLayer,  // zoffset
