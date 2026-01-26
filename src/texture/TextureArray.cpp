@@ -101,7 +101,7 @@ int TextureArray::upload(ImageFormat format, Data data, int layer) {
     if (m_id == 0)
         throw std::runtime_error("TextureArray not created");
 
-    int targetLayer = compabilityCheck(m_width, m_width, layer);
+    int targetLayer = compabilityCheck(m_width, m_height, layer);
 
     detail::SubData3D(m_id, 0, 0, targetLayer, m_width, m_height, 1, format, data);
     return targetLayer;
