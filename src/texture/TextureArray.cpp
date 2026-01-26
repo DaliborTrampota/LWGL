@@ -57,7 +57,7 @@ int TextureArray::upload(const gl::ImageData& imageData, int layer) {
     if (m_id == 0)
         throw std::runtime_error("TextureArray not created");
 
-    int targetLayer = compabilityCheck(imageData.width, imageData.height, layer);
+    int targetLayer = compatibilityCheck(imageData.width, imageData.height, layer);
 
     detail::SubData3D(
         m_id,
@@ -79,7 +79,7 @@ int TextureArray::upload(const gl::RawImageData& rawImageData, int layer) {
     if (m_id == 0)
         throw std::runtime_error("TextureArray not created");
 
-    int targetLayer = compabilityCheck(rawImageData.width, rawImageData.height, layer);
+    int targetLayer = compatibilityCheck(rawImageData.width, rawImageData.height, layer);
 
     glTextureSubImage3D(
         m_id,
@@ -101,13 +101,13 @@ int TextureArray::upload(ImageFormat format, Data data, int layer) {
     if (m_id == 0)
         throw std::runtime_error("TextureArray not created");
 
-    int targetLayer = compabilityCheck(m_width, m_height, layer);
+    int targetLayer = compatibilityCheck(m_width, m_height, layer);
 
     detail::SubData3D(m_id, 0, 0, targetLayer, m_width, m_height, 1, format, data);
     return targetLayer;
 }
 
-int TextureArray::compabilityCheck(int w, int h, int layer) {
+int TextureArray::compatibilityCheck(int w, int h, int layer) {
     if (w > m_width || h > m_height)
         throw std::runtime_error(
             std::format("Image data size is larger than texture size: ({}, {})", m_width, m_height)

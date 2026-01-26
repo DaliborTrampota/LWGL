@@ -51,6 +51,6 @@ namespace gl {
         int m_layer = 0;
         unsigned int m_maxLayers = 0;
 
-        int compabilityCheck(int w, int h, int layer);
+        int compatibilityCheck(int w, int h, int layer);
     };
 }  // namespace gl
