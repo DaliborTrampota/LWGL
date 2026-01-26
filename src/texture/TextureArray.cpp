@@ -19,13 +19,12 @@ void TextureArray::create(TextureParams params) {
 
     if (m_immutable) {
         glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_id);
-        detail::ConfigureTexture(m_id, params);
     } else {
         glGenTextures(1, &m_id);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
-        detail::ConfigureTexture(m_id, params);
     }
+    detail::ConfigureTexture(m_id, params);
 }
 
 void TextureArray::allocate(TextureStorage storage) {
