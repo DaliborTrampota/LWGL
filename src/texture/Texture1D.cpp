@@ -9,7 +9,6 @@
 
 using namespace gl;
 
-
 Texture1D Texture1D::fromImageData(
     const gl::ImageData& imageData, TextureParams params, bool immutable
 ) {
@@ -35,7 +34,7 @@ Texture1D Texture1D::fromRawData(
     texture.m_channels = rawImageData.channels;
 
     if (immutable) {
-        glTextureStorage1D(texture.m_id, 0, rawImageData.internalFormat, texture.m_width);
+        glTextureStorage1D(texture.m_id, 1, rawImageData.internalFormat, texture.m_width);
 
         glTextureSubImage1D(
             texture.m_id,

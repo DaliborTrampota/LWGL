@@ -37,7 +37,7 @@ Texture2D Texture2D::fromRawData(
 
     if (immutable) {
         glTextureStorage2D(
-            texture.m_id, 0, rawImageData.internalFormat, texture.m_width, texture.m_height
+            texture.m_id, 1, rawImageData.internalFormat, texture.m_width, texture.m_height
         );
 
         glTextureSubImage2D(
