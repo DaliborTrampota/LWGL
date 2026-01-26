@@ -12,7 +12,10 @@ namespace gl {
         // static TextureArray fromRawData(const RawImageData& rawImageData, TextureParams params);
         // static TextureArray forRenderTarget(TextureStorage storage, TextureParams params);
 
+        /// @brief Creates and configures the texture
         void create(TextureParams params);
+
+        /// @brief Allocates memory for the texture
         void allocate(TextureStorage storage);
 
         /// @brief Load raw data into the texture

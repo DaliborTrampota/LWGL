@@ -17,8 +17,15 @@ void TextureArray::create(TextureParams params) {
     if (m_id != 0)
         throw std::runtime_error("TextureArray already created");
 
-    glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_id);
-    detail::ConfigureTexture(m_id, params);
+    if (m_immutable) {
+        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_id);
+        detail::ConfigureTexture(m_id, params);
+    } else {
+        glGenTextures(1, &m_id);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
+        detail::ConfigureTexture(m_id, params);
+    }
 }
 
 void TextureArray::allocate(TextureStorage storage) {
@@ -30,13 +37,21 @@ void TextureArray::allocate(TextureStorage storage) {
     m_maxLayers = storage.depth;
     // m_channels // TODO
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
-
-    // gl::detail::Data3D(
-    //     GL_TEXTURE_2D_ARRAY, m_width, m_height, m_maxLayers, storage.format, nullptr, storage.dataType
-    // );
-    detail::Data3DImmutable(m_id, m_width, m_height, m_maxLayers, storage.format);
+    if (m_immutable) {
+        detail::Data3DImmutable(m_id, m_width, m_height, m_maxLayers, storage.format);
+    } else {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
+        detail::Data3D(
+            GL_TEXTURE_2D_ARRAY,
+            m_width,
+            m_height,
+            m_maxLayers,
+            storage.format,
+            nullptr,
+            storage.dataType
+        );
+    }
 }
 
 int TextureArray::upload(const gl::ImageData& imageData, int layer) {

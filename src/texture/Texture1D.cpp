@@ -82,7 +82,7 @@ void Texture1D::create(TextureParams params) {
 
 void Texture1D::allocate(TextureStorage storage) {
     if (m_id == 0)
-        throw std::runtime_error("Texture2D not created");
+        throw std::runtime_error("Texture1D not created");
 
     m_width = storage.width;
     // m_channels = storage.channels; // TODO deduce from format?
@@ -98,7 +98,7 @@ void Texture1D::allocate(TextureStorage storage) {
 
 void Texture1D::upload(ImageFormat format, Data data) {
     if (m_id == 0)
-        throw std::runtime_error("Texture2D not created");
+        throw std::runtime_error("Texture1D not created");
 
     detail::SubData1D(m_id, 0, m_width, format, data);
 }
