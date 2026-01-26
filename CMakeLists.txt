@@ -14,5 +14,9 @@ target_link_libraries(lwgl PRIVATE glad)
 target_link_libraries(lwgl PRIVATE glm)
 
 target_include_directories(
-    lwgl SYSTEM PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    lwgl SYSTEM
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/dependencies
 )
+
+
