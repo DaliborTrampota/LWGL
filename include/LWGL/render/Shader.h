@@ -1,6 +1,9 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace gl {
 
@@ -14,6 +17,8 @@ namespace gl {
     };
 
     struct Shader {
+        static void setChunksDirectory(fs::path directory) { s_chunksDirectory = directory; }
+
         unsigned int ID;
 
         Shader(const char* path, ShaderType type);
@@ -23,5 +28,10 @@ namespace gl {
         Shader& operator=(Shader&& other) noexcept = delete;
         Shader(const Shader& other) = delete;
         Shader& operator=(const Shader& other) = delete;
+
+        bool compile(std::string source) const;
+
+      protected:
+        static inline fs::path s_chunksDirectory;
     };
 }  // namespace gl
