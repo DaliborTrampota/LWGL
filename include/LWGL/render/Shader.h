@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <filesystem>
+#include <unordered_map>
 
 namespace fs = std::filesystem;
 
@@ -32,6 +33,8 @@ namespace gl {
         bool compile(std::string source) const;
 
       protected:
+        friend class ShaderProgram;
         static inline fs::path s_chunksDirectory;
+        static inline std::unordered_map<std::string, std::string> s_constants;
     };
 }  // namespace gl

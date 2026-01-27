@@ -111,6 +111,8 @@ bool Shader::compile(std::string source) const {
             tag = trim(tag);
             if (s_chunks.find(tag) != s_chunks.end()) {
                 source.replace(lastFind, endTag - lastFind + s_end.length(), s_chunks[tag]);
+            } else if (s_constants.find(tag) != s_constants.end()) {
+                source.replace(lastFind, endTag - lastFind + s_end.length(), s_constants[tag]);
             } else {
                 printf("ERROR::SHADER::FAILED_TO_FIND_CHUNK: %s\n", tag.c_str());
                 return false;
