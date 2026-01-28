@@ -109,6 +109,22 @@ void ShaderProgram::bindUBO(const UBO& ubo) const {
     ubo.bindToProgram(m_id);
 }
 
+void ShaderProgram::setConstant(const std::string& name, const std::string& value) {
+    Shader::s_constants[name] = value;
+}
+
+void ShaderProgram::setConstant(const std::string& name, float value) {
+    Shader::s_constants[name] = std::to_string(value);
+}
+
+void ShaderProgram::setConstant(const std::string& name, int value) {
+    Shader::s_constants[name] = std::to_string(value);
+}
+
+void ShaderProgram::setConstant(const std::string& name, bool value) {
+    Shader::s_constants[name] = value ? "true" : "false";
+}
+
 
 bool ShaderProgram::link() {
     GL_GUARD
