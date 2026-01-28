@@ -122,7 +122,7 @@ void ShaderProgram::setConstant(const std::string& name, int value) {
 }
 
 void ShaderProgram::setConstant(const std::string& name, bool value) {
-    Shader::s_constants[name] = std::to_string(value);
+    Shader::s_constants[name] = value ? "true" : "false";
 }
 
 

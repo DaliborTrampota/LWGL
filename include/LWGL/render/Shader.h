@@ -30,7 +30,7 @@ namespace gl {
         Shader(const Shader& other) = delete;
         Shader& operator=(const Shader& other) = delete;
 
-        bool compile(std::string source) const;
+        bool compile(std::string& source) const;
 
       protected:
         friend class ShaderProgram;

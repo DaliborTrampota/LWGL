@@ -55,9 +55,9 @@ void Shader::setChunksDirectory(fs::path directory) {
     for (const auto& entry : fs::directory_iterator(s_chunksDirectory)) {
         if (entry.is_regular_file()) {
             std::string name = entry.path().filename().string();
-            if (!s_chunks.contains(name)) {
-                s_chunks[name] = readFile(entry.path().string().c_str());
-            }
+            // if (!s_chunks.contains(name)) {
+            s_chunks[name] = readFile(entry.path().string().c_str());
+            // }
         }
     }
 }
@@ -94,7 +94,7 @@ Shader::~Shader() {
     glDeleteShader(ID);
 }
 
-bool Shader::compile(std::string source) const {
+bool Shader::compile(std::string& source) const {
     static std::string s_start = "{{";
     static std::string s_end = "}}";
 
@@ -107,13 +107,15 @@ bool Shader::compile(std::string source) const {
                 printf("ERROR::SHADER::FAILED_TO_FIND_END_TAG\n");
                 return false;
             }
-            std::string tag =
-                source.substr(lastFind + s_start.length(), endTag - lastFind - s_start.length());
+            size_t tagLength = endTag - lastFind - s_start.length();
+            std::string tag = source.substr(lastFind + s_start.length(), tagLength);
             tag = trim(tag);
+
+            size_t replaceLength = endTag - lastFind + s_end.length();
             if (s_chunks.find(tag) != s_chunks.end()) {
-                source.replace(lastFind, endTag - lastFind + s_end.length(), s_chunks[tag]);
+                source.replace(lastFind, replaceLength, s_chunks[tag]);
             } else if (s_constants.find(tag) != s_constants.end()) {
-                source.replace(lastFind, endTag - lastFind + s_end.length(), s_constants[tag]);
+                source.replace(lastFind, replaceLength, s_constants[tag]);
             } else {
                 printf("ERROR::SHADER::FAILED_TO_FIND_CHUNK: %s\n", tag.c_str());
                 return false;
