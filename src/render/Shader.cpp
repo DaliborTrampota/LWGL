@@ -104,7 +104,7 @@ bool Shader::compile(std::string source) const {
         if (findEndTag) {
             size_t endTag = source.find(s_end, lastFind);
             if (endTag == std::string::npos) {
-                printf("ERROR::SHADER::FAILED_TO_FIND_END_TAG: %s\n", source.c_str());
+                printf("ERROR::SHADER::FAILED_TO_FIND_END_TAG\n");
                 return false;
             }
             std::string tag =
@@ -118,7 +118,6 @@ bool Shader::compile(std::string source) const {
                 printf("ERROR::SHADER::FAILED_TO_FIND_CHUNK: %s\n", tag.c_str());
                 return false;
             }
-            lastFind = 0;
             findEndTag = false;
         } else {
             lastFind = source.find(s_start, lastFind);
