@@ -50,6 +50,18 @@ namespace {
     }
 }  // namespace
 
+void Shader::setChunksDirectory(fs::path directory) {
+    s_chunksDirectory = directory;
+    for (const auto& entry : fs::directory_iterator(s_chunksDirectory)) {
+        if (entry.is_regular_file()) {
+            std::string name = entry.path().filename().string();
+            if (!s_chunks.contains(name)) {
+                s_chunks[name] = readFile(entry.path().string().c_str());
+            }
+        }
+    }
+}
+
 Shader::Shader(const char* path, ShaderType type) {
     GL_GUARD
     ID = glCreateShader(shaderTypeToGL(type));
@@ -83,19 +95,8 @@ Shader::~Shader() {
 }
 
 bool Shader::compile(std::string source) const {
-    static std::unordered_map<std::string, std::string> s_chunks;
     static std::string s_start = "{{";
     static std::string s_end = "}}";
-
-    if (s_chunks.empty()) {
-        for (const auto& entry : fs::directory_iterator(s_chunksDirectory)) {
-            if (entry.is_regular_file()) {
-                s_chunks[entry.path().filename().string()] =
-                    readFile(entry.path().string().c_str());
-            }
-        }
-    }
-
 
     size_t lastFind = 0;
     bool findEndTag = false;

@@ -18,7 +18,7 @@ namespace gl {
     };
 
     struct Shader {
-        static void setChunksDirectory(fs::path directory) { s_chunksDirectory = directory; }
+        static void setChunksDirectory(fs::path directory);
 
         unsigned int ID;
 
@@ -36,5 +36,6 @@ namespace gl {
         friend class ShaderProgram;
         static inline fs::path s_chunksDirectory;
         static inline std::unordered_map<std::string, std::string> s_constants;
+        static inline std::unordered_map<std::string, std::string> s_chunks;
     };
 }  // namespace gl
