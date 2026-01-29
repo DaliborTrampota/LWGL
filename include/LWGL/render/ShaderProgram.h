@@ -53,6 +53,11 @@ namespace gl {
         //         (glAttachShader(m_id, shaders.ID), ...);
         // }
 
+        static void setConstant(const std::string& name, const std::string& value);
+        static void setConstant(const std::string& name, float value);
+        static void setConstant(const std::string& name, int value);
+        static void setConstant(const std::string& name, bool value);
+
 
       protected:
         unsigned int m_id = 0;
