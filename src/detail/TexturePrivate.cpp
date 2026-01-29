@@ -29,11 +29,13 @@ void gl::detail::Data1D(
     );
 }
 
-void gl::detail::Data1DImmutable(GLuint texID, int width, ImageFormat format) {
+void gl::detail::Data1DImmutable(
+    GLuint texID, int width, ImageFormat format, ImageDataType dataType
+) {
     glTextureStorage1D(
         texID,
         1,  // mipmap level count
-        toGLInternalFormat(format),
+        toGLInternalFormat(format, dataType),
         width
     );
 }
@@ -70,11 +72,13 @@ void gl::detail::Data2D(
     );
 }
 
-void gl::detail::Data2DImmutable(GLuint texID, int width, int height, ImageFormat format) {
+void gl::detail::Data2DImmutable(
+    GLuint texID, int width, int height, ImageFormat format, ImageDataType dataType
+) {
     glTextureStorage2D(
         texID,
         1,  // mipmap level count
-        toGLInternalFormat(format),
+        toGLInternalFormat(format, dataType),
         width,
         height
     );
@@ -119,12 +123,12 @@ void gl::detail::Data3D(
 }
 
 void gl::detail::Data3DImmutable(
-    GLuint texID, int width, int height, int depth, ImageFormat format
+    GLuint texID, int width, int height, int depth, ImageFormat format, ImageDataType dataType
 ) {
     glTextureStorage3D(
         texID,
         1,  // mipmap level
-        toGLInternalFormat(format),
+        toGLInternalFormat(format, dataType),
         width,
         height,
         depth

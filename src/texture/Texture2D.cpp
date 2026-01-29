@@ -100,7 +100,7 @@ void Texture2D::allocate(TextureStorage storage) {
     // m_channels = 0;  // TODO deduce from format?
 
     if (m_immutable) {
-        detail::Data2DImmutable(m_id, m_width, m_height, storage.format);
+        detail::Data2DImmutable(m_id, m_width, m_height, storage.format, storage.dataType);
     } else {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_id);

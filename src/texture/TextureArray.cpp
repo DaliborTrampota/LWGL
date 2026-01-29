@@ -37,7 +37,7 @@ void TextureArray::allocate(TextureStorage storage) {
     // m_channels // TODO
 
     if (m_immutable) {
-        detail::Data3DImmutable(m_id, m_width, m_height, m_maxLayers, storage.format);
+        detail::Data3DImmutable(m_id, m_width, m_height, m_maxLayers, storage.format, storage.dataType);
     } else {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);

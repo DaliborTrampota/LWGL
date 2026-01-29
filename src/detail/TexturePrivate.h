@@ -14,7 +14,7 @@ namespace gl::detail {
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
 
-    void Data1DImmutable(GLuint texID, int width, ImageFormat format);
+    void Data1DImmutable(GLuint texID, int width, ImageFormat format, ImageDataType dataType);
 
     void SubData1D(
         GLuint texID,
@@ -34,7 +34,9 @@ namespace gl::detail {
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
 
-    void Data2DImmutable(GLuint texID, int width, int height, ImageFormat format);
+    void Data2DImmutable(
+        GLuint texID, int width, int height, ImageFormat format, ImageDataType dataType
+    );
 
     void SubData2D(
         GLuint texID,
@@ -57,7 +59,9 @@ namespace gl::detail {
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
 
-    void Data3DImmutable(GLuint texID, int width, int height, int depth, ImageFormat format);
+    void Data3DImmutable(
+        GLuint texID, int width, int height, int depth, ImageFormat format, ImageDataType dataType
+    );
 
     void SubData3D(
         GLuint texID,
