@@ -45,6 +45,25 @@ namespace {
 
 }  // namespace
 
+FBO::FBO(FBO&& other) noexcept
+    : m_fboID(other.m_fboID),
+      m_target(other.m_target),
+      m_attachments(std::move(other.m_attachments)),
+      m_textures(std::move(other.m_textures)) {
+    other.m_fboID = 0;
+}
+
+FBO& FBO::operator=(FBO&& other) noexcept {
+    if (this != &other) {
+        m_fboID = std::exchange(other.m_fboID, 0);
+        m_target = other.m_target;
+        m_attachments = std::move(other.m_attachments);
+        m_textures = std::move(other.m_textures);
+    }
+    return *this;
+}
+
+
 FBO::FBO() : m_target(GL_FRAMEBUFFER), m_attachments(), m_textures() {
     glGenFramebuffers(1, &m_fboID);
     if (MaxDrawBuffers == -1) {
@@ -55,18 +74,9 @@ FBO::FBO() : m_target(GL_FRAMEBUFFER), m_attachments(), m_textures() {
     }
 }
 
-void FBO::bindTexture(Att attachment, TextureRef texture) {
+void FBO::bindTexture(Att attachment, TextureRef&& texture) {
     if (attachment - FBOAttachment::Color >= MaxColorAttachments)
         throw std::runtime_error("Exceeding max color attachments");
-
-    auto attIt = findAtt(m_attachments, attachment);
-    if (attIt == m_attachments.end()) {
-        m_attachments.push_back(attachment);
-        m_textures.push_back(std::move(texture));
-    } else {
-        int index = std::distance(m_attachments.cbegin(), attIt);
-        m_textures[index] = texture;
-    }
 
     unsigned int texID = texture.id();
     if (texture.type() == TextureType::Texture2D) {
@@ -79,6 +89,7 @@ void FBO::bindTexture(Att attachment, TextureRef texture) {
         glFramebufferTexture(m_target, detail::toGLAttachmentType(attachment), texID, 0);
     } else if (texture.type() == TextureType::CubeMap) {
         // glBindTexture(GL_TEXTURE_CUBE_MAP, tex->id());
+        // TODO
         throw std::runtime_error("Cubemap not implemented yet");
     } else if (texture.type() == TextureType::Texture1D) {
         glBindTexture(GL_TEXTURE_1D, texID);
@@ -86,7 +97,17 @@ void FBO::bindTexture(Att attachment, TextureRef texture) {
             m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_1D, texID, 0
         );
     } else {
+        // TODO
         throw std::runtime_error("Unsupported texture type");
+    }
+
+    auto attIt = findAtt(m_attachments, attachment);
+    if (attIt == m_attachments.end()) {
+        m_attachments.push_back(attachment);
+        m_textures.push_back(std::move(texture));
+    } else {
+        int index = std::distance(m_attachments.cbegin(), attIt);
+        m_textures[index] = std::move(texture);
     }
 }
 

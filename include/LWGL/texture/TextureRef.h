@@ -7,20 +7,16 @@ namespace gl {
 
     class TextureRef : public TextureBase {
       public:
-        TextureRef(const TextureBase* texture) : TextureBase(texture->type(), false) {
-            m_id = texture->id();
-        }
-        TextureRef(unsigned int textureID, TextureType type, bool owned = false)
-            : TextureBase(type, false),
-              m_owned(owned) {
-            m_id = textureID;
-        }
-        ~TextureRef() {
-            if (!m_owned) {
-                // Just set to 0 to avoid TextureBase dtor glDeleting the texture since it's just a reference
-                m_id = 0;
-            }
-        };
+        TextureRef(const TextureBase* texture);
+        TextureRef(unsigned int textureID, TextureType type, bool owned = false);
+        ~TextureRef();
+
+        /// @note If the texture that is being copied is owning, the copy will not be owning. Only one copy of the texture can be owned.
+        TextureRef(const TextureRef&);
+        /// @note If the texture that is being copied is owning, the copy will not be owning. Only one copy of the texture can be owned.
+        TextureRef& operator=(const TextureRef&);
+        TextureRef(TextureRef&& other) noexcept;
+        TextureRef& operator=(TextureRef&& other) noexcept;
 
         TextureType type() const { return m_type; }
         // TODO hold weak ptr and check if texture is still valid
