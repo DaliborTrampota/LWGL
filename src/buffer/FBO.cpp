@@ -155,9 +155,9 @@ void FBO::clearActive(const glm::vec4& color, float depth, uint8_t stencil) cons
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
-void FBO::clearColor(uint8_t index, const glm::vec4& color) const {
+void FBO::clearColor(Att index, const glm::vec4& color) const {
     glBindFramebuffer(m_target, m_fboID);
-    glClearBufferfv(GL_COLOR, index, &color.r);
+    glClearBufferfv(GL_COLOR, index - FBOAttachment::Color, &color.r);
 }
 
 void FBO::clearDepth(float depth) const {
