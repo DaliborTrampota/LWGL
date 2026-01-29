@@ -3,15 +3,12 @@
 #include "../detail/conversions.h"
 #include "LWGL/buffer/RBO.h"
 
-
 #include <glad/glad.h>
 #include <algorithm>
 #include <stdexcept>
+#include <utility>
 
-#include "LWGL/texture/CubeMap.h"
-#include "LWGL/texture/ImageData.h"
 #include "LWGL/texture/Texture2D.h"
-#include "LWGL/texture/TextureArray.h"
 
 
 using namespace gl;
