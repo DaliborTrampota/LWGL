@@ -3,10 +3,27 @@
 
 #include <glad/glad.h>
 #include <stdexcept>
+#include <utility>
 
 
 using namespace gl;
 
+
+TextureBase::TextureBase(TextureBase&& other) noexcept
+    : m_id(other.m_id),
+      m_type(other.m_type),
+      m_immutable(other.m_immutable) {
+    other.m_id = 0;
+}
+
+TextureBase& TextureBase::operator=(TextureBase&& other) noexcept {
+    if (this != &other) {
+        m_id = std::exchange(other.m_id, 0);
+        m_type = other.m_type;
+        m_immutable = other.m_immutable;
+    }
+    return *this;
+}
 TextureBase::TextureBase(TextureType type, bool immutable) : m_type(type), m_immutable(immutable) {}
 
 TextureBase::~TextureBase() {

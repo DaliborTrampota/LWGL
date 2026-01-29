@@ -69,6 +69,11 @@ namespace gl {
         TextureBase(TextureType type, bool immutable);
         virtual ~TextureBase();
 
+        TextureBase(const TextureBase&) = delete;
+        TextureBase& operator=(const TextureBase&) = delete;
+        TextureBase(TextureBase&& other) noexcept;
+        TextureBase& operator=(TextureBase&& other) noexcept;
+
         UInt id() const { return m_id; }
         void bind() const;
         void activate(UInt unit) const;
@@ -79,7 +84,7 @@ namespace gl {
 
       protected:
         UInt m_id = 0;
-        bool m_immutable = true;
+        bool m_immutable;    // TODO const?
         TextureType m_type;  // OpenGL texture type (e.g., GL_TEXTURE_2D)
     };
 }  // namespace gl
