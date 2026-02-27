@@ -103,7 +103,7 @@ void FBO::bindTexture(Att attachment, TextureRef&& texture) {
         m_attachments.push_back(attachment);
         m_textures.push_back(std::move(texture));
     } else {
-        int index = std::distance(m_attachments.cbegin(), attIt);
+        size_t index = std::distance(m_attachments.cbegin(), attIt);
         m_textures[index] = std::move(texture);
     }
 }
@@ -130,7 +130,7 @@ void FBO::removeAttachment(Att attachment) {
     auto it = findAtt(m_attachments, attachment);
     if (it == m_attachments.end())
         throw std::runtime_error("Attachment not found");
-    int index = std::distance(m_attachments.cbegin(), it);
+    size_t index = std::distance(m_attachments.cbegin(), it);
 
     glFramebufferTexture2D(m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, 0, 0);
     m_textures.erase(m_textures.begin() + index);

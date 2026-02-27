@@ -10,7 +10,7 @@ namespace gl::detail {
         GLenum type,
         int width,
         ImageFormat format,
-        unsigned char* data,
+        const unsigned char* data,
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
 
@@ -21,7 +21,7 @@ namespace gl::detail {
         int x,
         int width,
         ImageFormat format,
-        unsigned char* data,
+        const unsigned char* data,
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
 
@@ -30,7 +30,7 @@ namespace gl::detail {
         int width,
         int height,
         ImageFormat format,
-        unsigned char* data,
+        const unsigned char* data,
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
 
@@ -45,7 +45,7 @@ namespace gl::detail {
         int width,
         int height,
         ImageFormat format,
-        unsigned char* data,
+        const unsigned char* data,
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
 
@@ -55,7 +55,7 @@ namespace gl::detail {
         int height,
         int depth,
         ImageFormat format,
-        unsigned char* data,
+        const unsigned char* data,
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
 
@@ -72,7 +72,7 @@ namespace gl::detail {
         int height,
         int depth,
         ImageFormat format,
-        unsigned char* data,
+        const unsigned char* data,
         gl::ImageDataType dataType = gl::ImageDataType::UChar
     );
 }  // namespace gl::detail

@@ -9,17 +9,17 @@ using namespace gl;
 
 ImageData::ImageData(const char* path) {
     data = stbi_load(path, &width, &height, &channels, 0);
-    if (!data)
-        throw std::runtime_error(std::format("Failed to load image: {}", stbi_failure_reason()));
+    if (!data) {
+        this->path = std::format("Failed to load image: {}", stbi_failure_reason());
+        return;
+    }
 
     this->path = path;
-
     switch (channels) {
         case 1: format = ImageFormat::Gray; break;
         case 2: format = ImageFormat::GrayAlpha; break;
         case 3: format = ImageFormat::RGB; break;
         case 4: format = ImageFormat::RGBA; break;
-        default: throw std::runtime_error("Unsupported number of channels");
     }
 }
 

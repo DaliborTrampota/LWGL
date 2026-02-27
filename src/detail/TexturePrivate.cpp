@@ -15,7 +15,7 @@ void gl::detail::ConfigureTexture(GLuint texID, const gl::TextureParams& params)
 }
 
 void gl::detail::Data1D(
-    GLenum type, int width, ImageFormat format, unsigned char* data, gl::ImageDataType dataType
+    GLenum type, int width, ImageFormat format, const unsigned char* data, gl::ImageDataType dataType
 ) {
     glTexImage1D(
         type,
@@ -45,7 +45,7 @@ void gl::detail::SubData1D(
     int x,
     int width,
     ImageFormat format,
-    unsigned char* data,
+    const unsigned char* data,
     gl::ImageDataType dataType
 ) {
     glTextureSubImage1D(texID, 0, x, width, toGLFormat(format), toGLDataType(dataType), data);
@@ -56,7 +56,7 @@ void gl::detail::Data2D(
     int width,
     int height,
     ImageFormat format,
-    unsigned char* data,
+    const unsigned char* data,
     gl::ImageDataType dataType
 ) {
     glTexImage2D(
@@ -91,7 +91,7 @@ void gl::detail::SubData2D(
     int width,
     int height,
     ImageFormat format,
-    unsigned char* data,
+    const unsigned char* data,
     gl::ImageDataType dataType
 ) {
     glTextureSubImage2D(
@@ -105,7 +105,7 @@ void gl::detail::Data3D(
     int height,
     int depth,
     ImageFormat format,
-    unsigned char* data,
+    const unsigned char* data,
     gl::ImageDataType dataType
 ) {
     glTexImage3D(
@@ -144,7 +144,7 @@ void gl::detail::SubData3D(
     int height,
     int depth,
     ImageFormat format,
-    unsigned char* data,
+    const unsigned char* data,
     gl::ImageDataType dataType
 ) {
     glTextureSubImage3D(
