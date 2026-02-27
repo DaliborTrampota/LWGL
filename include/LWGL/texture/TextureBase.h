@@ -62,7 +62,7 @@ namespace gl {
     };
 
     using UInt = unsigned int;
-    using Data = unsigned char*;
+    using Data = const unsigned char*;
 
     class TextureBase {
       public:
@@ -79,6 +79,7 @@ namespace gl {
         void activate(UInt unit) const;
         void unbind(UInt unit) const;
         TextureType type() const { return m_type; }
+        UInt release() { return std::exchange(m_id, 0); }
 
         static void unbind(TextureType type);
 
