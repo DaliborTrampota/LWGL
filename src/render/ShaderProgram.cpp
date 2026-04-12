@@ -1,6 +1,7 @@
 #include "LWGL/render/ShaderProgram.h"
 
 #include <glm/gtc/type_ptr.hpp>
+#include <iterator>
 
 #include "LWGL/buffer/UBO.h"
 #include "LWGL/render/Shader.h"
@@ -167,7 +168,7 @@ bool ShaderProgram::link() {
     return success;
 }
 
-void ShaderProgram::compile() {
+bool ShaderProgram::compile() {
     if (m_compiled) {
         printf("ShaderInfo: Recompiling shader program (%s)\n", m_name.c_str());
         GLint numShaders;
@@ -194,14 +195,20 @@ void ShaderProgram::compile() {
             ShaderType type = static_cast<ShaderType>(i);
             Shader* shader = new Shader(m_shaderPaths[i].c_str(), type, symbols, m_constants);
             shaders.push_back(shader);
+            if (shader->ID == 0) {
+                for (auto& shader : shaders) {
+                    delete shader;
+                }
+                return false;
+            }
             glAttachShader(m_id, shader->ID);
         }
     }
 
-    link();
+    m_compiled = link();
 
     for (auto& shader : shaders) {
         delete shader;
     }
-    m_compiled = true;
+    return m_compiled;
 }

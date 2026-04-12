@@ -37,7 +37,7 @@ namespace gl {
 
         /// @brief If constructed with deferCompilation, this will compile the program.
         /// @note If the program is already compiled, it will be recompiled.
-        void compile();
+        bool compile();
 
         unsigned int id() const { return m_id; }
         void use() const;

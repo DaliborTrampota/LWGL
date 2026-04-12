@@ -78,7 +78,7 @@ FBO::FBO() : m_target(GL_FRAMEBUFFER), m_attachments(), m_textures() {
     }
 }
 
-void FBO::bindTexture(Att attachment, const TextureRef& texture) {
+void FBO::bindTexture(Att attachment, TextureRef texture) {
     if (attachment - FBOAttachment::Color >= MaxColorAttachments)
         throw std::runtime_error("Exceeding max color attachments");
 

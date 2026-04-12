@@ -48,7 +48,7 @@ namespace gl {
         /// @brief Binds a texture to an attachment. If the attachment is already bound, the texture is replaced (old texture is not deleted).
         /// @param attachment Attachment to bind the texture to.
         /// @param textureID ID of the texture to bind.
-        void bindTexture(Att attachment, const TextureRef& texture);
+        void bindTexture(Att attachment, TextureRef texture);
 
         /// @brief Creates a texture for an attachment, returns texture ownership.
         /// @param attachment Attachment to create the texture for.
