@@ -23,7 +23,7 @@ namespace gl {
       public:
         static void setChunksDirectory(std::filesystem::path directory);
 
-        unsigned int ID;
+        unsigned int ID = 0;
 
         Shader(const char* computeShaderPath);
         ~Shader();

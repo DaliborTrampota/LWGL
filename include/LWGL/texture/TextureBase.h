@@ -79,7 +79,7 @@ namespace gl {
         void activate(UInt unit) const;
         void unbind(UInt unit) const;
         TextureType type() const { return m_type; }
-        UInt release() { return std::exchange(m_id, 0); }
+        UInt release();
 
         static void unbind(TextureType type);
 

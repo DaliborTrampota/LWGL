@@ -92,7 +92,6 @@ Shader::Shader(const char* path, ShaderType type, Symbols symbols, Constants con
         case ShaderType::Geometry: m_symbols.shaderType = "geometry"; break;
         case ShaderType::Fragment: m_symbols.shaderType = "fragment"; break;
         case ShaderType::Compute: m_symbols.shaderType = "compute"; break;
-        default: static_assert("Invalid shader type");
     }
 
     std::string content = readFile(path);

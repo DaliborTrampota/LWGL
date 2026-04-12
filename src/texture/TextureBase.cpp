@@ -58,3 +58,7 @@ void TextureBase::unbind(UInt unit) const {
 void TextureBase::unbind(TextureType type) {
     glBindTexture(detail::toGLTexture(type), 0);
 }
+
+UInt TextureBase::release() {
+    return std::exchange(m_id, 0);
+}
