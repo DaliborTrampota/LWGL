@@ -20,6 +20,12 @@ ImageData::ImageData(const char* path) {
         case 2: format = ImageFormat::GrayAlpha; break;
         case 3: format = ImageFormat::RGB; break;
         case 4: format = ImageFormat::RGBA; break;
+        default:
+            stbi_image_free(data);
+            data = nullptr;
+            this->path =
+                std::format("Failed to load image: unsupported channel count {}", channels);
+            return;
     }
 }
 
