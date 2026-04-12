@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 using namespace gl;
+namespace fs = std::filesystem;
 
 namespace {
     constexpr GLenum shaderTypeToGL(ShaderType type) {
@@ -125,7 +126,7 @@ bool Shader::compile(std::string& source) const {
             } else if (s_constants.find(tag) != s_constants.end()) {
                 source.replace(lastFind, replaceLength, s_constants[tag]);
             } else {
-                printf("ERROR::SHADER::FAILED_TO_FIND_CHUNK: %s\n", tag.c_str());
+                printf("ERROR::SHADER::FAILED_TO_FIND_CHUNK_OR_CONSTANT: %s\n", tag.c_str());
                 return false;
             }
             findEndTag = false;
