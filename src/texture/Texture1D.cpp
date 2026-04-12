@@ -86,7 +86,7 @@ void Texture1D::allocate(TextureStorage storage) {
     // m_channels = storage.channels; // TODO deduce from format?
 
     if (m_immutable) {
-        detail::Data1DImmutable(m_id, m_width, storage.format);
+        detail::Data1DImmutable(m_id, m_width, storage.format, storage.dataType);
     } else {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_1D, m_id);

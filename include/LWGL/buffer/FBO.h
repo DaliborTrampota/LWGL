@@ -24,10 +24,19 @@ namespace gl {
         static inline int MaxColorAttachments = -1;
 
         FBO();
+        ~FBO();
+
+        FBO(const FBO&) = delete;
+        FBO& operator=(const FBO&) = delete;
+        FBO(FBO&& other) noexcept;
+        FBO& operator=(FBO&& other) noexcept;
+
         // FBO(std::initializer_list<FBOAttachment> attachments, Target target = Target::ReadDraw);
 
         void bind() const;
         void unbind() const;
+
+        unsigned int id() const { return m_fboID; }
 
         /// @brief Sets where draw operations will write to.
         /// @param colorAttachments The color attachments to write to.
@@ -41,7 +50,7 @@ namespace gl {
         /// @param textureID ID of the texture to bind.
         void bindTexture(Att attachment, TextureRef texture);
 
-        /// @brief Creates a texture for an attachment owned by the FBO.
+        /// @brief Creates a texture for an attachment, returns texture ownership.
         /// @param attachment Attachment to create the texture for.
         /// @param params Settings for the texture.
         /// @param size Dimensions and format of the texture

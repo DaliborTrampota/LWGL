@@ -15,7 +15,7 @@ void gl::detail::ConfigureTexture(GLuint texID, const gl::TextureParams& params)
 }
 
 void gl::detail::Data1D(
-    GLenum type, int width, ImageFormat format, unsigned char* data, gl::ImageDataType dataType
+    GLenum type, int width, ImageFormat format, const unsigned char* data, gl::ImageDataType dataType
 ) {
     glTexImage1D(
         type,
@@ -29,11 +29,13 @@ void gl::detail::Data1D(
     );
 }
 
-void gl::detail::Data1DImmutable(GLuint texID, int width, ImageFormat format) {
+void gl::detail::Data1DImmutable(
+    GLuint texID, int width, ImageFormat format, ImageDataType dataType
+) {
     glTextureStorage1D(
         texID,
         1,  // mipmap level count
-        toGLInternalFormat(format),
+        toGLInternalFormat(format, dataType),
         width
     );
 }
@@ -43,7 +45,7 @@ void gl::detail::SubData1D(
     int x,
     int width,
     ImageFormat format,
-    unsigned char* data,
+    const unsigned char* data,
     gl::ImageDataType dataType
 ) {
     glTextureSubImage1D(texID, 0, x, width, toGLFormat(format), toGLDataType(dataType), data);
@@ -54,7 +56,7 @@ void gl::detail::Data2D(
     int width,
     int height,
     ImageFormat format,
-    unsigned char* data,
+    const unsigned char* data,
     gl::ImageDataType dataType
 ) {
     glTexImage2D(
@@ -70,11 +72,13 @@ void gl::detail::Data2D(
     );
 }
 
-void gl::detail::Data2DImmutable(GLuint texID, int width, int height, ImageFormat format) {
+void gl::detail::Data2DImmutable(
+    GLuint texID, int width, int height, ImageFormat format, ImageDataType dataType
+) {
     glTextureStorage2D(
         texID,
         1,  // mipmap level count
-        toGLInternalFormat(format),
+        toGLInternalFormat(format, dataType),
         width,
         height
     );
@@ -87,7 +91,7 @@ void gl::detail::SubData2D(
     int width,
     int height,
     ImageFormat format,
-    unsigned char* data,
+    const unsigned char* data,
     gl::ImageDataType dataType
 ) {
     glTextureSubImage2D(
@@ -101,7 +105,7 @@ void gl::detail::Data3D(
     int height,
     int depth,
     ImageFormat format,
-    unsigned char* data,
+    const unsigned char* data,
     gl::ImageDataType dataType
 ) {
     glTexImage3D(
@@ -119,12 +123,12 @@ void gl::detail::Data3D(
 }
 
 void gl::detail::Data3DImmutable(
-    GLuint texID, int width, int height, int depth, ImageFormat format
+    GLuint texID, int width, int height, int depth, ImageFormat format, ImageDataType dataType
 ) {
     glTextureStorage3D(
         texID,
         1,  // mipmap level
-        toGLInternalFormat(format),
+        toGLInternalFormat(format, dataType),
         width,
         height,
         depth
@@ -140,7 +144,7 @@ void gl::detail::SubData3D(
     int height,
     int depth,
     ImageFormat format,
-    unsigned char* data,
+    const unsigned char* data,
     gl::ImageDataType dataType
 ) {
     glTextureSubImage3D(

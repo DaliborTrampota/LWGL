@@ -14,13 +14,17 @@ namespace gl {
       public:
         ShaderProgram() = delete;
         ShaderProgram(
-            const std::string& vertexPath, const std::string& fragmentPath, std::string name
+            const char* vertexPath,
+            const char* fragmentPath,
+            const char* name,
+            bool deferCompilation = false
         );
         ShaderProgram(
-            const std::string& vertexPath,
-            const std::string& geometryPath,
-            const std::string& fragmentPath,
-            std::string name
+            const char* vertexPath,
+            const char* geometryPath,
+            const char* fragmentPath,
+            const char* name,
+            bool deferCompilation = false
         );
         ~ShaderProgram();
 
@@ -30,6 +34,10 @@ namespace gl {
 
         ShaderProgram(ShaderProgram&&) noexcept;
         ShaderProgram& operator=(ShaderProgram&&) noexcept = delete;
+
+        /// @brief If constructed with deferCompilation, this will compile the program.
+        /// @note If the program is already compiled, it will be recompiled.
+        bool compile();
 
         unsigned int id() const { return m_id; }
         void use() const;
@@ -46,24 +54,27 @@ namespace gl {
         void setVec4(const std::string& name, const glm::vec4& value) const;
         void setMat4(const std::string& name, const glm::mat4& value) const;
 
-        // template <typename... Shaders>
-        // void attach(Shaders&&... shaders) {
-        //     GL_GUARD
+        static void setGlobalConstant(const std::string& name, const char* value);
+        static void setGlobalConstant(const std::string& name, float value);
+        static void setGlobalConstant(const std::string& name, int value);
+        static void setGlobalConstant(const std::string& name, bool value);
 
-        //         (glAttachShader(m_id, shaders.ID), ...);
-        // }
-
-        static void setConstant(const std::string& name, const std::string& value);
-        static void setConstant(const std::string& name, float value);
-        static void setConstant(const std::string& name, int value);
-        static void setConstant(const std::string& name, bool value);
+        void setConstant(const std::string& name, const char* value);
+        void setConstant(const std::string& name, float value);
+        void setConstant(const std::string& name, int value);
+        void setConstant(const std::string& name, bool value);
 
 
       protected:
         unsigned int m_id = 0;
-        std::string m_name = "Unnamed";
+        std::string m_name;
 
         std::unordered_map<unsigned int, const TextureBase*> m_textureBindings;
+        std::unordered_map<std::string, std::string> m_constants;
+
+        std::uint8_t m_inUseBitmask = 0;
+        std::string m_shaderPaths[3];
+        bool m_compiled = false;
 
       private:
         bool link();

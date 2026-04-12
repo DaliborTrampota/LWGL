@@ -67,33 +67,40 @@ void Shader::setChunksDirectory(fs::path directory) {
     }
 }
 
-Shader::Shader(const char* path, ShaderType type) {
+// TODO placeholder
+Shader::Shader(const char* computeShaderPath) {
     GL_GUARD
+    m_type = ShaderType::Compute;
+    std::string content = readFile(computeShaderPath);
+    if (content.empty()) {
+        printf("ShaderError: Shader source is empty (%s)\n", computeShaderPath);
+        return;
+    }
+
+    compile(content);
+}
+
+Shader::Shader(const char* path, ShaderType type, Symbols symbols, Constants constants)
+    : m_path(path),
+      m_symbols(std::move(symbols)),
+      m_constants(std::move(constants)),
+      m_type(type) {
+    GL_GUARD
+
+    switch (type) {
+        case ShaderType::Vertex: m_symbols.shaderType = "vertex"; break;
+        case ShaderType::Geometry: m_symbols.shaderType = "geometry"; break;
+        case ShaderType::Fragment: m_symbols.shaderType = "fragment"; break;
+        case ShaderType::Compute: m_symbols.shaderType = "compute"; break;
+    }
 
     std::string content = readFile(path);
     if (content.empty()) {
-        printf("ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: %s\n", path);
+        printf("ShaderError: Shader source is empty (%s)\n", path);
         return;
     }
 
-    if (!compile(content)) {
-        printf("ERROR::SHADER::FAILED_TO_COMPILE: %s\n", path);
-        return;
-    }
-
-
-    ID = glCreateShader(shaderTypeToGL(type));
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(ID, 512, NULL, infoLog);
-        printf("ERROR::SHADER::COMPILATION_FAILED::%s\n%s", path, infoLog);
-        glDeleteShader(ID);
-        return;
-    }
-    printf("Shader %s compiled %d\n", path, ID);
+    compile(content);
 }
 
 Shader::~Shader() {
@@ -103,7 +110,7 @@ Shader::~Shader() {
     }
 }
 
-bool Shader::compile(std::string& source) const {
+bool Shader::compile(std::string& source, Constants localConstants) const {
     static std::string s_start = "{{";
     static std::string s_end = "}}";
 
@@ -113,20 +120,23 @@ bool Shader::compile(std::string& source) const {
         if (findEndTag) {
             size_t endTag = source.find(s_end, lastFind);
             if (endTag == std::string::npos) {
-                printf("ERROR::SHADER::FAILED_TO_FIND_END_TAG\n");
+                printf("ShaderError: Failed to find end tag\n");
                 return false;
             }
             size_t tagLength = endTag - lastFind - s_start.length();
             std::string tag = source.substr(lastFind + s_start.length(), tagLength);
             tag = trim(tag);
+            unrollSymbols(tag);
 
             size_t replaceLength = endTag - lastFind + s_end.length();
-            if (s_chunks.find(tag) != s_chunks.end()) {
+            if (localConstants.find(tag) != localConstants.end()) {
+                source.replace(lastFind, replaceLength, localConstants[tag]);
+            } else if (s_chunks.find(tag) != s_chunks.end()) {
                 source.replace(lastFind, replaceLength, s_chunks[tag]);
             } else if (s_constants.find(tag) != s_constants.end()) {
                 source.replace(lastFind, replaceLength, s_constants[tag]);
             } else {
-                printf("ERROR::SHADER::FAILED_TO_FIND_CHUNK_OR_CONSTANT: %s\n", tag.c_str());
+                printf("ShaderError: Failed to find chunk or constant (%s)\n", tag.c_str());
                 return false;
             }
             findEndTag = false;
@@ -143,4 +153,48 @@ bool Shader::compile(std::string& source) const {
     glShaderSource(ID, 1, &code, NULL);
     glCompileShader(ID);
     return true;
+}
+
+void Shader::unrollSymbols(std::string& tag) const {
+    // {{tag}} -> tag
+    // {{#name.tag}} -> program_name.tag
+    // {{#type.tag}} -> shader_type.tag
+
+    if (!tag.starts_with("#"))
+        return;
+
+    size_t dotPos = tag.find('.');
+    if (dotPos == std::string::npos)
+        return;
+
+    std::string symbol = tag.substr(1, dotPos - 1);
+
+    if (symbol == "name") {
+        tag.replace(0, dotPos + 1, m_symbols.programName);
+
+    } else if (symbol == "type") {
+        tag.replace(0, dotPos + 1, m_symbols.shaderType);
+    }
+}
+
+void Shader::compile(std::string& content) {
+    ID = glCreateShader(shaderTypeToGL(m_type));
+    if (!compile(content, m_constants)) {
+        glDeleteShader(ID);
+        ID = 0;
+        printf("ShaderError: Failed to preprocess shader (%s)\n", m_path.c_str());
+        return;
+    }
+
+    int success;
+    char infoLog[512];
+    glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(ID, 512, NULL, infoLog);
+        glDeleteShader(ID);
+        ID = 0;
+        printf("ShaderError: Failed to compile shader (%s)\n%s", m_path.c_str(), infoLog);
+        return;
+    }
+    printf("Shader %s %s compiled %d\n", m_symbols.shaderType.c_str(), m_path.c_str(), ID);
 }
