@@ -24,6 +24,7 @@ namespace gl {
         static inline int MaxColorAttachments = -1;
 
         FBO();
+        ~FBO();
 
         FBO(const FBO&) = delete;
         FBO& operator=(const FBO&) = delete;

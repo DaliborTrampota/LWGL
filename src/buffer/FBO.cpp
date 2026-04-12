@@ -50,8 +50,15 @@ FBO::FBO(FBO&& other) noexcept
     other.m_fboID = 0;
 }
 
+FBO::~FBO() {
+    if (m_fboID != 0)
+        glDeleteFramebuffers(1, &m_fboID);
+}
+
 FBO& FBO::operator=(FBO&& other) noexcept {
     if (this != &other) {
+        if (m_fboID != 0)
+            glDeleteFramebuffers(1, &m_fboID);
         m_fboID = std::exchange(other.m_fboID, 0);
         m_target = other.m_target;
         m_attachments = std::move(other.m_attachments);
@@ -153,8 +160,16 @@ void FBO::clearActive(const glm::vec4& color, float depth, uint8_t stencil) cons
 }
 
 void FBO::clearColor(Att index, const glm::vec4& color) const {
+    if (index < FBOAttachment::Color) {
+        throw std::runtime_error("clearColor called with non-color attachment");
+    }
+    auto drawBuffer = index - FBOAttachment::Color;
+    if (drawBuffer >= MaxColorAttachments) {
+        throw std::runtime_error("clearColor draw buffer index exceeds max color attachments");
+    }
+
     glBindFramebuffer(m_target, m_fboID);
-    glClearBufferfv(GL_COLOR, index - FBOAttachment::Color, &color.r);
+    glClearBufferfv(GL_COLOR, drawBuffer, &color.r);
 }
 
 void FBO::clearDepth(float depth) const {
