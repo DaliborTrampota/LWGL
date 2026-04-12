@@ -60,7 +60,13 @@ ShaderProgram::~ShaderProgram() {
 ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
     : m_id(other.m_id),
       m_name(std::move(other.m_name)),
-      m_textureBindings(std::move(other.m_textureBindings)) {
+      m_textureBindings(std::move(other.m_textureBindings)),
+      m_inUseBitmask(other.m_inUseBitmask),
+      m_constants(std::move(other.m_constants)),
+      m_compiled(other.m_compiled) {
+    std::move(
+        std::begin(other.m_shaderPaths), std::end(other.m_shaderPaths), std::begin(m_shaderPaths)
+    );
     other.m_id = 0;
 }
 

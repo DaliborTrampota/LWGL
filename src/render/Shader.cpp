@@ -178,9 +178,10 @@ void Shader::unrollSymbols(std::string& tag) const {
 }
 
 void Shader::compile(std::string& content) {
-    const char* code = content.c_str();
     ID = glCreateShader(shaderTypeToGL(m_type));
     if (!compile(content, m_constants)) {
+        glDeleteShader(ID);
+        ID = 0;
         printf("ShaderError: Failed to preprocess shader (%s)\n", m_path.c_str());
         return;
     }
@@ -189,9 +190,9 @@ void Shader::compile(std::string& content) {
     char infoLog[512];
     glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
     if (!success) {
+        glGetShaderInfoLog(ID, 512, NULL, infoLog);
         glDeleteShader(ID);
         ID = 0;
-        glGetShaderInfoLog(ID, 512, NULL, infoLog);
         printf("ShaderError: Failed to compile shader (%s)\n%s", m_path.c_str(), infoLog);
         return;
     }
