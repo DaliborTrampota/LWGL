@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 using namespace gl;
+namespace fs = std::filesystem;
 
 namespace {
     constexpr GLenum shaderTypeToGL(ShaderType type) {
@@ -51,6 +52,10 @@ namespace {
 }  // namespace
 
 void Shader::setChunksDirectory(fs::path directory) {
+    if (!fs::exists(directory) || !fs::is_directory(directory)) {
+        printf("ERROR::SHADER::CHUNKS_DIRECTORY_NOT_FOUND: %s\n", directory.string().c_str());
+        return;
+    }
     s_chunksDirectory = directory;
     for (const auto& entry : fs::directory_iterator(s_chunksDirectory)) {
         if (entry.is_regular_file()) {
@@ -64,7 +69,6 @@ void Shader::setChunksDirectory(fs::path directory) {
 
 Shader::Shader(const char* path, ShaderType type) {
     GL_GUARD
-    ID = glCreateShader(shaderTypeToGL(type));
 
     std::string content = readFile(path);
     if (content.empty()) {
@@ -72,12 +76,13 @@ Shader::Shader(const char* path, ShaderType type) {
         return;
     }
 
-    const char* code = content.c_str();
     if (!compile(content)) {
         printf("ERROR::SHADER::FAILED_TO_COMPILE: %s\n", path);
         return;
     }
 
+
+    ID = glCreateShader(shaderTypeToGL(type));
 
     int success;
     char infoLog[512];
@@ -85,13 +90,17 @@ Shader::Shader(const char* path, ShaderType type) {
     if (!success) {
         glGetShaderInfoLog(ID, 512, NULL, infoLog);
         printf("ERROR::SHADER::COMPILATION_FAILED::%s\n%s", path, infoLog);
+        glDeleteShader(ID);
+        return;
     }
     printf("Shader %s compiled %d\n", path, ID);
 }
 
 Shader::~Shader() {
     GL_GUARD
-    glDeleteShader(ID);
+    if (ID != 0) {
+        glDeleteShader(ID);
+    }
 }
 
 bool Shader::compile(std::string& source) const {
@@ -117,7 +126,7 @@ bool Shader::compile(std::string& source) const {
             } else if (s_constants.find(tag) != s_constants.end()) {
                 source.replace(lastFind, replaceLength, s_constants[tag]);
             } else {
-                printf("ERROR::SHADER::FAILED_TO_FIND_CHUNK: %s\n", tag.c_str());
+                printf("ERROR::SHADER::FAILED_TO_FIND_CHUNK_OR_CONSTANT: %s\n", tag.c_str());
                 return false;
             }
             findEndTag = false;
