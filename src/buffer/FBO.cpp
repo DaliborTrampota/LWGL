@@ -108,10 +108,10 @@ void FBO::bindTexture(Att attachment, TextureRef&& texture) {
     auto attIt = findAtt(m_attachments, attachment);
     if (attIt == m_attachments.end()) {
         m_attachments.push_back(attachment);
-        m_textures.push_back(std::move(texture));
+        m_textures.push_back(texture);
     } else {
         size_t index = std::distance(m_attachments.cbegin(), attIt);
-        m_textures[index] = std::move(texture);
+        m_textures[index] = texture;
     }
 }
 

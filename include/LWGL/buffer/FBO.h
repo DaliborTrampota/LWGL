@@ -50,7 +50,7 @@ namespace gl {
         /// @param textureID ID of the texture to bind.
         void bindTexture(Att attachment, TextureRef&& texture);
 
-        /// @brief Creates a texture for an attachment owned by the FBO.
+        /// @brief Creates a texture for an attachment, returns texture ownership.
         /// @param attachment Attachment to create the texture for.
         /// @param params Settings for the texture.
         /// @param size Dimensions and format of the texture

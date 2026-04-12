@@ -16,8 +16,14 @@ TextureBase::TextureBase(TextureBase&& other) noexcept
     other.m_id = 0;
 }
 
+// TODO bug
+// TextureBase& base = textureRefInstance; // non owning
+// base = std::move(other);
+// it will still delete the textureRefInstance when its not owning
 TextureBase& TextureBase::operator=(TextureBase&& other) noexcept {
     if (this != &other) {
+        if (m_id != 0)
+            glDeleteTextures(1, &m_id);
         m_id = std::exchange(other.m_id, 0);
         m_type = other.m_type;
         m_immutable = other.m_immutable;
