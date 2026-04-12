@@ -18,7 +18,7 @@ gl::ShaderProgram::ShaderProgram(
     const char* name,
     bool deferCompilation
 )
-    : m_name(std::move(name)) {
+    : m_name(name) {
     GL_GUARD
     m_id = glCreateProgram();
 
