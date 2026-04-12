@@ -11,37 +11,42 @@ using namespace gl;
 
 
 gl::ShaderProgram::ShaderProgram(
-    const std::string& vertexPath,
-    const std::string& geometryPath,
-    const std::string& fragmentPath,
-    std::string name
+    const char* vertexPath,
+    const char* geometryPath,
+    const char* fragmentPath,
+    const char* name,
+    bool deferCompilation
 )
     : m_name(std::move(name)) {
     GL_GUARD
     m_id = glCreateProgram();
 
-    Shader vert(vertexPath.c_str(), ShaderType::Vertex);
-    Shader geom(geometryPath.c_str(), ShaderType::Geometry);
-    Shader frag(fragmentPath.c_str(), ShaderType::Fragment);
+    m_shaderPaths[0] = vertexPath;
+    m_shaderPaths[1] = geometryPath;
+    m_shaderPaths[2] = fragmentPath;
 
-    glAttachShader(m_id, vert.ID);
-    glAttachShader(m_id, geom.ID);
-    glAttachShader(m_id, frag.ID);
-    link();
+    m_inUseBitmask = 0b111;
+
+    if (!deferCompilation) {
+        compile();
+    }
 }
 gl::ShaderProgram::ShaderProgram(
-    const std::string& vertexPath, const std::string& fragmentPath, std::string name
+    const char* vertexPath, const char* fragmentPath, const char* name, bool deferCompilation
 )
     : m_name(std::move(name)) {
     GL_GUARD
     m_id = glCreateProgram();
 
-    Shader vert(vertexPath.c_str(), ShaderType::Vertex);
-    Shader frag(fragmentPath.c_str(), ShaderType::Fragment);
+    m_shaderPaths[0] = vertexPath;
+    m_shaderPaths[1] = "";
+    m_shaderPaths[2] = fragmentPath;
 
-    glAttachShader(m_id, vert.ID);
-    glAttachShader(m_id, frag.ID);
-    link();
+    m_inUseBitmask = 0b101;
+
+    if (!deferCompilation) {
+        compile();
+    }
 }
 
 ShaderProgram::~ShaderProgram() {
@@ -109,20 +114,36 @@ void ShaderProgram::bindUBO(const UBO& ubo) const {
     ubo.bindToProgram(m_id);
 }
 
-void ShaderProgram::setConstant(const std::string& name, const std::string& value) {
-    Shader::s_constants[name] = value;
+void ShaderProgram::setGlobalConstant(const std::string& name, const char* value) {
+    Shader::s_constants[name] = std::string(value);
+}
+
+void ShaderProgram::setGlobalConstant(const std::string& name, float value) {
+    Shader::s_constants[name] = std::to_string(value);
+}
+
+void ShaderProgram::setGlobalConstant(const std::string& name, int value) {
+    Shader::s_constants[name] = std::to_string(value);
+}
+
+void ShaderProgram::setGlobalConstant(const std::string& name, bool value) {
+    Shader::s_constants[name] = value ? "true" : "false";
+}
+
+void ShaderProgram::setConstant(const std::string& name, const char* value) {
+    m_constants[name] = std::string(value);
 }
 
 void ShaderProgram::setConstant(const std::string& name, float value) {
-    Shader::s_constants[name] = std::to_string(value);
+    m_constants[name] = std::to_string(value);
 }
 
 void ShaderProgram::setConstant(const std::string& name, int value) {
-    Shader::s_constants[name] = std::to_string(value);
+    m_constants[name] = std::to_string(value);
 }
 
 void ShaderProgram::setConstant(const std::string& name, bool value) {
-    Shader::s_constants[name] = value ? "true" : "false";
+    m_constants[name] = value ? "true" : "false";
 }
 
 
@@ -135,7 +156,46 @@ bool ShaderProgram::link() {
     glGetProgramiv(m_id, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(m_id, 512, NULL, infoLog);
-        printf("ERROR::SHADER::PROGRAM\n%s", infoLog);
+        printf("ShaderError: Failed to link shader program (%s)\n%s", m_name.c_str(), infoLog);
     }
     return success;
+}
+
+void ShaderProgram::compile() {
+    if (m_compiled) {
+        printf("ShaderInfo: Recompiling shader program (%s)\n", m_name.c_str());
+        GLint numShaders;
+        glGetProgramiv(m_id, GL_ATTACHED_SHADERS, &numShaders);
+
+        if (numShaders > 0) {
+            // Get the shader IDs
+            std::vector<GLuint> shaders(numShaders);
+            glGetAttachedShaders(m_id, numShaders, nullptr, shaders.data());
+
+            for (GLuint ID : shaders) {
+                glDetachShader(m_id, ID);
+            }
+        }
+    }
+
+    Shader::Symbols symbols = {
+        .programName = m_name,
+    };
+    std::vector<Shader*> shaders;
+
+    for (uint8_t i = 0; i < m_inUseBitmask; i++) {
+        if (m_inUseBitmask & (1 << i)) {
+            ShaderType type = static_cast<ShaderType>(i);
+            Shader* shader = new Shader(m_shaderPaths[i].c_str(), type, symbols, m_constants);
+            shaders.push_back(shader);
+            glAttachShader(m_id, shader->ID);
+        }
+    }
+
+    link();
+
+    for (auto& shader : shaders) {
+        delete shader;
+    }
+    m_compiled = true;
 }
