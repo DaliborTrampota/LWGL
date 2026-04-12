@@ -58,6 +58,11 @@ namespace gl {
         ImageData(const ImageData&) = delete;
         ImageData(ImageData&& other) noexcept;
         ImageData& operator=(ImageData&& other) noexcept;
+
+        /// @brief Returns true if the image was loaded successfully
+        bool isValid() const { return data != nullptr; }
+        /// @brief Returns the error message if the image is not valid
+        std::string error() const { return isValid() ? "" : path; }
     };
 
     struct RawImageData {

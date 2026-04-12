@@ -45,7 +45,7 @@ void CubeMap::allocate(TextureStorage storage) {
     m_width = storage.width;
 
     if (m_immutable) {
-        detail::Data2DImmutable(m_id, m_width, m_width, storage.format);
+        detail::Data2DImmutable(m_id, m_width, m_width, storage.format, storage.dataType);
     }
 }
 
