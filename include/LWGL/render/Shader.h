@@ -2,9 +2,8 @@
 
 #include <glad/glad.h>
 #include <filesystem>
+#include <string>
 #include <unordered_map>
-
-namespace fs = std::filesystem;
 
 namespace gl {
 
@@ -18,7 +17,7 @@ namespace gl {
     };
 
     struct Shader {
-        static void setChunksDirectory(fs::path directory);
+        static void setChunksDirectory(std::filesystem::path directory);
 
         unsigned int ID;
 
@@ -34,7 +33,7 @@ namespace gl {
 
       protected:
         friend class ShaderProgram;
-        static inline fs::path s_chunksDirectory;
+        static inline std::filesystem::path s_chunksDirectory;
         static inline std::unordered_map<std::string, std::string> s_constants;
         static inline std::unordered_map<std::string, std::string> s_chunks;
     };
