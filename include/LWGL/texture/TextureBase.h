@@ -72,7 +72,7 @@ namespace gl {
         TextureBase(const TextureBase&) = delete;
         TextureBase& operator=(const TextureBase&) = delete;
         TextureBase(TextureBase&& other) noexcept;
-        TextureBase& operator=(TextureBase&& other) noexcept;
+        TextureBase& operator=(TextureBase&&) noexcept = delete;
 
         UInt id() const { return m_id; }
         void bind() const;
