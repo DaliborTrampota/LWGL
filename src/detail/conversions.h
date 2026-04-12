@@ -101,7 +101,10 @@ namespace gl::detail {
                 case ImageFormat::RGBA:
                     return dataType == ImageDataType::Float ? GL_RGBA32F : GL_RGBA16F;
                 case ImageFormat::Depth: return GL_DEPTH_COMPONENT32F;  // use 16F?
-                default: break;
+                case ImageFormat::Unknown:
+                case ImageFormat::DepthStencil:
+                case ImageFormat::Stencil:
+                    break;
             }
         }
         // Fall back to regular internal format
