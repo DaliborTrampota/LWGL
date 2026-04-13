@@ -4,6 +4,8 @@
 #include <cassert>
 #include <stdexcept>
 
+#include "LWGL/Context.h"
+
 
 #include "LWGL/texture/Texture2D.h"
 #include "LWGL/texture/TextureRef.h"
@@ -12,6 +14,8 @@
 using namespace gl;
 
 BindlessTextures::BindlessTextures() {
+    if (!Context::supports(Extension::BindlessTextures))
+        throw std::runtime_error("GL_ARB_bindless_texture is not supported on this context");
     glCreateBuffers(1, &m_ssboID);
 }
 
@@ -46,6 +50,7 @@ size_t BindlessTextures::add(const TextureRef& texture) {
 void BindlessTextures::use() {
     for (GLuint64 handle : m_textureHandles)
         glMakeTextureHandleResidentARB(handle);
+    m_resident = true;
 }
 
 void BindlessTextures::use(size_t index) {
@@ -53,8 +58,11 @@ void BindlessTextures::use(size_t index) {
 }
 
 void BindlessTextures::unload() {
+    if (!m_resident)
+        return;
     for (GLuint64 handle : m_textureHandles)
         glMakeTextureHandleNonResidentARB(handle);
+    m_resident = false;
 }
 
 void BindlessTextures::unload(size_t index) {

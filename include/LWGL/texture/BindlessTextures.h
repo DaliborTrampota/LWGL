@@ -34,6 +34,7 @@ namespace gl {
         std::vector<TextureRef> m_textures;
         std::vector<GLuint64> m_textureHandles;
         bool m_dirty = false;
+        bool m_resident = false;
 
         unsigned int m_ssboID = 0;
     };
