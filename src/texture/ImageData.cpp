@@ -7,20 +7,23 @@
 
 using namespace gl;
 
-ImageData::ImageData(const char* path) {
-    data = stbi_load(path, &width, &height, &channels, 0);
+ImageData::ImageData(const char* path, int forceChannels) {
+    data = stbi_load(path, &width, &height, &channels, forceChannels);
     if (!data) {
         this->path = std::format("Failed to load image: {}", stbi_failure_reason());
         return;
     }
 
     this->path = path;
+    if (forceChannels != 0)
+        channels = forceChannels;
     switch (channels) {
         case 1: format = ImageFormat::Gray; break;
         case 2: format = ImageFormat::GrayAlpha; break;
         case 3: format = ImageFormat::RGB; break;
         case 4: format = ImageFormat::RGBA; break;
         default:
+            format = ImageFormat::Unknown;
             stbi_image_free(data);
             data = nullptr;
             this->path =
