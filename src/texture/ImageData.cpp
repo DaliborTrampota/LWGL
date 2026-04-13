@@ -8,6 +8,13 @@
 using namespace gl;
 
 ImageData::ImageData(const char* path, int forceChannels) {
+    if (forceChannels < 0 || forceChannels > 4) {
+        this->path = std::format(
+            "Failed to load image: invalid forceChannels {} (expected 0-4)", forceChannels
+        );
+        return;
+    }
+
     data = stbi_load(path, &width, &height, &channels, forceChannels);
     if (!data) {
         this->path = std::format("Failed to load image: {}", stbi_failure_reason());
@@ -23,11 +30,11 @@ ImageData::ImageData(const char* path, int forceChannels) {
         case 3: format = ImageFormat::RGB; break;
         case 4: format = ImageFormat::RGBA; break;
         default:
-            format = ImageFormat::Unknown;
             stbi_image_free(data);
             data = nullptr;
-            this->path =
-                std::format("Failed to load image: unsupported channel count {}", channels);
+            this->path = std::format(
+                "Failed to load image: unsupported channel count {} (expected 1-4)", channels
+            );
             return;
     }
 }

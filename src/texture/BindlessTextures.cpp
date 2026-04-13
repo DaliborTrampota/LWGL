@@ -1,6 +1,9 @@
 #include "LWGL/texture/BindlessTextures.h"
 
 #include <glad/glad.h>
+#include <cassert>
+#include <stdexcept>
+
 
 #include "LWGL/texture/Texture2D.h"
 #include "LWGL/texture/TextureRef.h"
@@ -13,6 +16,7 @@ BindlessTextures::BindlessTextures() {
 }
 
 BindlessTextures::~BindlessTextures() {
+    unload();
     if (m_ssboID != 0)
         glDeleteBuffers(1, &m_ssboID);
 }
@@ -44,8 +48,8 @@ void BindlessTextures::use() {
         glMakeTextureHandleResidentARB(handle);
 }
 
-void BindlessTextures::use(int index) {
-    glMakeTextureHandleResidentARB(m_textureHandles[index]);
+void BindlessTextures::use(size_t index) {
+    glMakeTextureHandleResidentARB(m_textureHandles.at(index));
 }
 
 void BindlessTextures::unload() {
@@ -53,11 +57,13 @@ void BindlessTextures::unload() {
         glMakeTextureHandleNonResidentARB(handle);
 }
 
-void BindlessTextures::unload(int index) {
-    glMakeTextureHandleNonResidentARB(m_textureHandles[index]);
+void BindlessTextures::unload(size_t index) {
+    glMakeTextureHandleNonResidentARB(m_textureHandles.at(index));
 }
 
-void BindlessTextures::destroy(int index) {
+void BindlessTextures::destroy(size_t index) {
+    if (index >= m_textureHandles.size())
+        throw std::out_of_range("BindlessTextures::destroy: index out of range");
     unload(index);
     m_textureHandles.erase(m_textureHandles.begin() + index);
     m_textures.erase(m_textures.begin() + index);
@@ -72,9 +78,10 @@ void BindlessTextures::unbind(unsigned bindingPoint) {
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, 0);
 }
 
-void BindlessTextures::setUniform(const char* name, int index, unsigned int programID) {
-    unsigned int location = glGetUniformLocation(programID, name);
-    glUniformHandleui64ARB(location, m_textureHandles[index]);
+void BindlessTextures::setUniform(const char* name, size_t index, unsigned int programID) {
+    GLint location = glGetUniformLocation(programID, name);
+    assert(location != -1 && "setUniform: uniform not found in shader program");
+    glProgramUniformHandleui64ARB(programID, location, m_textureHandles.at(index));
 }
 
 void BindlessTextures::update() {

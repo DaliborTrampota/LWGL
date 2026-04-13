@@ -52,6 +52,8 @@ namespace gl {
         }
 
         void upload() {
+            if (m_id == 0)
+                throw std::runtime_error("SSBO not created");
             if (!m_dirty)
                 return;
             glNamedBufferData(
@@ -64,6 +66,8 @@ namespace gl {
         }
 
         void bind(unsigned bindingPoint) {
+            if (m_id == 0)
+                throw std::runtime_error("SSBO not created");
             glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, m_id);
         }
 

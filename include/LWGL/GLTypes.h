@@ -10,7 +10,7 @@ using GLenum = unsigned int;
 using GLuint = unsigned int;
 using GLint = int;
 using GLsizei = int;
-using GLuint64 = unsigned long long;
+using GLuint64 = std::uint64_t;
 using GLbitfield = unsigned int;
 
 

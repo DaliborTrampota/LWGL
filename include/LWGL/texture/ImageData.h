@@ -45,11 +45,11 @@ namespace gl {
         int height = 0;
         int channels = 0;
         unsigned char* data = nullptr;
-        ImageFormat format = ImageFormat::RGBA;
+        ImageFormat format = ImageFormat::Unknown;
         ImageDataType dataType = ImageDataType::UChar;
         std::string path;
 
-        ImageData(const char* path, int forceChannels = 4);
+        ImageData(const char* path, int forceChannels = 0);
         ImageData(
             unsigned char* data, int w, int h, int ch, ImageFormat format, ImageDataType dataType
         );

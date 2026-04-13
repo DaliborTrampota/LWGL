@@ -18,17 +18,17 @@ namespace gl {
         size_t add(const TextureRef& texture);
 
         void use();
-        void use(int index);
+        void use(size_t index);
 
         void unload();
-        void unload(int index);
+        void unload(size_t index);
 
-        void destroy(int index);
+        void destroy(size_t index);
         void update();
         void bind(unsigned bindingPoint);
         void unbind(unsigned bindingPoint);
 
-        void setUniform(const char* name, int index, unsigned int programID);
+        void setUniform(const char* name, size_t index, unsigned int programID);
 
       private:
         std::vector<TextureRef> m_textures;
