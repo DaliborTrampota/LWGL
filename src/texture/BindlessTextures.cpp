@@ -1,11 +1,10 @@
 #include "LWGL/texture/BindlessTextures.h"
 
 #include <glad/glad.h>
-#include <cassert>
+#include <format>
 #include <stdexcept>
 
 #include "LWGL/Context.h"
-
 
 #include "LWGL/texture/Texture2D.h"
 #include "LWGL/texture/TextureRef.h"
@@ -88,7 +87,14 @@ void BindlessTextures::unbind(unsigned bindingPoint) {
 
 void BindlessTextures::setUniform(const char* name, size_t index, unsigned int programID) {
     GLint location = glGetUniformLocation(programID, name);
-    assert(location != -1 && "setUniform: uniform not found in shader program");
+    if (location == -1)
+        throw std::runtime_error(
+            std::string(
+                std::format(
+                    "BindlessTextures::setUniform: uniform {} not found in shader program", name
+                )
+            )
+        );
     glProgramUniformHandleui64ARB(programID, location, m_textureHandles.at(index));
 }
 
