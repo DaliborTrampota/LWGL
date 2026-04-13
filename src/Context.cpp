@@ -140,6 +140,7 @@ bool Context::supports(Extension ext) {
     switch (ext) {
         case Extension::BindlessTextures: return GLAD_GL_ARB_bindless_texture;
     }
+    return false;
 }
 
 float Context::time() {

@@ -53,6 +53,7 @@ void BindlessTextures::use() {
 }
 
 void BindlessTextures::use(size_t index) {
+    // TODO figure out the resident flag
     glMakeTextureHandleResidentARB(m_textureHandles.at(index));
 }
 
@@ -89,11 +90,8 @@ void BindlessTextures::setUniform(const char* name, size_t index, unsigned int p
     GLint location = glGetUniformLocation(programID, name);
     if (location == -1)
         throw std::runtime_error(
-            std::string(
-                std::format(
-                    "BindlessTextures::setUniform: uniform {} not found in shader program", name
-                )
-            )
+            std::format("BindlessTextures::setUniform: uniform {} not found in shader program", name)
+
         );
     glProgramUniformHandleui64ARB(programID, location, m_textureHandles.at(index));
 }
