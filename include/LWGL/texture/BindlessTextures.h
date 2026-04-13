@@ -26,6 +26,7 @@ namespace gl {
         void destroy(int index);
         void update();
         void bind(unsigned bindingPoint);
+        void unbind(unsigned bindingPoint);
 
         void setUniform(const char* name, int index, unsigned int programID);
 

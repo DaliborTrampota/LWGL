@@ -68,6 +68,10 @@ void BindlessTextures::bind(unsigned bindingPoint) {
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, m_ssboID);
 }
 
+void BindlessTextures::unbind(unsigned bindingPoint) {
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, 0);
+}
+
 void BindlessTextures::setUniform(const char* name, int index, unsigned int programID) {
     unsigned int location = glGetUniformLocation(programID, name);
     glUniformHandleui64ARB(location, m_textureHandles[index]);
