@@ -7,6 +7,10 @@
 
 namespace gl {
 
+    enum class Extension {
+        BindlessTextures,   // GL_ARB_bindless_texture
+    };
+
     using GLDebugCallback = void (*)(
         int source,
         int type,
@@ -47,6 +51,8 @@ namespace gl {
 
         GLFWwindow* window() const { return m_window; }
         GLFWmonitor* monitor() const { return m_monitor; }
+
+        static bool supports(Extension ext);
 
         static float time();
         static double timeDouble();

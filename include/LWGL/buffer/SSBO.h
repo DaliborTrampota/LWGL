@@ -1,0 +1,103 @@
+#pragma once
+
+#include <stdexcept>
+#include <utility>
+#include <vector>
+
+#include <glad/glad.h>
+
+namespace gl {
+
+    template <typename T>
+    class SSBO {
+      public:
+        SSBO() = default;
+        ~SSBO() {
+            if (m_id != 0)
+                glDeleteBuffers(1, &m_id);
+        }
+
+        SSBO(const SSBO&) = delete;
+        SSBO& operator=(const SSBO&) = delete;
+
+        SSBO(SSBO&& other) noexcept
+            : m_id(other.m_id),
+              m_data(std::move(other.m_data)),
+              m_dirty(other.m_dirty) {
+            other.m_id = 0;
+        }
+
+        SSBO& operator=(SSBO&& other) noexcept {
+            if (this != &other) {
+                if (m_id != 0)
+                    glDeleteBuffers(1, &m_id);
+                m_id = std::exchange(other.m_id, 0);
+                m_data = std::move(other.m_data);
+                m_dirty = other.m_dirty;
+            }
+            return *this;
+        }
+
+        void create(std::vector<T> data = {}) {
+            if (m_id != 0)
+                throw std::runtime_error("SSBO already created");
+            glCreateBuffers(1, &m_id);
+            m_data = std::move(data);
+            glNamedBufferData(
+                m_id,
+                m_data.size() * sizeof(T),
+                m_data.empty() ? nullptr : m_data.data(),
+                GL_STATIC_DRAW
+            );
+        }
+
+        void upload() {
+            if (m_id == 0)
+                throw std::runtime_error("SSBO not created");
+            if (!m_dirty)
+                return;
+            glNamedBufferData(
+                m_id,
+                m_data.size() * sizeof(T),
+                m_data.empty() ? nullptr : m_data.data(),
+                GL_STATIC_DRAW
+            );
+            m_dirty = false;
+        }
+
+        void bind(unsigned bindingPoint) {
+            if (m_id == 0)
+                throw std::runtime_error("SSBO not created");
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, m_id);
+        }
+
+        void unbind(unsigned bindingPoint) {
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, 0);
+        }
+
+        void clear() {
+            m_data.clear();
+            m_dirty = true;
+        }
+
+        void reserve(size_t size) { m_data.reserve(size); }
+
+        void setData(std::vector<T>&& data) {
+            m_data = std::move(data);
+            m_dirty = true;
+        }
+
+        void add(const T& item) {
+            m_data.push_back(item);
+            m_dirty = true;
+        }
+
+        const std::vector<T>& data() const { return m_data; }
+
+      private:
+        unsigned int m_id = 0;
+
+        std::vector<T> m_data;
+        bool m_dirty = false;
+    };
+}  // namespace gl

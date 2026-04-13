@@ -67,11 +67,6 @@ int Context::init(int w, int h, const char* name) {
     // glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &max_units);
     // printf("Max layers: %d\nMax units: %d\n", max_layers, max_units);
 
-    // if (GLAD_GL_ARB_bindless_texture)
-    //     printf("Bindless textures supported!\n");
-    // else
-    //     printf("Bindless textures NOT supported!\n");
-
     s_contextCount++;
     return 1;
 }
@@ -139,6 +134,13 @@ void Context::setDebugCallback(GLDebugCallback callback) {
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback((GLDEBUGPROC)callback, this);
+}
+
+bool Context::supports(Extension ext) {
+    switch (ext) {
+        case Extension::BindlessTextures: return GLAD_GL_ARB_bindless_texture;
+    }
+    return false;
 }
 
 float Context::time() {
