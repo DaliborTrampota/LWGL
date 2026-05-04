@@ -81,10 +81,8 @@ void Texture2D::create(TextureParams params) {
     if (m_id != 0)
         throw std::runtime_error("Texture2D already created");
 
-    if (m_immutable) {
-        glCreateTextures(GL_TEXTURE_2D, 1, &m_id);
-    } else {
-        glGenTextures(1, &m_id);
+    glCreateTextures(GL_TEXTURE_2D, 1, &m_id);
+    if (!m_immutable) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_id);
     }
