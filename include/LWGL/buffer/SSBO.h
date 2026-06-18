@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include <stdexcept>
 #include <utility>
 #include <vector>
@@ -59,7 +58,10 @@ namespace gl {
             if (!m_dirty)
                 return;
 
-            assert(m_gpuCapacity >= m_data.size());
+            if (m_gpuCapacity < m_data.size())
+                throw std::runtime_error(
+                    "SSBO upload exceeds GPU capacity; call allocate() before upload."
+                );
             glNamedBufferSubData(
                 m_id, 0, m_data.size() * sizeof(T), m_data.empty() ? nullptr : m_data.data()
             );
@@ -89,6 +91,9 @@ namespace gl {
         void allocate(size_t capacity) {
             if (!m_id)
                 throw std::runtime_error("SSBO not created");
+            if (capacity < m_data.size())
+                throw std::runtime_error("SSBO allocate() cannot shrink below current data size");
+
             glNamedBufferData(m_id, capacity * sizeof(T), nullptr, m_drawMode);
             m_gpuCapacity = capacity;
             m_dirty = true;

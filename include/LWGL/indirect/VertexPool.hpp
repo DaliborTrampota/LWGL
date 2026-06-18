@@ -37,19 +37,19 @@ namespace gl {
         if (data.empty()) {
             return {0, 0};
         }
-        for (FreeBlock& block : m_freeBlocks) {
-            if (block.count >= data.size()) {
+        for (auto blockIt = m_freeBlocks.begin(); blockIt != m_freeBlocks.end(); blockIt++) {
+            if (blockIt->count >= data.size()) {
                 glNamedBufferSubData(
-                    m_VBO, block.offset * sizeof(T), data.size() * sizeof(T), data.data()
+                    m_VBO, blockIt->offset * sizeof(T), data.size() * sizeof(T), data.data()
                 );
 
-                PoolAllocation alloc{block.offset, data.size()};
+                PoolAllocation alloc{blockIt->offset, static_cast<uint32_t>(data.size())};
 
-                if (block.count == data.size()) {
-                    std::erase(m_freeBlocks, block);
+                if (blockIt->count == data.size()) {
+                    m_freeBlocks.erase(blockIt);
                 } else {
-                    block.offset += data.size();
-                    block.count -= data.size();
+                    blockIt->offset += data.size();
+                    blockIt->count -= data.size();
                 }
                 m_used += alloc.count;
                 return alloc;
@@ -62,6 +62,8 @@ namespace gl {
 
     template <gl::VertexType T>
     void VertexPool<T>::free(const PoolAllocation& alloc) {
+        if (!alloc.isValid())
+            return;
         m_used -= alloc.count;
         FreeBlock block{alloc.offset, alloc.count};
         m_freeBlocks.push_back(block);
@@ -71,7 +73,10 @@ namespace gl {
     template <gl::VertexType T>
     void VertexPool<T>::coalesce() {
         std::sort(m_freeBlocks.begin(), m_freeBlocks.end());
-        for (int i = m_freeBlocks.size() - 1; i > 0; i--) {
+        if (m_freeBlocks.empty())
+            return;
+
+        for (size_t i = m_freeBlocks.size() - 1; i > 0; i--) {
             auto& prev = m_freeBlocks[i - 1];
             auto& cur = m_freeBlocks[i];
             if (prev.offset + prev.count == cur.offset) {

@@ -59,7 +59,7 @@ void IndirectBuffer::draw() const {
     glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_IB);
     glMultiDrawArraysIndirect(
         GL_TRIANGLES,
-        (void*)0,
+        nullptr,
         static_cast<GLsizei>(m_commands.size()),
         sizeof(DrawArraysIndirectCommand)
     );
