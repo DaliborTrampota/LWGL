@@ -8,8 +8,7 @@ namespace gl {
 
     class IndirectBuffer {
       public:
-        static constexpr unsigned int s_MaxDraws = 2000;
-        IndirectBuffer();
+        IndirectBuffer(size_t capacity = 2000);
         ~IndirectBuffer();
 
         void begin();
@@ -23,6 +22,7 @@ namespace gl {
       private:
         GLuint m_IB = 0;
         uint32_t m_vertCount = 0;
+        size_t m_gpuCapacity = 0;
 
         std::vector<DrawArraysIndirectCommand> m_commands;
 
