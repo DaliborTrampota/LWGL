@@ -1,8 +1,10 @@
 #pragma once
 
+#include <cassert>
 #include <stdexcept>
 #include <utility>
 #include <vector>
+
 
 #include <glad/glad.h>
 

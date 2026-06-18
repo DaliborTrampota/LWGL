@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 #include <algorithm>
+#include <cstdio>
+
 
 namespace gl {
     template <gl::VertexType T>
@@ -41,7 +43,7 @@ namespace gl {
                     m_VBO, block.offset * sizeof(T), data.size() * sizeof(T), data.data()
                 );
 
-                PoolAllocation aloc{block.offset, data.size()};
+                PoolAllocation alloc{block.offset, data.size()};
 
                 if (block.count == data.size()) {
                     std::erase(m_freeBlocks, block);
@@ -49,7 +51,8 @@ namespace gl {
                     block.offset += data.size();
                     block.count -= data.size();
                 }
-                return aloc;
+                m_used += alloc.count;
+                return alloc;
             }
         }
         printf("VertexPool: Allocation failed\n");
@@ -59,6 +62,7 @@ namespace gl {
 
     template <gl::VertexType T>
     void VertexPool<T>::free(const PoolAllocation& alloc) {
+        m_used -= alloc.count;
         FreeBlock block{alloc.offset, alloc.count};
         m_freeBlocks.push_back(block);
         coalesce();

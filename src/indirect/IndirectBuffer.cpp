@@ -9,8 +9,7 @@ using namespace gl;
 
 
 IndirectBuffer::IndirectBuffer(size_t capacity) : m_gpuCapacity(capacity) {
-    glGenBuffers(1, &m_IB);
-    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_IB);
+    glCreateBuffers(1, &m_IB);
     glNamedBufferData(
         m_IB, m_gpuCapacity * sizeof(DrawArraysIndirectCommand), nullptr, GL_STREAM_DRAW
     );
@@ -48,6 +47,9 @@ void IndirectBuffer::add(PoolAllocation aloc, glm::mat4 model) {
 }
 void IndirectBuffer::upload() {
     m_models.upload();
+    glNamedBufferData(
+        m_IB, sizeof(DrawArraysIndirectCommand) * m_commands.size(), nullptr, GL_STREAM_DRAW
+    );
     glNamedBufferSubData(
         m_IB, 0, sizeof(DrawArraysIndirectCommand) * m_commands.size(), m_commands.data()
     );
@@ -56,6 +58,9 @@ void IndirectBuffer::draw() const {
     m_models.bind(m_modelBindPoint);
     glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_IB);
     glMultiDrawArraysIndirect(
-        GL_TRIANGLES, (void*)0, m_commands.size(), sizeof(DrawArraysIndirectCommand)
+        GL_TRIANGLES,
+        (void*)0,
+        static_cast<GLsizei>(m_commands.size()),
+        sizeof(DrawArraysIndirectCommand)
     );
 }
