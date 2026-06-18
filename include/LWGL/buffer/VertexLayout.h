@@ -1,6 +1,8 @@
 #pragma once
 
+#include <concepts>
 #include <vector>
+
 
 namespace gl {
 
@@ -30,5 +32,11 @@ namespace gl {
         /// @note Should be sizeof(VertexType)
         size_t stride;
         std::vector<VertexAttribute> attributes;
+    };
+
+
+    template <typename T>
+    concept VertexType = requires(T t) {
+        { T::layout() } -> std::same_as<VertexLayout>;
     };
 }  // namespace gl
