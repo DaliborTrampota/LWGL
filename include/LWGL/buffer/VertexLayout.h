@@ -31,4 +31,10 @@ namespace gl {
         size_t stride;
         std::vector<VertexAttribute> attributes;
     };
+
+
+    template <typename T>
+    concept VertexType = requires(T t) {
+        { T::layout() } -> std::same_as<VertexLayout>;
+    };
 }  // namespace gl

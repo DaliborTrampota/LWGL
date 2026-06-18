@@ -11,10 +11,6 @@
 
 
 namespace gl {
-    template <typename T>
-    concept VertexType = requires(T t) {
-        { T::layout() } -> std::same_as<VertexLayout>;
-    };
 
     template <VertexType VertexT>
     class Attributes : public IBuffer {
@@ -65,8 +61,12 @@ namespace gl {
             if (m_dirty) {
                 glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
                 glBufferData(
-                    GL_ARRAY_BUFFER, m_data.size() * sizeof(VertexT), m_data.data(), m_drawType
-                );
+                    GL_ARRAY_BUFFER, m_data.size() * sizeof(VertexT), nullptr, m_drawType
+                );  // orphan
+                glBufferSubData(
+                    GL_ARRAY_BUFFER, 0, m_data.size() * sizeof(VertexT), m_data.data()
+                );  // upload
+
                 m_dirty = false;
             }
         }

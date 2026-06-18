@@ -11,7 +11,7 @@ namespace gl {
     template <typename T>
     class SSBO {
       public:
-        SSBO() = default;
+        SSBO(GLenum drawMode = GL_STATIC_DRAW) : m_drawMode(drawMode) {};
         ~SSBO() {
             if (m_id != 0)
                 glDeleteBuffers(1, &m_id);
@@ -23,7 +23,8 @@ namespace gl {
         SSBO(SSBO&& other) noexcept
             : m_id(other.m_id),
               m_data(std::move(other.m_data)),
-              m_dirty(other.m_dirty) {
+              m_dirty(other.m_dirty),
+              m_drawMode(other.m_drawMode) {
             other.m_id = 0;
         }
 
@@ -34,6 +35,7 @@ namespace gl {
                 m_id = std::exchange(other.m_id, 0);
                 m_data = std::move(other.m_data);
                 m_dirty = other.m_dirty;
+                m_drawMode = other.m_drawMode;
             }
             return *this;
         }
@@ -44,10 +46,7 @@ namespace gl {
             glCreateBuffers(1, &m_id);
             m_data = std::move(data);
             glNamedBufferData(
-                m_id,
-                m_data.size() * sizeof(T),
-                m_data.empty() ? nullptr : m_data.data(),
-                GL_STATIC_DRAW
+                m_id, m_data.size() * sizeof(T), m_data.empty() ? nullptr : m_data.data(), m_drawMode
             );
         }
 
@@ -57,15 +56,12 @@ namespace gl {
             if (!m_dirty)
                 return;
             glNamedBufferData(
-                m_id,
-                m_data.size() * sizeof(T),
-                m_data.empty() ? nullptr : m_data.data(),
-                GL_STATIC_DRAW
+                m_id, m_data.size() * sizeof(T), m_data.empty() ? nullptr : m_data.data(), m_drawMode
             );
             m_dirty = false;
         }
 
-        void bind(unsigned bindingPoint) {
+        void bind(unsigned bindingPoint) const {
             if (m_id == 0)
                 throw std::runtime_error("SSBO not created");
             glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, m_id);
@@ -96,6 +92,7 @@ namespace gl {
 
       private:
         unsigned int m_id = 0;
+        GLenum m_drawMode;
 
         std::vector<T> m_data;
         bool m_dirty = false;
