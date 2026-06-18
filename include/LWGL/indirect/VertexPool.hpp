@@ -33,7 +33,7 @@ namespace gl {
 
 
     template <gl::VertexType T>
-    PoolAllocation VertexPool<T>::allocate(std::vector<T>& data) {
+    PoolAllocation VertexPool<T>::allocate(const std::vector<T>& data) {
         if (data.empty()) {
             return {0, 0};
         }

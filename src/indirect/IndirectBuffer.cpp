@@ -15,6 +15,7 @@ IndirectBuffer::IndirectBuffer(size_t capacity) : m_gpuCapacity(capacity) {
     );
 
     m_models.create(m_gpuCapacity);
+    m_models.reserve(m_gpuCapacity);
     m_commands.reserve(m_gpuCapacity);
 }
 
@@ -28,9 +29,9 @@ void IndirectBuffer::begin() {
     m_vertCount = 0;
 }
 
-void IndirectBuffer::add(PoolAllocation aloc, glm::mat4 model) {
+void IndirectBuffer::add(PoolAllocation aloc, const glm::mat4& model) {
     DrawArraysIndirectCommand cmd{
-        .count = aloc.count, .primCount = 1, .first = aloc.offset, .baseInstance = 0
+        .count = aloc.count, .primCount = 1, .offset = aloc.offset, .baseInstance = 0
     };
 
     if (m_commands.size() >= m_gpuCapacity) {

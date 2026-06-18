@@ -20,7 +20,7 @@ namespace gl {
             glDeleteBuffers(1, &m_VBO);
         }
 
-        PoolAllocation allocate(std::vector<T>& vertex);
+        PoolAllocation allocate(const std::vector<T>& vertex);
         void free(const PoolAllocation& alloc);
 
         void bind() const { glBindVertexArray(m_VAO); }

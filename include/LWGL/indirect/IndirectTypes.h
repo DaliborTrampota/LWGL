@@ -14,7 +14,7 @@ namespace gl {
     struct DrawArraysIndirectCommand {
         GLuint count;         // vertex count
         GLuint primCount;     // always 1
-        GLuint first;         // PoolAllocation::firstVertex
+        GLuint offset;        // PoolAllocation::offset
         GLuint baseInstance;  // always 0
     };
 

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstddef>
+#include <vector>
+
 #include <glm/glm.hpp>
 #include "../buffer/SSBO.h"
 #include "IndirectTypes.h"
@@ -12,7 +15,7 @@ namespace gl {
         ~IndirectBuffer();
 
         void begin();
-        void add(PoolAllocation aloc, glm::mat4 model);
+        void add(PoolAllocation alloc, const glm::mat4& model);
         void upload();
         void draw() const;
 
