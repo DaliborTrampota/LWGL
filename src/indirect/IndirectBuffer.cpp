@@ -4,14 +4,15 @@
 #include <glm/glm.hpp>
 
 
-
 using namespace gl;
 
 
 IndirectBuffer::IndirectBuffer() {
     glGenBuffers(1, &m_IB);
     glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_IB);
-    glNamedBufferData(m_IB, sizeof(DrawArraysIndirectCommand), nullptr, GL_STREAM_DRAW);
+    glNamedBufferData(
+        m_IB, s_MaxDraws * sizeof(DrawArraysIndirectCommand), nullptr, GL_STREAM_DRAW
+    );
 
     m_models.create();
 }
@@ -36,11 +37,8 @@ void IndirectBuffer::add(PoolAllocation aloc, glm::mat4 model) {
 }
 void IndirectBuffer::upload() {
     m_models.upload();
-    glNamedBufferData(
-        m_IB,
-        sizeof(DrawArraysIndirectCommand) * m_commands.size(),
-        m_commands.data(),
-        GL_STREAM_DRAW
+    glNamedBufferSubData(
+        m_IB, 0, sizeof(DrawArraysIndirectCommand) * m_commands.size(), m_commands.data()
     );
 }
 void IndirectBuffer::draw() const {

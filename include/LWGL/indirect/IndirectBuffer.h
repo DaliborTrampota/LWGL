@@ -8,6 +8,7 @@ namespace gl {
 
     class IndirectBuffer {
       public:
+        static constexpr unsigned int s_MaxDraws = 2000;
         IndirectBuffer();
         ~IndirectBuffer();
 

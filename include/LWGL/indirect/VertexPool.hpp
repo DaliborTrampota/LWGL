@@ -2,7 +2,6 @@
 
 #include <glad/glad.h>
 #include <algorithm>
-#include <cstdio>
 
 namespace gl {
     template <gl::VertexType T>
@@ -38,7 +37,6 @@ namespace gl {
         }
         for (FreeBlock& block : m_freeBlocks) {
             if (block.count >= data.size()) {
-                glBindVertexArray(m_VAO);
                 glNamedBufferSubData(
                     m_VBO, block.offset * sizeof(T), data.size() * sizeof(T), data.data()
                 );
@@ -54,7 +52,7 @@ namespace gl {
                 return aloc;
             }
         }
-        printf("allocation fail\n");
+        printf("VertexPool: Allocation failed\n");
         return {0, 0};
     }
 
