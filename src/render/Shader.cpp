@@ -67,13 +67,12 @@ void Shader::setChunksDirectory(fs::path directory) {
     }
 }
 
-// TODO placeholder
 Shader::Shader(const char* computeShaderPath) {
     GL_GUARD
     m_type = ShaderType::Compute;
     std::string content = readFile(computeShaderPath);
     if (content.empty()) {
-        printf("ShaderError: Shader source is empty (%s)\n", computeShaderPath);
+        printf("ShaderError: ComputeShader source is empty (%s)\n", computeShaderPath);
         return;
     }
 
