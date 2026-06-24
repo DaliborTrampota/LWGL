@@ -17,6 +17,10 @@ ComputeProgram::ComputeProgram(const std::filesystem::path& path) {
 
     m_name = path.filename().string();
     Shader compute(path.string().c_str());
+    if (compute.ID == 0) {
+        printf("ComputeShaderError: Failed to create shader program (%s)\n", m_name.c_str());
+        return;
+    }
 
     int success;
     char infoLog[512];

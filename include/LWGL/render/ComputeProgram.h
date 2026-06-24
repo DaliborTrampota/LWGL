@@ -1,7 +1,10 @@
 #pragma once
 
+#include <cstdint>
 #include <filesystem>
 #include <glm/glm.hpp>
+#include <string>
+
 
 namespace gl {
     class ComputeProgram {
