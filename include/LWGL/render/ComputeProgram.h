@@ -12,6 +12,8 @@ namespace gl {
         ComputeProgram(const std::filesystem::path& path);
         ~ComputeProgram();
 
+        unsigned int id() const { return m_ID; }
+
         void dispatch(uint32_t x, uint32_t y, uint32_t z) const;
 
         void setBool(const std::string& name, bool value) const;

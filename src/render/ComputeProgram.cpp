@@ -18,7 +18,7 @@ ComputeProgram::ComputeProgram(const std::filesystem::path& path) {
     m_name = path.filename().string();
     Shader compute(path.string().c_str());
     if (compute.ID == 0) {
-        printf("ComputeShaderError: Failed to create shader program (%s)\n", m_name.c_str());
+        printf("ComputeShaderError: Failed to compile shader program (%s)\n", m_name.c_str());
         return;
     }
 
@@ -35,6 +35,7 @@ ComputeProgram::ComputeProgram(const std::filesystem::path& path) {
         printf(
             "ComputeShaderError: Failed to link shader program (%s)\n%s", m_name.c_str(), infoLog
         );
+        return;
     }
     printf("Compute shader compiled and linked\n");
 }
@@ -47,6 +48,10 @@ ComputeProgram::~ComputeProgram() {
 }
 
 void ComputeProgram::dispatch(uint32_t x, uint32_t y, uint32_t z) const {
+    if (m_ID == 0) {
+        printf("ComputeShaderError: dispatch() called on invalid program (%s)\n", m_name.c_str());
+        return;
+    }
     glUseProgram(m_ID);
     glDispatchCompute(x, y, z);
 }

@@ -7,6 +7,7 @@
 #include "LWGL/render/Shader.h"
 #include "LWGL/texture/TextureBase.h"
 
+#include "LWGL/Globals.h"
 
 using namespace gl;
 

@@ -1,8 +1,9 @@
 #pragma once
 
+#include <cstdint>
 #include <glm/glm.hpp>
 #include <string>
-#include "../Globals.h"
+
 
 namespace gl {
     class UBO;
