@@ -44,6 +44,8 @@ namespace gl {
             return *this;
         }
 
+        unsigned int id() const { return m_id; }
+
         void create(size_t capacity) {
             if (m_id != 0)
                 throw std::runtime_error("SSBO already created");
@@ -109,8 +111,14 @@ namespace gl {
             m_dirty = true;
         }
 
+        /// @brief Returns the data vector and marks the SSBO as dirty
+        std::vector<T>& data() {
+            m_dirty = true;
+            return m_data;
+        }
+
+        /// @brief Returns the data vector
         const std::vector<T>& data() const { return m_data; }
-        std::vector<T>& data() { return m_data; }
 
         size_t capacity() const { return m_gpuCapacity; }
         size_t remainingCapacity() const { return m_gpuCapacity - m_data.size(); }
