@@ -11,6 +11,9 @@
 namespace gl {
 
     class RBO;
+    class CubeMapArray;
+    class CubeMap;
+    class TextureArray;
     class FBO {
       public:
         using Att = FBOAttachment::Attachment;
@@ -45,10 +48,15 @@ namespace gl {
         /// @param colorAttachment The color attachment to read from.
         void setReadBuffer(Att colorAttachment) const;
 
-        /// @brief Binds a texture to an attachment. If the attachment is already bound, the texture is replaced (old texture is not deleted).
+        /// @brief Attaches a texture to an attachment. If the attachment is already attached, the texture is replaced (old texture is not deleted).
         /// @param attachment Attachment to bind the texture to.
         /// @param textureID ID of the texture to bind.
-        void bindTexture(Att attachment, TextureRef texture);
+        void attach(Att attachment, TextureRef texture);
+        void attach(Att attachment, RBO& rbo);
+        void attachLayer(Att attachment, CubeMapArray& cubemap, int layer, CubeFace face);
+        void attachLayer(Att attachment, TextureArray& cubemap, int layer);
+        void attachFace(Att attachment, CubeMap& cubemap, CubeFace face);
+
 
         /// @brief Creates a texture for an attachment, returns texture ownership.
         /// @param attachment Attachment to create the texture for.
@@ -102,9 +110,6 @@ namespace gl {
         /// @return 0 if the FBO is complete, otherwise the OpenGL error code.
         /// @see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glCheckFramebufferStatus.xhtml
         unsigned int checkCompleteness() const;
-
-        void attachRenderBuffer(RBO& rbo, Att attachment);
-
 
       protected:
         unsigned int m_fboID = 0;
