@@ -35,6 +35,8 @@ ComputeProgram::ComputeProgram(const std::filesystem::path& path) {
         printf(
             "ComputeShaderError: Failed to link shader program (%s)\n%s", m_name.c_str(), infoLog
         );
+        glDeleteProgram(m_ID);
+        m_ID = 0;
         return;
     }
     printf("Compute shader compiled and linked\n");
