@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <format>
 #include <stdexcept>
+#include <stb_image.h>
 
 
 using namespace gl;

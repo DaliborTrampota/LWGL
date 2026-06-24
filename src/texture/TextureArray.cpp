@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 #include <glad/glad.h>
-#include <tools/stb_image.h>
+#include <stb_image.h>
 
 using namespace gl;
 
