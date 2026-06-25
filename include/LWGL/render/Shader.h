@@ -37,6 +37,7 @@ namespace gl {
 
       protected:
         friend class ShaderProgram;
+        friend class ComputeProgram;
 
         struct Symbols {
             std::string programName;
