@@ -1,6 +1,5 @@
 #pragma once
 
-#include <tools/stb_image.h>
 #include <string>
 
 #include "LWGL/GLTypes.h"
@@ -39,6 +38,11 @@ namespace gl {
         Float,
     };
 
+    enum class ImageResizeFilter {
+        Linear,
+        Nearest,
+    };
+
     // TODO support for 3d images? research if such formats exist and how to load them?
     struct ImageData {
         int width = 0;
@@ -64,6 +68,8 @@ namespace gl {
         bool isValid() const { return data != nullptr; }
         /// @brief Returns the error message if the image is not valid
         std::string error() const { return isValid() ? "" : path; }
+
+        ImageData resize(int w, int h, ImageResizeFilter filter = ImageResizeFilter::Linear) const;
     };
 
     struct RawImageData {
