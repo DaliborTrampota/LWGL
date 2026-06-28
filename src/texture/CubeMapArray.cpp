@@ -56,34 +56,7 @@ void CubeMapArray::upload(int layer, CubeFace face, int width, ImageFormat forma
     if (width <= 0)
         throw std::runtime_error("Width must be greater than zero");
 
-    if (m_immutable) {
-        detail::SubData3D(
-            m_id, 0, 0, layer * 6 + static_cast<int>(face), width, width, 1, format, data
-        );
-    } else {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, m_id);
-        detail::SubData3D(
-            GL_TEXTURE_CUBE_MAP_ARRAY,
-            0,
-            0,
-            layer * 6 + static_cast<int>(face),
-            width,
-            width,
-            1,
-            format,
-            data
-        );
-    }
+    detail::SubData3D(
+        m_id, 0, 0, layer * 6 + static_cast<int>(face), width, width, 1, format, data
+    );
 }
-
-
-void CubeMapArray::bind(int layer) {
-    // glBindTexture(detail::toGLTexture(m_type), m_id);
-}
-
-void CubeMapArray::unbind(int layer) {}
-
-void CubeMapArray::bindFace(int layer, CubeFace face) {}
-
-void CubeMapArray::unbindFace(int layer, CubeFace face) {}

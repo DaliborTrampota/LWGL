@@ -14,12 +14,6 @@ namespace gl {
         // void upload(int layer, CubeFace face, const ImageData& imageData);
         // void upload(int layer, CubeFace face, const RawImageData& rawImageData);
 
-        void bind(int layer);
-        void unbind(int layer);
-        void bindFace(int layer, CubeFace face);
-        void unbindFace(int layer, CubeFace face);
-
-
         int width() { return m_width; }
         int channels() { return m_channels; }
 

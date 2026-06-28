@@ -50,11 +50,11 @@ namespace gl {
 
         /// @brief Attaches a texture to an attachment. If the attachment is already attached, the texture is replaced (old texture is not deleted).
         /// @param attachment Attachment to bind the texture to.
-        /// @param textureID ID of the texture to bind.
+        /// @param texture TextureReference of the texture to bind.
         void attach(Att attachment, TextureRef texture);
         void attach(Att attachment, RBO& rbo);
         void attachLayer(Att attachment, CubeMapArray& cubemap, int layer, CubeFace face);
-        void attachLayer(Att attachment, TextureArray& cubemap, int layer);
+        void attachLayer(Att attachment, TextureArray& array, int layer);
         void attachFace(Att attachment, CubeMap& cubemap, CubeFace face);
 
 
@@ -116,5 +116,8 @@ namespace gl {
         unsigned int m_target;
         std::vector<TextureRef> m_textures;
         std::vector<Att> m_attachments;
+
+        void recordAttachment(Att attachment, TextureRef texture);
     };
+
 }  // namespace gl
