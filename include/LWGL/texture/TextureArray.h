@@ -43,13 +43,15 @@ namespace gl {
         /// @note OpenGL will throw an error if the ImageFormat is not compatible with the allocated ImageFormat from TextureArray::allocate
         int upload(const RawImageData& rawImageData, int layer = -1);
 
+        uint32_t layers() const { return m_maxLayers; }
+
       private:
         int m_width = 0;
         int m_height = 0;
         int m_channels = 0;
         GLenum m_format = GL_NONE;
         int m_layer = 0;
-        unsigned int m_maxLayers = 0;
+        uint32_t m_maxLayers = 0;
 
         int compatibilityCheck(int w, int h, int layer);
     };

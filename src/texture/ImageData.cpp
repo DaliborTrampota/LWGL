@@ -4,6 +4,11 @@
 #include <format>
 #include <stdexcept>
 
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include <stb_image_resize2.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 using namespace gl;
 
@@ -82,6 +87,73 @@ ImageData& ImageData::operator=(ImageData&& other) noexcept {
     return *this;
 }
 
+ImageData ImageData::resize(int w, int h, ImageResizeFilter filter) const {
+    if (!isValid())
+        throw std::runtime_error("ImageData::resize: image is not valid");
+    if (w <= 0 || h <= 0)
+        throw std::runtime_error("ImageData::resize: invalid width or height");
+    // TODO if image is the same size?
+
+    stbir_pixel_layout pixelLayout;
+
+    switch (channels) {
+        case 1: pixelLayout = STBIR_1CHANNEL; break;
+        case 2: pixelLayout = STBIR_2CHANNEL; break;
+        case 3: pixelLayout = STBIR_RGB; break;
+        case 4: pixelLayout = STBIR_RGBA; break;
+        default: throw std::runtime_error("Invalid channel count");
+    }
+
+    stbir_datatype type;
+    size_t bytesPerChannel = 0;
+    switch (dataType) {
+        case ImageDataType::UChar:
+            type = STBIR_TYPE_UINT8;
+            bytesPerChannel = 1;
+            break;
+        case ImageDataType::UShort:
+            type = STBIR_TYPE_UINT16;
+            bytesPerChannel = 2;
+            break;
+        case ImageDataType::HalfFloat:
+            type = STBIR_TYPE_HALF_FLOAT;
+            bytesPerChannel = 2;
+            break;
+        case ImageDataType::Float:
+            type = STBIR_TYPE_FLOAT;
+            bytesPerChannel = 4;
+            break;
+        case ImageDataType::Char:
+        case ImageDataType::Short:
+        case ImageDataType::Int:
+        case ImageDataType::UInt:
+            throw std::runtime_error("ImageData::resize: unsupported datatype");
+    }
+    // TODO for 8-bit color textures the gamma-correct choice is STBIR_TYPE_UINT8_SRGB rather than STBIR_TYPE_UINT8, otherwise smoothing resamples in gamma space and darkens slightly.
+    unsigned char* out = static_cast<unsigned char*>(
+        malloc(static_cast<size_t>(w) * h * channels * bytesPerChannel)
+    );
+    if (!out)
+        throw std::runtime_error("ImageData::resize: failed to allocate memory for resized image");
+
+    stbir_resize(
+        data,
+        width,
+        height,
+        0,  // in stride - 0 stb will figure out
+        out,
+        w,
+        h,
+        0,  // out stride
+        pixelLayout,
+        type,
+        STBIR_EDGE_CLAMP,
+        filter == ImageResizeFilter::Linear ? STBIR_FILTER_TRIANGLE : STBIR_FILTER_POINT_SAMPLE
+    );
+    ImageData resized(out, w, h, channels, format, dataType);
+    resized.path = path + " (resized)";
+    return resized;
+}
 
 RawImageData::RawImageData(
     void* data, int w, int h, int d, int ch, GLenum format, GLenum dataType, GLenum internalFormat

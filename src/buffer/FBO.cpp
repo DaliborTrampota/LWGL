@@ -3,12 +3,16 @@
 #include "../detail/conversions.h"
 #include "LWGL/buffer/RBO.h"
 
+#include "LWGL/texture/CubeMap.h"
+#include "LWGL/texture/CubeMapArray.h"
+#include "LWGL/texture/Texture2D.h"
+#include "LWGL/texture/TextureArray.h"
+
+
 #include <glad/glad.h>
 #include <algorithm>
 #include <stdexcept>
 #include <utility>
-
-#include "LWGL/texture/Texture2D.h"
 
 
 using namespace gl;
@@ -30,7 +34,7 @@ namespace {
     }
     int queryMaxDrawBuffers() {
         int maxDrawBuffers;
-        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxDrawBuffers);
+        glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
         return maxDrawBuffers;
     }
 
@@ -78,42 +82,66 @@ FBO::FBO() : m_target(GL_FRAMEBUFFER), m_attachments(), m_textures() {
     }
 }
 
-void FBO::bindTexture(Att attachment, TextureRef texture) {
+void FBO::attach(Att attachment, TextureRef texture) {
     if (attachment - FBOAttachment::Color >= MaxColorAttachments)
         throw std::runtime_error("Exceeding max color attachments");
 
     unsigned int texID = texture.id();
-    if (texture.type() == TextureType::Texture2D) {
-        glBindTexture(GL_TEXTURE_2D, texID);
-        glFramebufferTexture2D(
-            m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_2D, texID, 0
-        );
-    } else if (texture.type() == TextureType::TextureArray) {
-        glBindTexture(GL_TEXTURE_2D_ARRAY, texID);
-        glFramebufferTexture(m_target, detail::toGLAttachmentType(attachment), texID, 0);
-    } else if (texture.type() == TextureType::CubeMap) {
-        // glBindTexture(GL_TEXTURE_CUBE_MAP, tex->id());
-        // TODO
-        throw std::runtime_error("Cubemap not implemented yet");
-    } else if (texture.type() == TextureType::Texture1D) {
-        glBindTexture(GL_TEXTURE_1D, texID);
-        glFramebufferTexture1D(
-            m_target, detail::toGLAttachmentType(attachment), GL_TEXTURE_1D, texID, 0
-        );
-    } else {
-        // TODO
-        throw std::runtime_error("Unsupported texture type");
-    }
+    glNamedFramebufferTexture(m_fboID, detail::toGLAttachmentType(attachment), texID, 0);
 
-    auto attIt = findAtt(m_attachments, attachment);
-    if (attIt == m_attachments.end()) {
-        m_attachments.push_back(attachment);
-        m_textures.push_back(texture);
-    } else {
-        size_t index = std::distance(m_attachments.cbegin(), attIt);
-        m_textures[index] = texture;
-    }
+    recordAttachment(attachment, texture);
 }
+
+// TODO track RBO or document why its not needed
+void FBO::attach(Att attachment, RBO& rbo) {
+    if (attachment - FBOAttachment::Color >= MaxColorAttachments)
+        throw std::runtime_error("Exceeding max color attachments");
+
+    glNamedFramebufferRenderbuffer(
+        m_fboID, detail::toGLAttachmentType(attachment), GL_RENDERBUFFER, rbo.id()
+    );
+}
+
+void FBO::attachLayer(Att attachment, CubeMapArray& cubemap, uint8_t layer, CubeFace face) {
+    if (attachment - FBOAttachment::Color >= MaxColorAttachments)
+        throw std::runtime_error("Exceeding max color attachments");
+
+    if (layer >= cubemap.layers())
+        throw std::runtime_error("Layer index exceeds the number of layers in the cube map array");
+
+    unsigned int layerIndex = layer * 6 + static_cast<int>(face);
+    glNamedFramebufferTextureLayer(
+        m_fboID, detail::toGLAttachmentType(attachment), cubemap.id(), 0, layerIndex
+    );
+
+    recordAttachment(attachment, &cubemap);
+}
+
+void FBO::attachLayer(Att attachment, TextureArray& textureArray, uint8_t layer) {
+    if (attachment - FBOAttachment::Color >= MaxColorAttachments)
+        throw std::runtime_error("Exceeding max color attachments");
+
+    if (layer >= textureArray.layers())
+        throw std::runtime_error("Layer index exceeds the number of layers in the texture array");
+
+    glNamedFramebufferTextureLayer(
+        m_fboID, detail::toGLAttachmentType(attachment), textureArray.id(), 0, layer
+    );
+
+    recordAttachment(attachment, &textureArray);
+}
+
+void FBO::attachFace(Att attachment, CubeMap& cubemap, CubeFace face) {
+    if (attachment - FBOAttachment::Color >= MaxColorAttachments)
+        throw std::runtime_error("Exceeding max color attachments");
+
+    glNamedFramebufferTextureLayer(
+        m_fboID, detail::toGLAttachmentType(attachment), cubemap.id(), 0, static_cast<int>(face)
+    );
+
+    recordAttachment(attachment, &cubemap);
+}
+
 
 std::shared_ptr<TextureBase> FBO::createTexture(
     Att attachment, const TextureParams& params, const TextureStorage& size
@@ -228,9 +256,13 @@ unsigned int FBO::checkCompleteness() const {
     return status == GL_FRAMEBUFFER_COMPLETE ? 0 : status;
 }
 
-
-void FBO::attachRenderBuffer(RBO& rbo, Att attachment) {
-    glNamedFramebufferRenderbuffer(
-        m_fboID, detail::toGLAttachmentType(attachment), GL_RENDERBUFFER, rbo.id()
-    );
+void FBO::recordAttachment(Att attachment, TextureRef texture) {
+    auto attIt = findAtt(m_attachments, attachment);
+    if (attIt == m_attachments.end()) {
+        m_attachments.push_back(attachment);
+        m_textures.push_back(texture);
+    } else {
+        size_t index = std::distance(m_attachments.cbegin(), attIt);
+        m_textures[index] = texture;
+    }
 }

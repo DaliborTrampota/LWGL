@@ -4,15 +4,23 @@
 #include <filesystem>
 #include <glm/glm.hpp>
 #include <string>
+#include <unordered_map>
 
 
 namespace gl {
     class ComputeProgram {
       public:
-        ComputeProgram(const std::filesystem::path& path);
+        ComputeProgram(const std::filesystem::path& path, bool deferCompilation = false);
         ~ComputeProgram();
 
         unsigned int id() const { return m_ID; }
+
+        bool compile();
+
+        void setConstant(const std::string& name, const char* value);
+        void setConstant(const std::string& name, float value);
+        void setConstant(const std::string& name, int value);
+        void setConstant(const std::string& name, bool value);
 
         void dispatch(uint32_t x, uint32_t y, uint32_t z) const;
 
@@ -28,5 +36,8 @@ namespace gl {
       private:
         unsigned int m_ID = 0;
         std::string m_name;
+        std::string m_path;
+        std::unordered_map<std::string, std::string> m_constants;
+        bool m_compiled = false;
     };
 }  // namespace gl

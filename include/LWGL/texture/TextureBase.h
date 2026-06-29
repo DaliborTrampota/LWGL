@@ -51,10 +51,11 @@ namespace gl {
         ImageFormat format = ImageFormat::RGBA;
         ImageDataType dataType = ImageDataType::UChar;
 
-        static TextureStorage FBODepth(int width, int height) {
+        static TextureStorage FBODepth(int width, int height, int depth = 0) {
             return {
                 .width = width,
                 .height = height,
+                .depth = depth,
                 .format = ImageFormat::Depth,
                 .dataType = ImageDataType::Float,
             };
