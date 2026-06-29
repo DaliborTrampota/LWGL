@@ -53,8 +53,8 @@ namespace gl {
         /// @param texture TextureReference of the texture to bind.
         void attach(Att attachment, TextureRef texture);
         void attach(Att attachment, RBO& rbo);
-        void attachLayer(Att attachment, CubeMapArray& cubemap, int layer, CubeFace face);
-        void attachLayer(Att attachment, TextureArray& array, int layer);
+        void attachLayer(Att attachment, CubeMapArray& cubemap, uint8_t layer, CubeFace face);
+        void attachLayer(Att attachment, TextureArray& array, uint8_t layer);
         void attachFace(Att attachment, CubeMap& cubemap, CubeFace face);
 
 

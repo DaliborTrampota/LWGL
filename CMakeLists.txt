@@ -28,5 +28,5 @@ target_include_directories(
     lwgl SYSTEM PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-target_include_directories(lwgl SYSTEM PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/LWGL/libs>)
+target_include_directories(lwgl SYSTEM PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/src/libs>)
 # target_include_directories(lwgl SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/libs)

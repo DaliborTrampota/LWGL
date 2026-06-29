@@ -92,15 +92,22 @@ void FBO::attach(Att attachment, TextureRef texture) {
     recordAttachment(attachment, texture);
 }
 
+// TODO track RBO or document why its not needed
 void FBO::attach(Att attachment, RBO& rbo) {
+    if (attachment - FBOAttachment::Color >= MaxColorAttachments)
+        throw std::runtime_error("Exceeding max color attachments");
+
     glNamedFramebufferRenderbuffer(
         m_fboID, detail::toGLAttachmentType(attachment), GL_RENDERBUFFER, rbo.id()
     );
 }
 
-void FBO::attachLayer(Att attachment, CubeMapArray& cubemap, int layer, CubeFace face) {
+void FBO::attachLayer(Att attachment, CubeMapArray& cubemap, uint8_t layer, CubeFace face) {
     if (attachment - FBOAttachment::Color >= MaxColorAttachments)
         throw std::runtime_error("Exceeding max color attachments");
+
+    if (layer >= cubemap.layers())
+        throw std::runtime_error("Layer index exceeds the number of layers in the cube map array");
 
     unsigned int layerIndex = layer * 6 + static_cast<int>(face);
     glNamedFramebufferTextureLayer(
@@ -110,9 +117,12 @@ void FBO::attachLayer(Att attachment, CubeMapArray& cubemap, int layer, CubeFace
     recordAttachment(attachment, &cubemap);
 }
 
-void FBO::attachLayer(Att attachment, TextureArray& textureArray, int layer) {
+void FBO::attachLayer(Att attachment, TextureArray& textureArray, uint8_t layer) {
     if (attachment - FBOAttachment::Color >= MaxColorAttachments)
         throw std::runtime_error("Exceeding max color attachments");
+
+    if (layer >= textureArray.layers())
+        throw std::runtime_error("Layer index exceeds the number of layers in the texture array");
 
     glNamedFramebufferTextureLayer(
         m_fboID, detail::toGLAttachmentType(attachment), textureArray.id(), 0, layer

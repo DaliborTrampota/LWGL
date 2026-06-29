@@ -14,15 +14,15 @@ namespace gl {
         // void upload(int layer, CubeFace face, const ImageData& imageData);
         // void upload(int layer, CubeFace face, const RawImageData& rawImageData);
 
-        int width() { return m_width; }
-        int channels() { return m_channels; }
+        int width() const { return m_width; }
+        int channels() const { return m_channels; }
 
-        int layers() { return m_layers; }
-        int layerFaces() { return m_layers * 6; }
+        uint32_t layers() const { return m_layers; }
+        uint32_t layerFaces() const { return m_layers * 6; }
 
       private:
         int m_width = 0;
-        int m_layers = 0;
+        uint32_t m_layers = 0;
         int m_channels = 0;
     };
 }  // namespace gl

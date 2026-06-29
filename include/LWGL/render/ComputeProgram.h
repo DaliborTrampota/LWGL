@@ -38,5 +38,6 @@ namespace gl {
         std::string m_name;
         std::string m_path;
         std::unordered_map<std::string, std::string> m_constants;
+        bool m_compiled = false;
     };
 }  // namespace gl

@@ -88,6 +88,12 @@ ImageData& ImageData::operator=(ImageData&& other) noexcept {
 }
 
 ImageData ImageData::resize(int w, int h, ImageResizeFilter filter) const {
+    if (!isValid())
+        throw std::runtime_error("ImageData::resize: image is not valid");
+    if (w <= 0 || h <= 0)
+        throw std::runtime_error("ImageData::resize: invalid width or height");
+    // TODO if image is the same size?
+
     stbir_pixel_layout pixelLayout;
 
     switch (channels) {
@@ -127,6 +133,9 @@ ImageData ImageData::resize(int w, int h, ImageResizeFilter filter) const {
     unsigned char* out = static_cast<unsigned char*>(
         malloc(static_cast<size_t>(w) * h * channels * bytesPerChannel)
     );
+    if (!out)
+        throw std::runtime_error("ImageData::resize: failed to allocate memory for resized image");
+
     stbir_resize(
         data,
         width,
@@ -141,9 +150,9 @@ ImageData ImageData::resize(int w, int h, ImageResizeFilter filter) const {
         STBIR_EDGE_CLAMP,
         filter == ImageResizeFilter::Linear ? STBIR_FILTER_TRIANGLE : STBIR_FILTER_POINT_SAMPLE
     );
-    ImageData data(out, w, h, channels, format, dataType);
-    data.path = path + " (resized)";
-    return data;
+    ImageData resized(out, w, h, channels, format, dataType);
+    resized.path = path + " (resized)";
+    return resized;
 }
 
 RawImageData::RawImageData(

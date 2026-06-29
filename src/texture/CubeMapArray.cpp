@@ -25,7 +25,16 @@ void CubeMapArray::create(TextureParams params) {
 void CubeMapArray::allocate(TextureStorage storage) {
     if (m_id == 0)
         throw std::runtime_error("CubeMapArray not created");
-
+    if (storage.width <= 0)
+        throw std::runtime_error("CubeMapArray::allocate: width must be greater than zero");
+    if (storage.height != 0 && storage.height != storage.width)
+        throw std::runtime_error(
+            "CubeMapArray::allocate: cubemap faces must be square (height must equal width)"
+        );
+    if (storage.depth <= 0)
+        throw std::runtime_error(
+            "CubeMapArray::allocate: depth (layers) must be greater than zero"
+        );
     m_width = storage.width;
     m_layers = storage.depth;
     // m_channels = storage.channels; // TODO deduce from format?
@@ -55,6 +64,19 @@ void CubeMapArray::upload(int layer, CubeFace face, int width, ImageFormat forma
 
     if (width <= 0)
         throw std::runtime_error("Width must be greater than zero");
+
+    if (width != m_width)
+        throw std::runtime_error(
+            "CubeMapArray::upload: width must be equal to the allocated width"
+        );
+
+    if (layer < 0 || layer >= m_layers)
+        throw std::runtime_error(
+            "CubeMapArray::upload: layer must be between 0 and the number of layers"
+        );
+
+    if (!data)
+        throw std::runtime_error("CubeMapArray::upload: data is null");
 
     detail::SubData3D(
         m_id, 0, 0, layer * 6 + static_cast<int>(face), width, width, 1, format, data

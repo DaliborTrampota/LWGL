@@ -60,11 +60,15 @@ bool ComputeProgram::compile() {
     glGetProgramiv(m_ID, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(m_ID, 512, NULL, infoLog);
-        printf("ComputeShaderError: Failed to link shader program (%s)\n%s", m_name.c_str(), infoLog);
+        printf(
+            "ComputeShaderError: Failed to link shader program (%s)\n%s", m_name.c_str(), infoLog
+        );
+        m_compiled = false;
         return false;
     }
 
     printf("Compute shader compiled and linked\n");
+    m_compiled = true;
     return true;
 }
 
@@ -89,6 +93,14 @@ void ComputeProgram::dispatch(uint32_t x, uint32_t y, uint32_t z) const {
         printf("ComputeShaderError: dispatch() called on invalid program (%s)\n", m_name.c_str());
         return;
     }
+
+    if (!m_compiled) {
+        printf(
+            "ComputeShaderError: dispatch() called on uncompiled program (%s)\n", m_name.c_str()
+        );
+        return;
+    }
+
     glUseProgram(m_ID);
     glDispatchCompute(x, y, z);
 }
