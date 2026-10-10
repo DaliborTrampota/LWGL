@@ -62,6 +62,9 @@ namespace gl::detail {
         switch (format) {
             case ImageFormat::RGB: return GL_RGB;
             case ImageFormat::RGBA: return GL_RGBA;
+            case ImageFormat::SRGB: return GL_RGB;
+            case ImageFormat::SRGBA: return GL_RGBA;
+            case ImageFormat::RGBPackedFloat: return GL_RGB;
             case ImageFormat::Gray: return GL_RED;
             case ImageFormat::GrayAlpha: return GL_RG;
             case ImageFormat::Depth: return GL_DEPTH_COMPONENT;
@@ -78,6 +81,9 @@ namespace gl::detail {
         switch (format) {
             case ImageFormat::RGB: return GL_RGB8;
             case ImageFormat::RGBA: return GL_RGBA8;
+            case ImageFormat::RGBPackedFloat: return GL_R11F_G11F_B10F;
+            case ImageFormat::SRGB: return GL_SRGB8;
+            case ImageFormat::SRGBA: return GL_SRGB8_ALPHA8;
             case ImageFormat::Gray: return GL_R8;
             case ImageFormat::GrayAlpha: return GL_RG8;
             case ImageFormat::Depth: return GL_DEPTH_COMPONENT24;
@@ -101,10 +107,12 @@ namespace gl::detail {
                 case ImageFormat::RGBA:
                     return dataType == ImageDataType::Float ? GL_RGBA32F : GL_RGBA16F;
                 case ImageFormat::Depth: return GL_DEPTH_COMPONENT32F;  // use 16F?
+                case ImageFormat::SRGB:
+                case ImageFormat::SRGBA:
+                case ImageFormat::RGBPackedFloat:
                 case ImageFormat::Unknown:
                 case ImageFormat::DepthStencil:
-                case ImageFormat::Stencil:
-                    break;
+                case ImageFormat::Stencil: break;
             }
         }
         // Fall back to regular internal format

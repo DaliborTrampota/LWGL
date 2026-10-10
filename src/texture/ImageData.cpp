@@ -12,7 +12,7 @@
 
 using namespace gl;
 
-ImageData::ImageData(const char* path, int forceChannels) {
+ImageData::ImageData(const char* path, ColorSpace colorSpace, int forceChannels) {
     if (forceChannels < 0 || forceChannels > 4) {
         this->path = std::format(
             "Failed to load image: invalid forceChannels {} (expected 0-4)", forceChannels
@@ -32,8 +32,12 @@ ImageData::ImageData(const char* path, int forceChannels) {
     switch (channels) {
         case 1: format = ImageFormat::Gray; break;
         case 2: format = ImageFormat::GrayAlpha; break;
-        case 3: format = ImageFormat::RGB; break;
-        case 4: format = ImageFormat::RGBA; break;
+        case 3:
+            format = colorSpace == ColorSpace::sRGB ? ImageFormat::SRGB : ImageFormat::RGB;
+            break;
+        case 4:
+            format = colorSpace == ColorSpace::sRGB ? ImageFormat::SRGBA : ImageFormat::RGBA;
+            break;
         default:
             stbi_image_free(data);
             data = nullptr;
@@ -108,7 +112,9 @@ ImageData ImageData::resize(int w, int h, ImageResizeFilter filter) const {
     size_t bytesPerChannel = 0;
     switch (dataType) {
         case ImageDataType::UChar:
-            type = STBIR_TYPE_UINT8;
+            type = (format == ImageFormat::SRGB || format == ImageFormat::SRGBA)
+                       ? STBIR_TYPE_UINT8_SRGB
+                       : STBIR_TYPE_UINT8;
             bytesPerChannel = 1;
             break;
         case ImageDataType::UShort:
@@ -129,7 +135,7 @@ ImageData ImageData::resize(int w, int h, ImageResizeFilter filter) const {
         case ImageDataType::UInt:
             throw std::runtime_error("ImageData::resize: unsupported datatype");
     }
-    // TODO for 8-bit color textures the gamma-correct choice is STBIR_TYPE_UINT8_SRGB rather than STBIR_TYPE_UINT8, otherwise smoothing resamples in gamma space and darkens slightly.
+
     unsigned char* out = static_cast<unsigned char*>(
         malloc(static_cast<size_t>(w) * h * channels * bytesPerChannel)
     );

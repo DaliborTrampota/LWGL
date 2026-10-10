@@ -17,13 +17,16 @@ namespace gl {
 
     enum class ImageFormat {
         Unknown,
-        RGB,           // Red, Green, Blue
-        RGBA,          // Red, Green, Blue, Alpha
-        Gray,          // Grayscale
-        GrayAlpha,     // Grayscale with Alpha
-        Depth,         // Depth
-        DepthStencil,  // Depth and Stencil
-        Stencil,       // Stencil
+        RGB,             // Red, Green, Blue
+        RGBA,            // Red, Green, Blue, Alpha
+        RGBPackedFloat,  // Packed float RGB format R11F_G11F_B10F
+        SRGB,            // Red, Green, Blue in sRGB color space
+        SRGBA,           // Red, Green, Blue, Alpha in sRGB color space
+        Gray,            // Grayscale
+        GrayAlpha,       // Grayscale with Alpha
+        Depth,           // Depth
+        DepthStencil,    // Depth and Stencil
+        Stencil,         // Stencil
     };
 
     enum class ImageDataType {
@@ -43,6 +46,11 @@ namespace gl {
         Nearest,
     };
 
+    enum class ColorSpace {
+        Linear,
+        sRGB,
+    };
+
     // TODO support for 3d images? research if such formats exist and how to load them?
     struct ImageData {
         int width = 0;
@@ -53,7 +61,9 @@ namespace gl {
         ImageDataType dataType = ImageDataType::UChar;
         std::string path;
 
-        ImageData(const char* path, int forceChannels = 0);
+        explicit ImageData(
+            const char* path, ColorSpace colorSpace = ColorSpace::Linear, int forceChannels = 0
+        );
         ImageData(
             unsigned char* data, int w, int h, int ch, ImageFormat format, ImageDataType dataType
         );
