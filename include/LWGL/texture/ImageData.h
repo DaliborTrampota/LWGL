@@ -61,9 +61,7 @@ namespace gl {
         ImageDataType dataType = ImageDataType::UChar;
         std::string path;
 
-        explicit ImageData(
-            const char* path, ColorSpace colorSpace = ColorSpace::Linear, int forceChannels = 0
-        );
+        explicit ImageData(const char* path, ColorSpace colorSpace, int forceChannels = 0);
         ImageData(
             unsigned char* data, int w, int h, int ch, ImageFormat format, ImageDataType dataType
         );
