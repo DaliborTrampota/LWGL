@@ -26,7 +26,6 @@ namespace gl {
         void upload(CubeFace face, int width, ImageFormat format, Data data);
 
         /// @brief Uploads data to the texture from ImageData
-        /// @note There is implicit conversion from resource path to ImageData
         void upload(CubeFace face, const ImageData& imageData);
 
         /// @brief Uploads data to the texture from RawImageData
